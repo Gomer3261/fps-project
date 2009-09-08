@@ -1,3 +1,0 @@
-name: Default Server
-message: This server has not set a server message
-maxplayers: 12
