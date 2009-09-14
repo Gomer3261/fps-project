@@ -1,5 +1,5 @@
 import gamesystems
-import GUI
+import items
 import networking
 import systems
 

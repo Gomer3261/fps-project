@@ -1,181 +1,245 @@
-################################
-### ------ ballistics ------ ###
-################################
-### Copyright 2009 Chase Moskal
+### ####################################### ###
+### ### ------ BALLISTICS ENGINE ------ ### ###
+### ####################################### ###
+### # The FPS Project
 INIT = 0
 
-class PROJECTILESYSTEM:
-
-    projectiles = []
-
-    def __init__(self, obj):
-        # Needs a gameblender object for raycasting
-        self.obj = obj
-
-    def addProjectile(self, owner, startpos, startori, velocity, mass, airdamping, randomness, gravityincrement, terminalvelocity, maxsteps, ticrate=60.0):
-        projectile = self.PROJECTILE(self, owner, startpos, startori, velocity, mass, airdamping, randomness, gravityincrement, terminalvelocity, maxsteps, ticrate)
-        self.projectiles.append(projectile)
-
-    def removeProjectile(self, projectile):
-        self.projectiles.remove(projectile)
-
-    def simulate(self, debug=0):
-        for projectile in self.projectiles:
-            projectile.simulate(debug)
-
-    class PROJECTILE:
-        def __init__(self, projectilesystem, owner, startpos, startori, velocity, mass, airdamping, instability, gravityincrement, terminalvelocity, maxsteps, ticrate):
-            self.projectilesystem = projectilesystem
-            self.owner = owner
-            self.startpos = startpos
-            self.startori = startori
-            self.velocity = velocity/ticrate
-            self.mass = mass
-            self.airdamping = airdamping/ticrate
-            self.instability = instability/100.0
-            self.gravityincrement = gravityincrement/ticrate
-            self.terminalvelocity = terminalvelocity
-            self.maxsteps = maxsteps
-            self.ticrate = ticrate
-
-            self.position = startpos
-            self.direction = self.normalize(self.getYFromOri(self.startori))
-
-            self.gravity = 0.0
-
-            self.path = []
-            self.terminate = 0
-            self.step = 0
-
-            import random
-            self.random = random
-
-        def simulate(self, debug=1):
-            if self.step > self.maxsteps:
-                self.terminate = 1
-            
-            if not self.terminate:
-                
-                # Simulate Projectile
-                self.doAirDamping()
-                self.doInstability()
-                self.doGravity()
-                self.doProjection()
-                self.step += 1
-
-                E = self.getKineticEnergy()
-                
-                if debug == 1:
-                    import Rasterizer
-                    line = self.path[len(self.path)-1]
-                    Rasterizer.drawLine(line[0], line[1], [1.0, 0.0, 0.0])
-                elif debug == 2:
-                    import Rasterizer
-                    for line in self.path:
-                        Rasterizer.drawLine(line[0], line[1], [1.0, 0.0, 0.0])
-            else:
-                # Terminate Self
-                self.projectilesystem.removeProjectile(self)
+manager = None
 
 
-        ### ================================================================================================
-        ### THE SIMULATION
-        ### ================================================================================================
-        def doProjection(self):
-            obj = self.owner
-
-            D = self.direction
-            V = self.velocity
-
-            startpos = self.position
-            offset = [ D[0]*V, D[1]*V, (D[2]*V)-(self.gravity/self.ticrate) ]
-            newpos = self.offset(offset)
-
-            hit, point, normal = obj.rayCast(startpos, newpos)
-
-            if hit:
-                self.position = point
-                self.terminate = 1
-            else:
-                self.position = newpos
-
-            self.path.append( [startpos, self.position] )
-
-        def doAirDamping(self):
-            if self.velocity > 0.0:
-                damping = self.airdamping / self.mass
-                damp = self.velocity*damping
-                self.velocity -= damp
-            else:
-                self.velocity = 0.0
-
-        def doInstability(self):
-            self.randomizeDirection(self.instability)
-
-        def doGravity(self):
-            if self.gravity < self.terminalvelocity:
-                self.gravity += self.gravityincrement
-            else:
-                self.gravity = self.terminalvelocity
 
 
-        ### ================================================================================================
-        ### TOOLS
-        ### ================================================================================================
-        def getKineticEnergy(self):
-            # E = 0.5(mv^2)
-            m = self.mass / 1000.0 # Converting mass to Kilograms
-            #print "Mass: %s"%(m)
-            v = self.velocity*self.ticrate
-            #print "Velocity: %s"%(v)
-            E = (m/2.0) * (v*v)
-            #print "Energy: %s"%(E)
-            return E
+
+
+class MANAGER:
+    """
+    The Ballistics Manager.
+    It handles the simulation of every bullet projectile in the game.
+    """
+
+    def __init__(self, modules):
+        self.bullets = modules.gamesystems.bullets
+
+    pool = [] # Pool of bullets to be simulated.
+    toTerminalSim = [] # Bullets that need to be removed from pool and handled by Terminal Simulation.
+    deadPool = [] # List of bullets that need to be removed from the pool; they are dead.
+
+    def addToSimulation(self, bullet, owner):
+        """
+        Adds a bullet object to the ballistics simulation.
+        """
+        # Setting owner object for raycasting
+        bullet.owner = owner
         
-        def randomize(self, x, value=0.1):
-            r = self.random.random()
-            r *= value
-            neg = self.random.choice([1, 0])
-            if neg:
-                r *= -1.0
-            return x+r
+        # Timer for ballistics simulation. Giving it a 1 frame headstart.
+        bullet.timer = modules.systems.time.TIMER(modules.systems.time.perFrame())
+        
+        # Starting the bullet.path at the bullet's starting point
+        bullet.path.append(bullet.position)
 
-        def randomizeDirection(self, value=1.0):
-            #value = value/100.0
-            x = self.direction[0]
-            y = self.direction[1]
-            z = self.direction[2]
+        # Adding it to the external simulation pool
+        self.pool.append(bullet)
 
-            X = self.randomize(x, value)
-            Y = self.randomize(y, value)
-            Z = self.randomize(z, value)
+    def run(self):
+        self.externalSimulation()
+        self.terminalSimulation()
 
-            self.direction = [X, Y, Z]
-            self.normalizeDirection()
 
-        def getYFromOri(self, ori):
-            # Y = [YX, YY, YZ]
-            return [ ori[0][1], ori[1][1], ori[2][1] ]
 
-        def offset(self, offset):
-            pos = self.position
+
+    ### ================================================
+    ### External Simulation
+    ### ================================================
+
+    def externalSimulation(self):
+        """
+        Performs external ballistics simulation for each bullet.
+        Can divide the bullet pool into multiple passes for simulation
+        to divide up the workload (while decreasing authenticity of the
+        simulation).
+        """
+        for bullet in self.pool:
+            # The actual simulation for each bullet
+            self.eSim(self, bullet)
+        self.cleanThePool()
+
+    def cleanThePool(self):
+        for deadBullet in self.deadPool:
+            self.pool.remove(deadBullet)
+        self.deadPool = []
+
+
+
+    def eSim(self, bullet):
+        """
+        The external simulation of a single bullet.
+        """
+        # Getting the length of time that this simulation step is simulating.
+        stepTime = bullet.time.get()
+        bullet.time.reset()
+        
+        self.factorDamping(bullet, stepTime)
+        self.factorGravity(bullet, stepTime)
+        self.factorRandomness(bullet, stepTime)
+        
+        self.projectBullet(bullet, stepTime)
             
-            X = pos[0]
-            Y = pos[1]
-            Z = pos[2]
+        if bullet.steps >= bullet.maxsteps:
+            # Bullet has run out of simulation time; killing bullet
+            self.deadPool.append(bullet)
 
-            X += offset[0]
-            Y += offset[1]
-            Z += offset[2]
 
-            return [X, Y, Z]
 
-        def normalizeDirection(self):
-            self.direction = self.normalize(self.direction)
 
-        def normalize(self, vector):
-            import math
-            L = math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2)
-            nVector = [vector[0]/L, vector[1]/L, vector[2]/L]
-            return nVector
+    def factorDamping(self, bullet, stepTime):
+        """
+        Simulates the affects of air friction and things 
+        related to that on the bullet.
+        Includes velocity loss and stability loss.
+        """
+        return None
 
+    def factorGravity(self, bullet, stepTime):
+        """
+        Simulates the affects of gravity on the bullet.
+        """
+        return None
+
+    def factorRandomness(self, bullet, stepTime):
+        """
+        Simulates the randomization of certain factors.
+        For example, bullet direction is randomely affected
+        based on the bullets stability (or lack thereof).
+        """
+        return None
+
+
+
+
+    def projectBullet(self, bullet, stepTime):
+        """
+        Projects a ray from current position to the next position,
+        if the ray hits an object, then pass bullet to terminal ballistics,
+        otherwise set bullet's position to the next position.
+        """
+        # Using stepTime to get the displacement magnitude for this step.
+        M = bullet.velocity * stepTime # Positional displacement Magnitude.
+        D = self.normalize(bullet.direction) # 3D Direction Vector
+
+        X = D[0] * M
+        Y = D[1] * M
+        Z = D[2] * M
+        offset = [X, Y, Z] # Local offset from current position to new position
+
+        newPosition = self.offset(bullet.position, offset)
+        
+        obj = bullet.owner # The object we will use for raycasting
+        hit, point, normal = obj.rayCast(position, newPosition) # Raycasting...
+
+        if hit: # If the bullet hit something...
+            bullet.position = point # Unnecessary, but it makes sense and might be nifty.
+
+            # Saving the hit data to the bullet
+            bullet.hit = hit
+            bullet.point = point
+            bullet.normal = normal
+
+            # Passing the bullet to the terminal simulation
+            self.toTerminalSim.append(bullet)
+
+        else:
+            # The bullet didn't hit anything, so we can safely
+            # move the bullet to the newPosition.
+            bullet.position = newPosition
+
+        # Adding the new position to the path (used for drawing the bullet)
+        bullet.path.append(newPosition)
+
+        # Incrementing Step Counter
+        bullet.step += 1
+        
+
+
+
+
+
+
+
+
+
+    ### ================================================
+    ### Terminal Simulation
+    ### ================================================
+
+    def terminalSimulation(self):
+        """
+        Removes toTerminal bullets from pool and simulates them.
+        """
+        for bullet in self.toTerminalSim:
+            self.pool.remove(bullet)
+            # The actual simulation for each bullet
+            self.tSim(bullet)
+        self.toTerminalSim = []
+
+
+
+    def tSim(self, bullet):
+        """
+        The terminal simulation of a single bullet.
+        """
+        # Do terminal simulation on bullet here
+
+
+
+
+
+
+
+
+
+    ### ================================================
+    ### General Purpose Methods
+    ### ================================================
+
+    def normalize(self, v):
+        """
+        Normalizes a 3D vector.
+        """
+        x = v[0]
+        y = v[1]
+        z = v[2]
+
+        import math
+        length = math.sqrt( (x*x + y*y + z*z) )
+
+        X = x/length
+        Y = y/length
+        Z = z/length
+
+        return [X, Y, Z]
+
+    def offset(self, pos, off):
+        pX = pos[0]
+        pY = pos[1]
+        pZ = pos[2]
+
+        oX = off[0]
+        oY = off[1]
+        oZ = off[2]
+
+        X = pX + oX
+        Y = pY + oY
+        Z = pZ + oZ
+
+        return [X, Y, Z]
+        
+
+
+
+
+
+
+
+def initiate(modules):
+    global manager
+    manager = MANAGER(modules)
