@@ -4,11 +4,7 @@
 ### # The FPS Project
 INIT = 0
 
-manager = None
-
-
-
-
+manager = MANAGER
 
 
 class MANAGER:
@@ -17,8 +13,10 @@ class MANAGER:
     It handles the simulation of every bullet projectile in the game.
     """
 
-    def __init__(self, modules):
-        self.bullets = modules.gamesystems.bullets
+    import modules
+
+    def __init__(self):
+        self.bullets = self.modules.gamesystems.bullets
 
     pool = [] # Pool of bullets to be simulated.
     toTerminalSim = [] # Bullets that need to be removed from pool and handled by Terminal Simulation.
@@ -232,14 +230,3 @@ class MANAGER:
         Z = pZ + oZ
 
         return [X, Y, Z]
-        
-
-
-
-
-
-
-
-def initiate(modules):
-    global manager
-    manager = MANAGER(modules)
