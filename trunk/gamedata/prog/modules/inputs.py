@@ -3,7 +3,28 @@
 ############################
 ### Copyright 2009 Chase Moskal
 INIT = 0
+controller = None
 
+
+def init(keyb, lmb, rmb, mmb, mwu, mwd, controls):
+	"""
+		Init the module
+		keyb	= Keyboard sensor
+		lmb		= Left mouse button sensor
+		rmb		= Right mouse button sensor
+		mmb		= Middle mouse button sensor
+		mwu		= Mouse wheel up sensor
+		mwd		= Mouse wheel down sensor
+		controls	= Controls dictionary
+	"""
+
+	global INIT, controller
+	
+	controller = CONTROLLER(keyb, lmb, rmb, mmb, mwu, mwd)
+	controller.setControls(controls)
+	
+	INIT = 1
+	
 class CONTROLLER:
     events = {}
 
