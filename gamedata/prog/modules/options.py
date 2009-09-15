@@ -13,6 +13,14 @@ path = "FPS_options.txt"
 settings = {}
 controls = {}
 
+def init():
+	"""Init the module."""
+	
+	global INIT
+	
+	load()
+	INIT = 1
+
 
 
 

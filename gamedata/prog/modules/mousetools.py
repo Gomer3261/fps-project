@@ -9,15 +9,23 @@
 
 INIT = 0
 
+mouse = None
+cursor = None
 
-
+def init(mousemove, mouseover):
+	"""Init the module:	This requires a mouse movement sensor and a mouse over sensor"""
+		
+	global mouse, cursor, INIT
+		
+	mouse = MOUSE(mousemove)
+	cursor = CURSOR(mouseover)
+	INIT = 1
 
 ##############################
 ### ------  MOUSE   ------ ###
 ##############################
 # For getting Mouse movement information.
 
-# Overmind must instantiate with a mouse movement sensor.
 class MOUSE:
     import math
     import Rasterizer
@@ -96,7 +104,6 @@ class MOUSE:
 # For getting cursor information, position,
 # object hover...
 
-# Overmind must insantiate with a mouse over sensor.
 class CURSOR:
     import Rasterizer
     
