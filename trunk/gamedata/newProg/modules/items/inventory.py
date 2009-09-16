@@ -3,7 +3,7 @@
 ################################
 
 # This module stores the INVENTORY class for managing items
-from modules.items import *
+from modules.items.data import *
 
 class INVENTORY:
 	"""Manages the player's items"""
