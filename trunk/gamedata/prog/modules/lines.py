@@ -5,22 +5,22 @@
 
 INIT = 0
     
-class LINEMANAGER:
+class lineManager:
     
     lines = []
     
     def __init__(self, add):
         self.add = add
     
-    def addLine(self, startpos, endpos, type="line", thickness=1):
-        newline = self.LINE(self, startpos, endpos, type, thickness)
-        self.lines.append(newline)
-        return newline
+    def addLine(self, startPos, endPos, type="line", thickness=1):
+        newLine = self.LINE(self, startPos, endPos, type, thickness)
+        self.lines.append(newLine)
+        return newLine
         
         
-    def deleteLine(self, lineref):
-        lineref.end()
-        self.lines.remove(lineref)
+    def deleteLine(self, lineRef):
+        lineRef.end()
+        self.lines.remove(lineRef)
         
     def clearLines(self):
         for line in self.lines:
@@ -35,21 +35,21 @@ class LINEMANAGER:
         #You shouldn't need to touch these.
         baseOrientation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
         orientation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-        uvdist = 0
+        uvDist = 0
         
-        def __init__(self, linemanager, startPos, endPos, type="line", thickness=1):
+        def __init__(self, lineManager, startPos, endPos, type="line", thickness=1):
     
             self.startPos = startPos
             self.endPos = endPos
             self.thickness = thickness
             self.type = type
             
-            self.linemanager = linemanager
+            self.lineManager = lineManager
             
             
-            self.linemanager.add.object = self.type
-            self.linemanager.add.instantAddObject()
-            self.object = self.linemanager.add.objectLastCreated
+            self.lineManager.add.object = self.type
+            self.lineManager.add.instantAddObject()
+            self.object = self.lineManager.add.objectLastCreated
             
             self.refresh()
           
@@ -61,7 +61,7 @@ class LINEMANAGER:
             
             startPos = self.startPos
             endPos = self.endPos
-            cameraPos = self.slab.currentCam.position
+            cameraPos = self.gl.getCurrentScene().active_camera
             
             thickness = self.thickness
             type = self.type
@@ -69,10 +69,10 @@ class LINEMANAGER:
             #recreating the 3D object if it doesn't match the settings.
             if type != self.object.name:
                 self.object.endObject()
-                self.linemanager.add.object = type
-                self.linemanager.add.instantAddObject()
-                self.object = self.linemanager.add.objectLastCreated
-                self.uvdist = 0
+                self.lineManager.add.object = type
+                self.lineManager.add.instantAddObject()
+                self.object = self.lineManager.add.objectLastCreated
+                self.uvDist = 0
             
             #get the distance between the 2 points
             dist = self.math.sqrt((endPos[0] - startPos[0])**2 + (endPos[1] - startPos[1])**2 + (endPos[2] - startPos[2])**2)
@@ -96,7 +96,7 @@ class LINEMANAGER:
             
             #getting vertex data for UV adjustment.
 ##            mesh = self.object.meshes[0]
-##            v_array = mesh.getVertexArrayLength(0)
+##            vArray = mesh.getVertexArrayLength(0)
 ##            
 ##            upper2 = []
 ##            
@@ -106,9 +106,9 @@ class LINEMANAGER:
 ##                    uv2 = mesh.getVertex(0, j)
 ##                    
 ##                    if uv1.getUV()[0] == uv2.getUV()[0]:
-##                        uvdist = uv2.getUV()[1] - uv.getUV()[1]
-##                        if uvdist < 0:
-##                            uvdist *= -1
+##                        uvDist = uv2.getUV()[1] - uv.getUV()[1]
+##                        if uvDist < 0:
+##                            uvDist *= -1
 ##                            
 ##                        if uv1.getUV()[1] >= uv2.getUV()[1]:
 ##                            upper2.append(uv1)
@@ -119,11 +119,11 @@ class LINEMANAGER:
 ##                            lower = uv2.getUV()[1]
 ##                            upper = uv2.getUV()[1]
 ##                            
-##            if self.uvdist == 0:
-##                self.uvdist = uvdist
+##            if self.uvDist == 0:
+##                self.uvDist = uvDist
 ##                
 ##            for vert in upper2:
-##                vert.setUV([vert.getUV()[0], lower + (self.uvdist * dist)])
+##                vert.setUV([vert.getUV()[0], lower + (self.uvDist * dist)])
             
         def end(self):
             self.object.endObject()
@@ -145,7 +145,7 @@ class LINEMANAGER:
                     vec1[2]*vec2[0]-vec1[0]*vec2[2],
                     vec1[0]*vec2[1]-vec1[1]*vec2[0]]
         
-        def pointTo(self, pos0, pos1, camerapos):
+        def pointTo(self, pos0, pos1, cameraPos):
             y = [pos1[0] - pos0[0],
                  pos1[1] - pos0[1],
                  pos1[2] - pos0[2]]
@@ -155,7 +155,7 @@ class LINEMANAGER:
             for i in range(0, 3):
                 y[i] = y[i] / size #nomalise size
         
-            z = self.cross(self.cross(y, camerapos), y)
+            z = self.cross(self.cross(y, cameraPos), y)
         
             size = self.euclidSize(z)
             
