@@ -2,24 +2,32 @@
 ### ------ MouseTools ------ ###
 ################################
 ### Copyright 2009 Chase Moskal!
-# This contains MOUSE, for mouse movement related stuff,
-# CURSOR, for simple cursor stuff,
-# and MOUSEBUTTONS, for mouseclicks and stuff.
-# lots of stuff.
 
 INIT = 0
 
 mouse = None
 cursor = None
 
-def init(mousemove, mouseover):
-	"""Init the module:	This requires a mouse movement sensor and a mouse over sensor"""
+def init(con):
+	"""Init the module: This requires a mouse movement sensor and a mouse over sensor"""
 		
 	global mouse, cursor, INIT
+
+	mousemove = con.sensors["mousemove"]
+	mouseover = con.sensors["mouseover"]
 		
 	mouse = MOUSE(mousemove)
 	cursor = CURSOR(mouseover)
+	
 	INIT = 1
+
+
+
+
+
+
+
+
 
 ##############################
 ### ------  MOUSE   ------ ###

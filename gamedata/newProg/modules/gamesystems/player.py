@@ -10,6 +10,7 @@ def spawn(con):
     global handler, HANDLER
     if handler:
         raise Exception, "You cannot spawn the player; the player is already alive."
+    print "Spawning"
     handler = HANDLER(con)
     
     
@@ -64,8 +65,8 @@ class HANDLER:
     
     def spawn(self):
         scene = self.GameLogic.getCurrentScene()
-        self.pcol = scene.addObject("pcol", self.con.owner)
-        self.con = pcol.controllers[0]
+        self.pcol = scene.addObject("pcol", self.spawnCon.owner)
+        self.con = self.pcol.controllers[0]
         
 
 

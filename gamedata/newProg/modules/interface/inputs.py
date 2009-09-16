@@ -5,25 +5,12 @@
 INIT = 0
 controller = None
 
-
-def init(keyb, lmb, rmb, mmb, mwu, mwd, controls):
-	"""
-		Init the module
-		keyb	= Keyboard sensor
-		lmb		= Left mouse button sensor
-		rmb		= Right mouse button sensor
-		mmb		= Middle mouse button sensor
-		mwu		= Mouse wheel up sensor
-		mwd		= Mouse wheel down sensor
-		controls	= Controls dictionary
-	"""
-
-	global INIT, controller
-	
-	controller = CONTROLLER(keyb, lmb, rmb, mmb, mwu, mwd)
-	controller.setControls(controls)
-	
-	INIT = 1
+def init(con):
+    global controller, INIT
+    controller = CONTROLLER(con)
+    import modules
+    controller.setControls(modules.interface.options.controls)
+    INIT = 1
 	
 class CONTROLLER:
     events = {}
@@ -39,7 +26,19 @@ class CONTROLLER:
     other["MWU"] = None
     other["MWD"] = None
 
-    def __init__(self, KEYBOARD, LMB, RMB, MMB, MWU, MWD):
+    def __init__(self, con):
+        
+        KEYBOARD = con.sensors["KEYBOARD"]
+        
+        LMB = con.sensors["LMB"]
+        RMB = con.sensors["RMB"]
+        MMB = con.sensors["MMB"]
+
+        MWU = con.sensors["MWU"]
+        MWD = con.sensors["MWD"]
+        
+        ###
+        
         self.keyboard = KEYBOARD
         
         self.other["LMB"] = LMB
@@ -108,16 +107,23 @@ class CONTROLLER:
 
 
     def getEvent(self, control):
-        event = self.events[control]
-        return event
+        if control in self.events:
+            event = self.events[control]
+            return event
+        else:
+            return None
 
     def getStatus(self, control):
         event = self.getEvent(control)
+        if not event:
+            return None
         status = event.getStatus()
         return status
 
     def isPositive(self, control):
         event = self.getEvent(control)
+        if not event:
+            return None
         positive = event.isPositive()
         return positive
     
