@@ -1,3 +1,5 @@
+### Notifications ###
+INIT = 1
 
 class NOTIFIER:
 

@@ -4,7 +4,6 @@
 ### Copyright 2009 Chase Moskal!
 # This simple system applies force in the opposite direction
 # of an object's velocity to create a simple damping effect.
-
 INIT = 1
 
 
