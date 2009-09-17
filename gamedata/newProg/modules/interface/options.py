@@ -14,12 +14,15 @@ settings = {}
 controls = {}
 
 def init():
-	"""Init the module."""
-	
-	global INIT
-	
-	load()
-	INIT = 1
+    """Init the module."""
+    global INIT
+    load()
+    INIT = 1
+
+def initLoop(con):
+    global INIT
+    if not INIT:
+        init()
 
 
 

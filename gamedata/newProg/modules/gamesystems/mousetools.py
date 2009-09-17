@@ -8,18 +8,24 @@ INIT = 0
 mouse = None
 cursor = None
 
-def init(con):
-	"""Init the module: This requires a mouse movement sensor and a mouse over sensor"""
-		
-	global mouse, cursor, INIT
+def initLoop(con):
+    if not INIT:
+        init(con)
 
-	mousemove = con.sensors["mousemove"]
-	mouseover = con.sensors["mouseover"]
-		
-	mouse = MOUSE(mousemove)
-	cursor = CURSOR(mouseover)
-	
-	INIT = 1
+def init(con):
+    """Init the module: This requires a mouse movement sensor and a mouse over sensor"""
+            
+    global mouse, cursor, INIT
+
+    mousemove = con.sensors["mousemove"]
+    mouseover = con.sensors["mouseover"]
+            
+    mouse = MOUSE(mousemove)
+    cursor = CURSOR(mouseover)
+
+    INIT = 1
+
+    print "Mousetools Initiated"
 
 
 

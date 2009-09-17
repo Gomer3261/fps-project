@@ -3,8 +3,37 @@
 ### ####################################### ###
 ### # The FPS Project
 INIT = 0
-
 manager = None # initiated at bottom
+
+### DEPENDENCIES:
+# modules.items.bullets
+# modules.time
+
+def dependenciesAreHappy():
+    import modules
+    return (modules.items.bullets and modules.time)
+
+def init(con):
+    global INIT
+    global manager, MANAGER
+    manager = MANAGER(con)
+    INIT = 1
+    print "Ballistics Initiated"
+
+def initLoop(con):
+    global INIT
+
+    if dependenciesAreHappy() and (not INIT):
+        init(con)
+    else:
+        pass
+
+
+
+
+
+
+
 
 class MANAGER:
     """
@@ -14,8 +43,9 @@ class MANAGER:
 
     import modules
 
-    def __init__(self):
+    def __init__(self, con):
         self.bullets = self.modules.items.bullets
+        self.time = self.modules.time
 
     pool = [] # Pool of bullets to be simulated.
     toTerminalSim = [] # Bullets that need to be removed from pool and handled by Terminal Simulation.
@@ -29,7 +59,7 @@ class MANAGER:
         bullet.owner = owner
         
         # Timer for ballistics simulation. Giving it a 1 frame headstart.
-        bullet.timer = modules.systems.time.TIMER(modules.systems.time.perFrame())
+        bullet.timer = self.time.TIMER(modules.systems.time.perFrame())
         
         # Starting the bullet.path at the bullet's starting point
         bullet.path.append(bullet.position)
@@ -230,19 +260,3 @@ class MANAGER:
 
         return [X, Y, Z]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#manager = MANAGER()
-#INIT = 1

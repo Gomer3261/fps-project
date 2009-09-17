@@ -43,7 +43,7 @@ class HANDLER:
         self.spawnCon = spawnCon
 
         # Spawning the player object (this method also sets self.con)
-        self.spawn()
+        self.spawnPcol()
         
         self.YPivot = self.con.actuators["YPivot"].owner
         self.centerhinge = self.con.actuators["centerhinge"].owner
@@ -63,7 +63,7 @@ class HANDLER:
     ### SPAWN PLAYER OBJECT
     ### ========================================================================
     
-    def spawn(self):
+    def spawnPcol(self):
         scene = self.GameLogic.getCurrentScene()
         self.pcol = scene.addObject("pcol", self.spawnCon.owner)
         self.con = self.pcol.controllers[0]
@@ -200,13 +200,15 @@ class HANDLER:
         invertY = 0
 
         # Settings Override
+        import traceback
         try:
             mxsens = self.options.settings["mxsens"]
             mysens = self.options.settings["mysens"]
             invertX = self.options.settings["invertx"]
             invertY = self.options.settings["inverty"]
         except:
-            print "Unable to get mouse settings from options."
+            traceback.print_exc()
+            print "Player/HANDLER/doMouseLook: Unable to get mouse settings from options.\n"
         
         # Restrict Y axis? (disallow looking upside-down?)
         restrictY = 1

@@ -5,13 +5,47 @@
 INIT = 0
 controller = None
 
+### DEPENDENCIES:
+# modules.interface.options
+
+def dependenciesAreHappy():
+    import modules
+    return (modules.interface.options.INIT)
+
 def init(con):
-    global controller, INIT
+    global INIT
+    global controller, CONTROLLER
     controller = CONTROLLER(con)
     import modules
     controller.setControls(modules.interface.options.controls)
     INIT = 1
-	
+    print "Inputs Initiated"
+
+def initLoop(con):
+    global INIT
+
+    if dependenciesAreHappy() and (not INIT):
+        init(con)
+    else:
+        pass
+
+
+
+
+##def init(con):
+##    global controller, INIT
+##    controller = CONTROLLER(con)
+##    import modules
+##    controller.setControls(modules.interface.options.controls)
+##    INIT = 1
+
+
+
+
+
+
+
+
 class CONTROLLER:
     events = {}
 
