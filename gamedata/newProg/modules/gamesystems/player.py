@@ -10,8 +10,8 @@ def spawn(con):
     global handler, HANDLER
     if handler:
         raise Exception, "You cannot spawn the player; the player is already alive."
-    print "Spawning"
     handler = HANDLER(con)
+    print "Player Spawned"
     
     
 

@@ -18,6 +18,7 @@ def init():
     global INIT
     load()
     INIT = 1
+    print "Options Initiated"
 
 def initLoop(con):
     global INIT
