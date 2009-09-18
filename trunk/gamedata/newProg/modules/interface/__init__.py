@@ -3,5 +3,6 @@ import notifications
 import options
 import terminal
 
-def init(con):
-    inputs.init(con)
+def initLoop(con):
+    options.initLoop(con)
+    inputs.initLoop(con)
