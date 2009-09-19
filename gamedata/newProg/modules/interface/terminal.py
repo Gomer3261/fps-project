@@ -20,6 +20,10 @@ contents = []
 inpipe = []
 
 
+
+
+termkeyLast = 0
+
 wraplen = 100
 maxlines = 60
 
@@ -38,18 +42,10 @@ def formatLines(lines):
     import textwrap
     newlines = []
 
-    import modules.profiling #######
-    P = modules.profiling.PROFILE("formatLines") ######
-    modules.profiling.SuperProfile.add(P)
-    C = P.clock("for loop") ######
-
     for line in lines:
         new = textwrap.wrap(line, wraplen)
         for n in new:
             newlines.append(n)
-
-    C.stop() ######
-    #P.output() ######
 
     newlines = limit(newlines, maxlines)
 
@@ -147,12 +143,6 @@ def clear():
 ######### TERMINAL HANDLER ###########
 
 def runHandler(con):
-    import modules.profiling
-    prof = modules.profiling.PROFILE("terminal")
-    modules.profiling.SuperProfile.add(prof)
-
-    clockA = prof.clock("getting sensors and actuators") ########
-    
     global contents
     global inpipe
     global active
@@ -161,11 +151,8 @@ def runHandler(con):
 
     inTextObj = con.actuators["inText"].owner
     outTextObj = con.actuators["outText"].owner
-    
-    clockA.stop() #########
 
 
-    clockB = prof.clock("handling user input")
     ### INPUT HANDLING ###
     
     # A = Input String
@@ -179,18 +166,30 @@ def runHandler(con):
         inTextObj["input"] = ""
         inTextObj["Text"] = ""
     
-    clockB.stop()
 
 
-    clockC = prof.clock("handling user output") ########
     ### OUTPUT HANDLING ###
-    CA = prof.clock("calling formatLines()") ########
     contents = formatLines(contents)
-    CA.stop() #########
     output = "\n".join(contents)
     
     outTextObj["Text"] = output
-    clockC.stop() ##########
 
 
-    modules.profiling.SuperProfile.output()
+
+def handleOpenClose(con):
+    global active
+    global termkeyLast
+    
+    termkey = con.sensors["termkey"]
+
+    if termkey.positive and (not termkeyLast):
+        if active:
+            closeTerminal = con.actuators["closeTerminal"]
+            con.activate(closeTerminal)
+            active = 0
+        else:
+            openTerminal = con.actuators["openTerminal"]
+            con.activate(openTerminal)
+            active = 1
+
+    termkeyLast = termkey.positive
