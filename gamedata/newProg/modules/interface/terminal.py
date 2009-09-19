@@ -20,6 +20,8 @@ contents = []
 inpipe = []
 
 
+wraplen = 100
+maxlines = 60
 
 
 
@@ -28,8 +30,30 @@ inpipe = []
 # Trims a list from the beginning until it reaches the desired length.
 def limit(x, l=10):
     while len(x) > l:
-        del x[0]
+        x = x[1:]
     return x
+
+# Formats lines (wraps them, trims them)
+def formatLines(lines):
+    import textwrap
+    newlines = []
+
+    import modules.profiling #######
+    P = modules.profiling.PROFILE("formatLines") ######
+    modules.profiling.SuperProfile.add(P)
+    C = P.clock("for loop") ######
+
+    for line in lines:
+        new = textwrap.wrap(line, wraplen)
+        for n in new:
+            newlines.append(n)
+
+    C.stop() ######
+    #P.output() ######
+
+    newlines = limit(newlines, maxlines)
+
+    return newlines
 
 # Limits the number of lines of contents it remembers.
 def limitContents(l=10):
@@ -65,10 +89,35 @@ def output(s):
     for line in lines:
         contents.append(line)
 
+
+
 # Inputs a string to the inpipe
+##def input(s):
+##    global inpipe
+##    inpipe.append(s)
+
 def input(s):
-    global inpipe
-    inpipe.append(s)
+    output(">> "+s)
+    import commandsUser
+    import commandsAdmin
+    modules = [commandsUser, commandsAdmin]
+
+    namespace = {}
+    
+    for module in modules:
+        for variableName in dir(module):
+            namespace[variableName] = getattr(module, variableName)
+
+    import sys
+    import traceback
+    try:
+        exec(s, namespace)
+    except:
+        error = traceback.format_exception_only(sys.exc_type, sys.exc_value)
+        error = error[len(error)-1]
+        output(error)
+
+
 
 # Enters something to the inpipe
 def enter(s):
@@ -83,3 +132,65 @@ def clearInpipe():
 def clear():
     global contents
     contents = []
+
+
+
+
+
+
+
+
+
+
+
+
+######### TERMINAL HANDLER ###########
+
+def runHandler(con):
+    import modules.profiling
+    prof = modules.profiling.PROFILE("terminal")
+    modules.profiling.SuperProfile.add(prof)
+
+    clockA = prof.clock("getting sensors and actuators") ########
+    
+    global contents
+    global inpipe
+    global active
+    
+    returnKey = con.sensors["RETURN"]
+
+    inTextObj = con.actuators["inText"].owner
+    outTextObj = con.actuators["outText"].owner
+    
+    clockA.stop() #########
+
+
+    clockB = prof.clock("handling user input")
+    ### INPUT HANDLING ###
+    
+    # A = Input String
+    A = inTextObj["input"]
+    A = A.replace("\r", "")
+    A = A.replace("\n", "")
+    inTextObj["Text"] = A + "|"
+
+    if A and returnKey.positive:
+        input(A)
+        inTextObj["input"] = ""
+        inTextObj["Text"] = ""
+    
+    clockB.stop()
+
+
+    clockC = prof.clock("handling user output") ########
+    ### OUTPUT HANDLING ###
+    CA = prof.clock("calling formatLines()") ########
+    contents = formatLines(contents)
+    CA.stop() #########
+    output = "\n".join(contents)
+    
+    outTextObj["Text"] = output
+    clockC.stop() ##########
+
+
+    modules.profiling.SuperProfile.output()

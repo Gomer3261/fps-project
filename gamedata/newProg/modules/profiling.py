@@ -9,7 +9,7 @@ class PROFILE:
     import time
     def __init__(self, name):
         self.name = name
-        self.data = {}
+        self.data = []
         self.totalms = 0.0
 
     class CLOCK:
@@ -22,7 +22,7 @@ class PROFILE:
             self.end = self.time.time()
 
             # adding itself to the profile
-            self.profile.data[name] = self
+            self.profile.data.append(self)
         
         def restart(self):
             self.start = self.time.time()
@@ -32,7 +32,7 @@ class PROFILE:
             return (self.time.time() - self.start)
 
         def get(self):
-            return (self.time.time() - self.start)
+            return (self.end - self.start)
 
     def clock(self, name):
         clock = self.CLOCK(self, name)
@@ -41,11 +41,21 @@ class PROFILE:
     def output(self):
         print "Profile of "+self.name
         totalms = 0.0
-        for clockname in self.data:
-            ms = self.data[clockname].get() * 1000.0
-            print "    "+clockname+": "+repr(ms)+"ms"
+        for clock in self.data:
+            ms = clock.get() * 1000.0
+            print "    %s: %.2f ms" % (clock.name, ms)
             totalms += ms
-        print "Total: "+repr(totalms)+"ms\n"
+        print "Total: %.2f ms\n" % (totalms)
+        self.totalms = totalms
+
+    def superOutput(self):
+        print "    Profile of "+self.name
+        totalms = 0.0
+        for clock in self.data:
+            ms = clock.get() * 1000.0
+            print "        %s: %.2f ms" % (clock.name, ms)
+            totalms += ms
+        print "    Total: %.2f ms\n" % (totalms)
         self.totalms = totalms
 
     def getTotalms(self):
@@ -70,10 +80,13 @@ class SUPERPROFILE:
         self.profiles[profile.name] = profile
 
     def output(self):
-        for profilename in self.profiles:
-            self.profiles[profilename].output()
+        totalms = 0.0
 
-    def outputshort(self):
+        print "SuperProfile:"
+        for profilename in self.profiles:
+            self.profiles[profilename].superOutput()
+
+    def outputShort(self):
         totalms = 0.0
         print "Superprofile:"
         for profilename in self.profiles:
