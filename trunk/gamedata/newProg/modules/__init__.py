@@ -6,7 +6,7 @@ __all__.append("interface")
 __all__.append("items")
 __all__.append("networking")
 __all__.append("profiling")
-__all__.append("time")
+__all__.append("timetools")
 
 import ai
 import gamecontrol
@@ -16,4 +16,4 @@ import items
 import networking
 
 import profiling
-import time
+import timetools

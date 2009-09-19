@@ -11,7 +11,7 @@ manager = None # initiated at bottom
 
 def dependenciesAreHappy():
     import modules
-    return (modules.items.bullets and modules.time)
+    return (modules.items.bullets and modules.timetools)
 
 def init(con):
     global INIT
@@ -45,7 +45,7 @@ class MANAGER:
 
     def __init__(self, con):
         self.bullets = self.modules.items.bullets
-        self.time = self.modules.time
+        self.timetools= self.modules.timetools
 
     pool = [] # Pool of bullets to be simulated.
     toTerminalSim = [] # Bullets that need to be removed from pool and handled by Terminal Simulation.
@@ -59,7 +59,7 @@ class MANAGER:
         bullet.owner = owner
         
         # Timer for ballistics simulation. Giving it a 1 frame headstart.
-        bullet.timer = self.time.TIMER(modules.systems.time.perFrame())
+        bullet.timer = self.timetools.TIMER(modules.systems.timetools.perFrame())
         
         # Starting the bullet.path at the bullet's starting point
         bullet.path.append(bullet.position)
