@@ -193,6 +193,7 @@ class HANDLER:
 
         slopeInfluence = 0.5
         slopeFactor = self.getSlopeFactor(movement)
+        slopeFactor *= slopeInfluence
         movement = self.applySlopeFactor(movement, slopeFactor)
 
         ## Slope Damping
