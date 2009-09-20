@@ -75,7 +75,7 @@ class HANDLER:
 
     speedforce = 80.0 # Speed in force of general player movement
     sprintmod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
-    jumpforce = 300.0 # Upward force when jump is executed.
+    jumpforce = 60.0 # Upward force when jump is executed.
 
 
 
@@ -195,10 +195,12 @@ class HANDLER:
         Z = 0.0
 
         # Input Status
+        con = self.con
         forward = self.inputs.controller.getStatus("forward")
         backward = self.inputs.controller.getStatus("backward")
         left = self.inputs.controller.getStatus("left")
         right = self.inputs.controller.getStatus("right")
+        jump = self.inputs.controller.getStatus("jump")
 
         # Figuring out desired movement
         if forward:
@@ -214,6 +216,9 @@ class HANDLER:
         if X and Y:
             X *= 0.7071
             Y *= 0.7071
+
+        if jump and (con.sensors["foot1"].positive or con.sensors["foot2"].positive or con.sensors["foot3"].positive or con.sensors["foot4"].positive or con.sensors["foot5"].positive):
+            Z = self.jumpforce
 
         return X, Y, Z
 
@@ -262,20 +267,28 @@ class HANDLER:
         normals = []
         avgnormal = [0, 0, 0]
 
-        normals.append(con.sensors["foot1"].hitNormal)
-        normals.append(con.sensors["foot2"].hitNormal)
-        normals.append(con.sensors["foot3"].hitNormal)
-        normals.append(con.sensors["foot4"].hitNormal)
-        normals.append(con.sensors["foot5"].hitNormal)
+        if con.sensors["foot1"].positive:
+            normals.append(con.sensors["foot1"].hitNormal)
+        if con.sensors["foot2"].positive:
+            normals.append(con.sensors["foot2"].hitNormal)
+        if con.sensors["foot3"].positive:
+            normals.append(con.sensors["foot3"].hitNormal)
+        if con.sensors["foot4"].positive:
+            normals.append(con.sensors["foot4"].hitNormal)
+        if con.sensors["foot5"].positive:
+            normals.append(con.sensors["foot5"].hitNormal)
 
-        for i in range(5):
-            avgnormal[0] += normals[i][0]
-            avgnormal[1] += normals[i][1]
-            avgnormal[2] += normals[i][2]
+        if len(normals) > 0:
+            for i in range(len(normals)):
+                avgnormal[0] += normals[i][0]
+                avgnormal[1] += normals[i][1]
+                avgnormal[2] += normals[i][2]
 
-        for i in range(3):
-            avgnormal[i] /= 5.0
-            avgnormal[i] *= -1
+            for i in range(3):
+                avgnormal[i] /= len(normals)
+                avgnormal[i] *= -1
+        else:
+            avgnormal = [0.0, 0.0, 0.0]
 
         return avgnormal
 
@@ -283,15 +296,17 @@ class HANDLER:
     def calculateSpeedFactor(self):
         globalmovement = self.getGlobalDesiredMovement()
 
-        if globalmovement == [0, 0, 0]:
-            return 0
+        if globalmovement == [0.0, 0.0, 0.0]:
+            return 0.0
 
         floornormal = self.getFloorNormal()
 
-        
-        floorvector = self.Mathutils.Vector(floornormal)
-        floorvector.normalize()
-        floorvector = [floorvector.x, floorvector.y, floorvector.z]
+        if floornormal != [0, 0, 0]:
+            floorvector = self.Mathutils.Vector(floornormal)
+            floorvector.normalize()
+            floorvector = [floorvector.x, floorvector.y, floorvector.z]
+        else:
+            floorvector = [0, 0, -0.5]
 
         factor = self.math.sqrt((floorvector[0] - globalmovement[0])**2 + (floorvector[1] - globalmovement[1])**2)
 
