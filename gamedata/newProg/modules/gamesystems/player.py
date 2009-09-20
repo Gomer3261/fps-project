@@ -20,6 +20,8 @@ class HANDLER:
     # When this is == 0, it means the player object is gone, and this handler is dead and ready to be cleared.
 
     import GameLogic
+    import Mathutils
+    import math
 
     pcol = None # The Player Collision Box (which is the parent of all of the other game objects that go along with that
     con = None # Controller attached to all the player object's actuators and stuff.
@@ -40,6 +42,7 @@ class HANDLER:
     
     def __init__(self, spawnCon):
         import modules
+        
         self.spawnCon = spawnCon
 
         # Spawning the player object (this method also sets self.con)
@@ -123,13 +126,20 @@ class HANDLER:
         X, Y, Z = self.getDesiredMovement()
         X, Y, Z = self.applySprint(X, Y, Z)
 
+        slopeinfluence = 1#change this value to change the ammount of influence slopes have on movement.
+
+        slopefactor = self.calculateSpeedFactor()
+        X -= X * (slopefactor * slopeinfluence)
+        Y -= Y * (slopefactor * slopeinfluence)
+        Z -= Z * (slopefactor * slopeinfluence)
+
         # Applying the movement
         if not self.terminal.active:
             self.pcol.applyForce([X, Y, Z], 1)
 
         # Damping Operation
-        DAMP = 25.0
-        self.damper.dampXY(self.pcol, DAMP)
+        damp = 25.0
+        self.damper.dampXY(self.pcol, damp)
 
     
 
@@ -163,6 +173,34 @@ class HANDLER:
         return X, Y, Z
 
 
+
+    def getGlobalDesiredMovement(self):
+        X, Y, Z = self.getDesiredMovement()
+        localmovement = [X, Y, Z]
+
+        if localmovement != [0, 0, 0]:
+            orientation = self.pcol.orientation[:]
+
+            localmovement[2] = 0
+            globalmovement = [0, 0, 0]
+
+
+            # Figuring out movement in global terms.
+            for i in range(3):
+                for j in range(3):
+                    globalmovement[j] += orientation[j][i] * localmovement[i]
+
+            globalmovement = self.Mathutils.Vector(globalmovement)
+            globalmovement.normalize()
+            globalmovement = [globalmovement.x, globalmovement.y, globalmovement.z]
+
+            return globalmovement
+
+        else:
+            return localmovement
+
+        
+
     def applySprint(self, X, Y, Z):
         sprint = self.inputs.controller.isPositive("sprint")
         if sprint:
@@ -170,6 +208,59 @@ class HANDLER:
             Y *= self.sprintmod
             Z *= self.sprintmod
         return X, Y, Z
+
+
+
+    def getFloorNormal(self):
+        con = self.con
+
+        normals = []
+        avgnormal = [0, 0, 0]
+
+        normals.append(con.sensors["foot1"].hitNormal)
+        normals.append(con.sensors["foot2"].hitNormal)
+        normals.append(con.sensors["foot3"].hitNormal)
+        normals.append(con.sensors["foot4"].hitNormal)
+        normals.append(con.sensors["foot5"].hitNormal)
+
+        for i in range(5):
+            avgnormal[0] += normals[i][0]
+            avgnormal[1] += normals[i][1]
+            avgnormal[2] += normals[i][2]
+
+        for i in range(3):
+            avgnormal[i] /= 5.0
+            avgnormal[i] *= -1
+
+        return avgnormal
+
+
+    def calculateSpeedFactor(self):
+        globalmovement = self.getGlobalDesiredMovement()
+
+        if globalmovement == [0, 0, 0]:
+            return 0
+
+        floornormal = self.getFloorNormal()
+
+        
+        floorvector = self.Mathutils.Vector(floornormal)
+        floorvector.normalize()
+        floorvector = [floorvector.x, floorvector.y, floorvector.z]
+
+        factor = self.math.sqrt((floorvector[0] - globalmovement[0])**2 + (floorvector[1] - globalmovement[1])**2)
+
+        if factor > 1:
+            factor = 1
+
+        factor = 1 - factor
+
+        return factor
+
+        
+
+        
+        
 
 
 
