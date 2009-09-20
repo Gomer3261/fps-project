@@ -1,7 +1,7 @@
 ############################
 ### ------ PLAYER ------ ###
 ############################
-### Copyright 2009 Chase Moskal!
+### The FPS Project
 # This module runs the player object.
 
 handler = None
@@ -53,7 +53,13 @@ def kill():
         terminal.output("Player Killed.")
     else:
         raise Exception, "You cannot kill the local player; the local player is already dead"
-    
+
+
+
+
+
+
+
     
 
 class HANDLER:
@@ -61,8 +67,6 @@ class HANDLER:
     # When this is == 0, it means the player object is gone, and this handler is dead and ready to be cleared.
 
     import GameLogic
-    import Mathutils
-    import math
 
     pcol = None # The Player Collision Box (which is the parent of all of the other game objects that go along with that
     con = None # Controller attached to all the player object's actuators and stuff.
@@ -87,11 +91,22 @@ class HANDLER:
         self.spawnCon = spawnCon
 
         # Spawning the player object (this method also sets self.con)
-        self.spawnPcol()
-        
+        pcol, con = self.spawnPcol()
+        self.pcol = pcol
+        self.con = con
+
+        # Getting some related objects
         self.YPivot = self.con.actuators["YPivot"].owner
         self.centerhinge = self.con.actuators["centerhinge"].owner
         self.fpcam = self.con.actuators["fpcam"].owner
+
+        # Getting the foot sensors
+        self.feet = []
+        self.feet.append(self.con.sensors["foot1"])
+        self.feet.append(self.con.sensors["foot2"])
+        self.feet.append(self.con.sensors["foot3"])
+        self.feet.append(self.con.sensors["foot4"])
+        self.feet.append(self.con.sensors["foot5"])
 
       
         self.inputs = modules.interface.inputs
@@ -109,10 +124,11 @@ class HANDLER:
     
     def spawnPcol(self):
         scene = self.GameLogic.getCurrentScene()
-        self.pcol = scene.addObject("pcol", self.spawnCon.owner)
-        self.pcol.position = [0.0, 0.0, 10.0]
-        self.pcol.orientation = [[1,0,0],[0,1,0],[0,0,1]]
-        self.con = self.pcol.controllers[0]
+        pcol = scene.addObject("pcol", self.spawnCon.owner)
+        pcol.position = [0.0, 0.0, 10.0]
+        pcol.orientation = [[1,0,0],[0,1,0],[0,0,1]]
+        con = pcol.controllers[0]
+        return pcol, con
         
 
 
@@ -168,19 +184,27 @@ class HANDLER:
     ### ========================================================================
 
     def doPlayerMovement(self):
-        X, Y, Z = self.getDesiredMovement()
-        X, Y, Z = self.applySprint(X, Y, Z)
+        """
+        Does player movement.
+        """
+        
+        movement = self.getDesiredMovement()
+        movement = self.applySprint(movement)
 
-        # Slope Damping
-        slopeinfluence = 1.0 #change this value to change the ammount of influence slopes have on movement.
-        slopefactor = self.calculateSpeedFactor()
-        X -= X * (slopefactor * slopeinfluence)
-        Y -= Y * (slopefactor * slopeinfluence)
-        Z -= Z * (slopefactor * slopeinfluence)
+        slopeInfluence = 0.5
+        slopeFactor = self.getSlopeFactor(movement)
+        movement = self.applySlopeFactor(movement, slopeFactor)
+
+        ## Slope Damping
+        #slopeinfluence = 1.0 # influence slopes have on movement
+        #slopefactor = self.calculateSpeedFactor()
+        #X -= X * (slopefactor * slopeinfluence)
+        #Y -= Y * (slopefactor * slopeinfluence)
+        #Z -= Z * (slopefactor * slopeinfluence)
 
         # Applying the movement
         if not self.terminal.active:
-            self.pcol.applyForce([X, Y, Z], 1)
+            self.pcol.applyForce(movement, 1)
 
         # Damping Operation
         damp = 25.0
@@ -189,18 +213,30 @@ class HANDLER:
     
 
     def getDesiredMovement(self):
+        """
+        Gets the player's desired movement (based on inputs)
+        in local coords
+        """
+
+        
         # Initial Movement Values (in local coords)
         X = 0.0
         Y = 0.0
         Z = 0.0
 
+
+
         # Input Status
         con = self.con
+        
         forward = self.inputs.controller.getStatus("forward")
         backward = self.inputs.controller.getStatus("backward")
         left = self.inputs.controller.getStatus("left")
         right = self.inputs.controller.getStatus("right")
+        
         jump = self.inputs.controller.getStatus("jump")
+
+
 
         # Figuring out desired movement
         if forward:
@@ -217,108 +253,152 @@ class HANDLER:
             X *= 0.7071
             Y *= 0.7071
 
-        if jump and (con.sensors["foot1"].positive or con.sensors["foot2"].positive or con.sensors["foot3"].positive or con.sensors["foot4"].positive or con.sensors["foot5"].positive):
+        if (jump == 1) and self.isOnTheGround():
             Z = self.jumpforce
 
-        return X, Y, Z
+        return [X, Y, Z]
 
 
 
-    def getGlobalDesiredMovement(self):
-        X, Y, Z = self.getDesiredMovement()
-        localmovement = [X, Y, Z]
-
-        if localmovement != [0, 0, 0]:
-            orientation = self.pcol.orientation[:]
-
-            localmovement[2] = 0
-            globalmovement = [0, 0, 0]
 
 
-            # Figuring out movement in global terms.
-            for i in range(3):
-                for j in range(3):
-                    globalmovement[j] += orientation[j][i] * localmovement[i]
+    def localToGlobal(self, V):
+        return self.postMultiply(V)
 
-            globalmovement = self.Mathutils.Vector(globalmovement)
-            globalmovement.normalize()
-            globalmovement = [globalmovement.x, globalmovement.y, globalmovement.z]
+    def postMultiply(self, V):
+        """
+        Converts Local to Global Coords
+        """
+        import Mathutils
 
-            return globalmovement
+        # Getting the Orientation
+        ori = self.pcol.orientation[:]
+        l1 = ori[0]
+        l2 = ori[1]
+        l3 = ori[2]
+        matrix = Mathutils.Matrix(l1, l2, l3)
 
-        else:
-            return localmovement
+        # Getting the original vector object
+        originalVector = Mathutils.Vector(V)
+
+        # Post-multiplication to get newVector
+        newVector = matrix * originalVector
+
+        return [newVector.x, newVector.y, newVector.z]
+
+
+
+
+    def globalToLocal(self, V):
+        return self.preMultiply(V)
+    
+    def preMultiply(self, V):
+        """
+        Converts Global to Local Coords
+        """
+        import Mathutils
+
+        # Getting the Orientation
+        ori = self.pcol.orientation[:]
+        l1 = ori[0]
+        l2 = ori[1]
+        l3 = ori[2]
+        matrix = Mathutils.Matrix(l1, l2, l3)
+
+        # Getting the original vector object
+        originalVector = Mathutils.Vector(V)
+
+        # Pre-multiplication to get newVector
+        newVector = originalVector * matrix
+
+        return [newVector.x, newVector.y, newVector.z]
+
+
+
+
 
         
 
-    def applySprint(self, X, Y, Z):
+    def applySprint(self, movement):
+        """
+        Multiplies XYZ by the sprintmod value when the sprint button is held.
+        """
         sprint = self.inputs.controller.isPositive("sprint")
         if sprint:
-            X *= self.sprintmod
-            Y *= self.sprintmod
-            Z *= self.sprintmod
-        return X, Y, Z
+            for i in range(3):
+                movement[i] *= self.sprintmod
+        return movement
 
 
 
     def getFloorNormal(self):
-        con = self.con
-
+        """
+        Gets the average normal of the floor
+        """
+        
+        # Gathering the hitNormals from each foot
         normals = []
-        avgnormal = [0, 0, 0]
+        for foot in self.feet:
+            if foot.positive:
+                normals.append(foot.hitNormal)
 
-        if con.sensors["foot1"].positive:
-            normals.append(con.sensors["foot1"].hitNormal)
-        if con.sensors["foot2"].positive:
-            normals.append(con.sensors["foot2"].hitNormal)
-        if con.sensors["foot3"].positive:
-            normals.append(con.sensors["foot3"].hitNormal)
-        if con.sensors["foot4"].positive:
-            normals.append(con.sensors["foot4"].hitNormal)
-        if con.sensors["foot5"].positive:
-            normals.append(con.sensors["foot5"].hitNormal)
-
+        # Averaging the hitNormals in normals
+        avgnormal = [0.0, 0.0, 0.0]
         if len(normals) > 0:
-            for i in range(len(normals)):
-                avgnormal[0] += normals[i][0]
-                avgnormal[1] += normals[i][1]
-                avgnormal[2] += normals[i][2]
-
+            for normal in normals:
+                for i in range(3):
+                    avgnormal[i] += normal[i]
             for i in range(3):
                 avgnormal[i] /= len(normals)
-                avgnormal[i] *= -1
-        else:
-            avgnormal = [0.0, 0.0, 0.0]
+                # avgnormal[i] *= -1 # ?
 
         return avgnormal
 
+    def isOnTheGround(self):
+        """
+        Tells you if at least one foot is on the ground.
+        Returns 1 if a foot is on the ground.
+        Returns 0 if no feet are touching the ground.
+        """
+        onGround = 0
+        for foot in self.feet:
+            if foot.positive:
+                onGround = 1
+                break
+        return onGround
+    
 
-    def calculateSpeedFactor(self):
-        globalmovement = self.getGlobalDesiredMovement()
+    def getSlopeFactor(self, movement):
+        """
+        Gets the slope factor.
+        0.0 means no effect on movement speed.
+        -0.5 would be a slow-down of movement speed (going uphill)
+        0.5 would be a boost of movement speed (doing downhill)
+        """
+        import Mathutils
+        import math
 
-        if globalmovement == [0.0, 0.0, 0.0]:
-            return 0.0
+        if movement == [0.0, 0.0, 0.0]: return 0.0
 
-        floornormal = self.getFloorNormal()
+        movementVector = Mathutils.Vector(movement)
+        movementVector.normalize()
 
-        if floornormal != [0, 0, 0]:
-            floorvector = self.Mathutils.Vector(floornormal)
-            floorvector.normalize()
-            floorvector = [floorvector.x, floorvector.y, floorvector.z]
-        else:
-            floorvector = [0, 0, -0.5]
+        floorNormal = self.getFloorNormal()
+        floorVector = Mathutils.Vector( self.globalToLocal(floorNormal) )
 
-        factor = self.math.sqrt((floorvector[0] - globalmovement[0])**2 + (floorvector[1] - globalmovement[1])**2)
+        return floorVector.dot(movementVector)
 
-        if factor > 1:
-            factor = 1
-
-        factor = 1 - factor
-
-        return factor
-
+    def applySlopeFactor(self, movement, slopeFactor):
+        """
+        Applies a given slopeFactor to a desired movement vector.
+        Returns the new movement.
+        """
         
-
+        newMovement = [0.0, 0.0, 0.0]
+        for i in range(3):
+            slopeVelocity = movement[i] * slopeFactor
+            newMovement[i] = movement[i] + slopeVelocity
+        return newMovement
         
         
 
