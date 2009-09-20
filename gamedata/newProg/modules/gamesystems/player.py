@@ -79,7 +79,9 @@ class HANDLER:
 
     speedforce = 80.0 # Speed in force of general player movement
     sprintmod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
-    jumpforce = 60.0 # Upward force when jump is executed.
+    jumpforce = 200.0 # Upward force when jump is executed.
+    slopeInfluence = 0.5 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
+    noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
 
 
 
@@ -189,27 +191,16 @@ class HANDLER:
         """
         
         movement = self.getDesiredMovement()
+        
         movement = self.applySprint(movement)
-
-        slopeInfluence = 0.5
-        slopeFactor = self.getSlopeFactor(movement)
-        slopeFactor *= slopeInfluence
-        movement = self.applySlopeFactor(movement, slopeFactor)
-
-        ## Slope Damping
-        #slopeinfluence = 1.0 # influence slopes have on movement
-        #slopefactor = self.calculateSpeedFactor()
-        #X -= X * (slopefactor * slopeinfluence)
-        #Y -= Y * (slopefactor * slopeinfluence)
-        #Z -= Z * (slopefactor * slopeinfluence)
+        movement = self.doSlopeDamping(movement)
+        movement = self.degradeMovementWhenNotOnTheGround(movement)
 
         # Applying the movement
         if not self.terminal.active:
             self.pcol.applyForce(movement, 1)
 
-        # Damping Operation
-        damp = 25.0
-        self.damper.dampXY(self.pcol, damp)
+        self.doDamping()
 
     
 
@@ -322,14 +313,34 @@ class HANDLER:
 
     def applySprint(self, movement):
         """
-        Multiplies XYZ by the sprintmod value when the sprint button is held.
+        Multiplies movement by the sprintmod value when the sprint button is held.
         """
+        newMovement = movement[:] # Making a copy, not a reference
         sprint = self.inputs.controller.isPositive("sprint")
         if sprint:
-            for i in range(3):
-                movement[i] *= self.sprintmod
-        return movement
+            for i in range(2):
+                newMovement[i] = movement[i] * self.sprintmod
+        #newMovement[2] = movement[2] # Leaves Z axis movement unchanged (jumping)
+        return newMovement
 
+
+    def degradeMovementWhenNotOnTheGround(self, movement):
+        if self.isOnTheGround():
+            return movement
+        else:
+            for i in range(3):
+                movement[i] *= self.noTouchMod
+            return movement
+
+    def doDamping(self):
+        damp = 1.0
+        if self.isOnTheGround():
+            # Damping Operation
+            damp = 25.0
+        else:
+            damp = 0.5
+        self.damper.dampXY(self.pcol, damp)
+        
 
 
     def getFloorNormal(self):
@@ -369,7 +380,7 @@ class HANDLER:
         return onGround
     
 
-    def getSlopeFactor(self, movement):
+    def getSlopeFactor(self, m):
         """
         Gets the slope factor.
         0.0 means no effect on movement speed.
@@ -378,6 +389,10 @@ class HANDLER:
         """
         import Mathutils
         import math
+
+        movement = m[:] # Making a copy
+
+        movement[2] = 0.0
 
         if movement == [0.0, 0.0, 0.0]: return 0.0
 
@@ -395,11 +410,33 @@ class HANDLER:
         Returns the new movement.
         """
         
-        newMovement = [0.0, 0.0, 0.0]
-        for i in range(3):
+        newMovement = movement[:]
+
+        # For X and Y
+        for i in range(2):
             slopeVelocity = movement[i] * slopeFactor
             newMovement[i] = movement[i] + slopeVelocity
+
+
+        ### Jumping Stuff ###
+        # Slopes can never make your jumps higher..
+        if slopeFactor < 0.0:
+            slopeVelocity = movement[2] * slopeFactor
+            newMovement[2] = movement[2] + slopeVelocity
+        # You cannot jump up steep slopes.
+        if slopeFactor < -0.25:
+            newMovement[2] = 0.0
+
         return newMovement
+
+    def doSlopeDamping(self, movement):
+        if self.isOnTheGround():
+            slopeFactor = self.getSlopeFactor(movement)
+            slopeFactor *= self.slopeInfluence
+            newMovement = self.applySlopeFactor(movement, slopeFactor)
+            return newMovement
+        else:
+            return movement
         
         
 
