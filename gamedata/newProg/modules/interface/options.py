@@ -187,7 +187,7 @@ def load():
 
         import inputs
         if inputs.INIT:
-            controller.setControls(controls)
+            inputs.controller.setControls(controls)
         
         return 1
     except:

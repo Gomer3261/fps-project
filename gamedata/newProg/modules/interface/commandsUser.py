@@ -4,7 +4,8 @@ hitting enter. If the command fails to execute properly, it \
 will attempt to send your input as a text message. \
 You can precede your input with a forward slash (/) to \
 explicitly designate your input as a python command (if it \
-fails, it will not be sent as a text message."""
+fails, it will not be sent as a text message, so you won't be \
+embarassed when you fail)."""
 
 def help():
     output(helpText)
@@ -20,3 +21,32 @@ def fill():
 def clear():
     import modules
     modules.interface.terminal.clear()
+
+
+
+
+
+
+def defaultOptions():
+    import modules
+    options = modules.interface.options
+    options.saveDefaults()
+    output("Options have been set to defaults. I think.")
+
+def setSetting(key, value):
+    import modules
+    options = modules.interface.options
+    r = options.setSetting(key, value)
+    output("Success value: %s"%(r))
+
+def setControl(key, value):
+    import modules
+    options = modules.interface.options
+    r = options.setControl(key, value)
+    output("Success value: %s"%(r))
+
+def loadOptions():
+    import modules
+    options = modules.interface.options
+    r = options.load()
+    output("Success value: %s"%(r))

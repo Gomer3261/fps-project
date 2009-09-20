@@ -6,12 +6,53 @@
 
 handler = None
 
+import modules.interface
+terminal = modules.interface.terminal
+
+def manage(con):
+    global handler, HANDLER
+
+    # Cleanup Dead Handler
+    if handler:
+        if not handler.LIFE:
+            handler = None
+
+
+
+# For the spot light casting shadows
+def followPlayer(con):
+    global handler
+    
+    playerPos = [0.0, 0.0, 0.0]
+
+    if handler:
+        playerPos = handler.pcol.position
+
+    con.owner.position = playerPos
+
+
+
+
+
 def spawn(con):
     global handler, HANDLER
     if handler:
-        raise Exception, "You cannot spawn the player; the player is already alive."
+        raise Exception, "You cannot spawn the local player; the local player is already alive."
     handler = HANDLER(con)
-    print "Player Spawned"
+    terminal.output("Player Spawned.")
+
+def kill():
+    global handler
+    import modules.gamesystems.camera as camera
+
+    if camera.INIT:
+        if not handler:
+            raise Exception, "You cannot kill the local player; the local player is already dead."
+        handler.alive = 0
+        camera.reset()
+        terminal.output("Player Killed.")
+    else:
+        raise Exception, "You cannot kill the local player; the local player is already dead"
     
     
 
@@ -69,6 +110,8 @@ class HANDLER:
     def spawnPcol(self):
         scene = self.GameLogic.getCurrentScene()
         self.pcol = scene.addObject("pcol", self.spawnCon.owner)
+        self.pcol.position = [0.0, 0.0, 10.0]
+        self.pcol.orientation = [[1,0,0],[0,1,0],[0,0,1]]
         self.con = self.pcol.controllers[0]
         
 
@@ -88,7 +131,7 @@ class HANDLER:
 
     def do(self):
         if self.alive:
-            self.doCamera()
+            self.doCamera() # Deprecated
             self.doPlayerMovement() # Running, Sprinting, Jumping, etc...
             self.doMouseLook() # Looking around with mouse in first person...
             #self.doInventory() # Managing the player's inventory (switching weapons, etc)
@@ -101,15 +144,17 @@ class HANDLER:
 
 
     ### ========================================================================
-    ### DO CAMERA
+    ### DO CAMERA (Deprecated)s
     ### ========================================================================
     
     def doCamera(self):
+        # Deprecated
+        pass
         # Just sets the camera
-        if self.LIFE:
-            scene = self.GameLogic.getCurrentScene()
-            if scene.active_camera != self.fpcam:
-                scene.active_camera = self.fpcam
+##        if self.LIFE:
+##            scene = self.GameLogic.getCurrentScene()
+##            if scene.active_camera != self.fpcam:
+##                scene.active_camera = self.fpcam
 
 
 
@@ -431,7 +476,7 @@ class HANDLER:
     ### ========================================================================
     
     def doDeath(self):
-        if not self.LIFE:
+        if self.LIFE:
             scene = self.GameLogic.getCurrentScene()
             if scene.active_camera != self.fpcam:
                 self.pcol.endObject()
