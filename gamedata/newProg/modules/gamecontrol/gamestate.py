@@ -3,6 +3,8 @@
 ###### ------ GAMESTATE ------ ######
 ###### ----------------------- ######
 #####################################
+
+
 class GAMESTATE:
     version = 4
 
@@ -226,108 +228,3 @@ class GAMESTATE:
 
 
 gamestate = GAMESTATE()
-
-
-
-
-
-
-
-class LOCALGAME:
-    players = {}
-
-    add = []
-    remove = []
-
-    def addPlayer(self, ticket, startPosition=[0.0, 0.0, 0.0]):
-        self.add.append( (ticket, startPosition) )
-
-    def actuallyAddPlayer(self, GameLogic, Replicator, ticket, startPosition=[0.0, 0.0, 0.0]):
-        scene = GameLogic.getCurrentScene()
-        print "Player added: %s"%(ticket)
-        clob = scene.addObject("client", Replicator)
-        clob.position = startPosition
-        clob["ticket"] = ticket
-        self.players[ticket] = clob
-        return 1
-
-    def removePlayer(self, ticket):
-        self.remove.append(ticket)
-
-    def actuallyRemovePlayer(self, ticket):
-        clob = self.players[ticket]
-        clob.endObject()
-        print "Player removed: %s"%(ticket)
-        del self.players[ticket]
-
-    def execute(self, GameLogic, Replicator):
-        for info in self.add:
-            ticket = info[0]
-            startPosition = info[1]
-            self.actuallyAddPlayer(GameLogic, Replicator, ticket, startPosition)
-
-        for ticket in self.remove:
-            self.actuallyRemovePlayer(ticket)
-
-        self.add = []
-        self.remove = []
-
-        return 1
-
-
-localGame = LOCALGAME()
-        
-
-
-
-
-
-
-class GAMECONTROLLER:
-    actionsend = []
-    actionthrow = []
-
-    
-    mode = "offline"
-    ticket = -1
-    inGame = 0
-
-    def set(self, mode="offline"):
-        self.mode = mode
-        self.actionsend = []
-        self.actionthrow = []
-        self.ticket = 0
-        self.inGame = 0
-
-    #toServer = []
-
-    def send(self, action):
-        self.actionsend.append(action)
-
-    def throw(self, action):
-        self.actionthrow.append(action)
-
-    def run(self):
-        toSend = []
-        toThrow = []
-        toGamestate = []
-        
-        for action in self.actionsend:
-            if self.mode == "online":
-                toSend.append(action)
-            else:
-                toGamestate.append(action)
-
-        for action in self.actionthrow:
-            if self.mode == "online":
-                toThrow.append(action)
-            else:
-                toGamestate.append(action)
-
-        self.actionsend = []
-        self.actionthrow = []
-        
-        return toGamestate, toSend, toThrow
-
-gamecontroller = GAMECONTROLLER()
-                

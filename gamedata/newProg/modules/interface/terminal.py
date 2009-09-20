@@ -14,14 +14,14 @@ INIT = 1
 active = 0
 
 # The contents of the terminal window (output)
-contents = []
+contents = ["Welcome to the terminal! Type help() if you're new here."]
 
 # Terminal input pipe
 inpipe = []
 
 
 
-
+# For opening and closing the terminal (detects single presses)
 termkeyLast = 0
 
 wraplen = 100

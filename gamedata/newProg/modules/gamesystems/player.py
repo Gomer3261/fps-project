@@ -126,8 +126,8 @@ class HANDLER:
         X, Y, Z = self.getDesiredMovement()
         X, Y, Z = self.applySprint(X, Y, Z)
 
-        slopeinfluence = 1#change this value to change the ammount of influence slopes have on movement.
-
+        # Slope Damping
+        slopeinfluence = 1.0 #change this value to change the ammount of influence slopes have on movement.
         slopefactor = self.calculateSpeedFactor()
         X -= X * (slopefactor * slopeinfluence)
         Y -= Y * (slopefactor * slopeinfluence)
@@ -431,7 +431,7 @@ class HANDLER:
     ### ========================================================================
     
     def doDeath(self):
-        if self.LIFE:
+        if not self.LIFE:
             scene = self.GameLogic.getCurrentScene()
             if scene.active_camera != self.fpcam:
                 self.pcol.endObject()
