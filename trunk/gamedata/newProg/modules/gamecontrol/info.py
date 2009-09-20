@@ -1,3 +1,3 @@
 mode = "offline"
-ticket = -1
-inGame = 1
+ticket = 0
+inGame = 0
