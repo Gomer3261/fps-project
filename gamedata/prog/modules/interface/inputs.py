@@ -8,10 +8,14 @@ controller = None
 ### DEPENDENCIES:
 # modules.interface.options
 
+#checks dependencies are initiated.
 def dependenciesAreHappy():
     import modules
     return (modules.interface.options.INIT)
 
+
+
+#initiates the module
 def init(con):
     global INIT
     global controller, CONTROLLER
@@ -20,7 +24,10 @@ def init(con):
     controller.setControls(modules.interface.options.controls)
     INIT = 1
     print "Inputs Initiated"
+    
 
+
+#Checks if the module is initiated. Ignoring it if it is, initiating it if it isn't.
 def initLoop(con):
     global INIT
 
@@ -32,19 +39,16 @@ def initLoop(con):
 
 
 
-##def init(con):
-##    global controller, INIT
-##    controller = CONTROLLER(con)
-##    import modules
-##    controller.setControls(modules.interface.options.controls)
-##    INIT = 1
 
 
 
 
 
 
-
+################################
+### ------ CONTROLLER ------ ###
+################################
+#This object is used to check the values of players custom controls.
 
 class CONTROLLER:
     events = {}
@@ -60,8 +64,11 @@ class CONTROLLER:
     other["MWU"] = None
     other["MWD"] = None
 
+    
+
     def __init__(self, con):
-        
+
+        #finding sensors
         KEYBOARD = con.sensors["KEYBOARD"]
         
         LMB = con.sensors["LMB"]
@@ -72,7 +79,8 @@ class CONTROLLER:
         MWD = con.sensors["MWD"]
         
         ###
-        
+
+        #setting variables.=
         self.keyboard = KEYBOARD
         
         self.other["LMB"] = LMB
@@ -83,6 +91,10 @@ class CONTROLLER:
         self.other["MWD"] = MWD
 
 
+
+        
+
+    #Used to detect hit keys, and other control events. (1 control/event)
     class EVENT:
         def __init__(self, controller, control, value=None):
             self.controller = controller
@@ -93,6 +105,9 @@ class CONTROLLER:
             self.kind = ""
             self.lastpositive = 0
 
+            
+
+        #converts the options value to a GameKeys value.
         def getValue(self, value=None):
             if not value:
                 if control not in self.controller.controls:
@@ -106,6 +121,9 @@ class CONTROLLER:
 
             return value
 
+        
+
+        #figures out the status of the event. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
         def getStatus(self):
             if self.value in self.controller.other:
                 self.kind = "other"
@@ -133,6 +151,9 @@ class CONTROLLER:
                 status = self.controller.keyboard.getKeyStatus(getattr(GameKeys, self.value))
                 return status
 
+            
+
+        #checks if the event is positive or not.
         def isPositive(self):
             status = self.getStatus()
             if (status == 1) or (status == 2):
@@ -140,6 +161,8 @@ class CONTROLLER:
             return 0
 
 
+
+    #checks for the event in self.events
     def getEvent(self, control):
         if control in self.events:
             event = self.events[control]
@@ -147,6 +170,9 @@ class CONTROLLER:
         else:
             return None
 
+        
+
+    #returns the status of the control. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
     def getStatus(self, control):
         event = self.getEvent(control)
         if not event:
@@ -154,14 +180,19 @@ class CONTROLLER:
         status = event.getStatus()
         return status
 
+    
+
+    #returns 1 if the control is positive.
     def isPositive(self, control):
         event = self.getEvent(control)
         if not event:
             return None
         positive = event.isPositive()
         return positive
+
     
     
+    #changes the values of controls, and creates events to detect them.
     def setControls(self, controls):
         # controls is usually from options.py
         self.controls = {}
