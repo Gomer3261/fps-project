@@ -1,6 +1,8 @@
 import comms
 import detailreader
-import gamemod
+import gamestate
 import gameplayserver
 import handlers
 import theater
+
+#gamestate = gamestate.GAMESTATE()

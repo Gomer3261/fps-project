@@ -27,8 +27,8 @@ class SERVER:
     import theater
     clientTheater = theater.THEATER()
 
-    import gamemod
-    gamestate = gamemod.GAMESTATE()
+    import gamestate
+    gamestate = gamestate.GAMESTATE()
 
 
 
