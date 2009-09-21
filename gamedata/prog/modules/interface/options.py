@@ -47,6 +47,7 @@ def saveDefaults():
         settings["mysens"] = 5.0
         settings["inverty"] = 0
         settings["invertx"] = 0
+        settings["filter-hdr"] = 1
 
         # CONTROLS
         controls["spawn"] = "space-key"

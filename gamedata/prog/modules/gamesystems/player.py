@@ -332,7 +332,12 @@ class HANDLER:
                 movement[i] *= self.noTouchMod
             return movement
 
+
     def doDamping(self):
+        """
+        Applies damping to the character so that they do not slide around
+        like they are on glass.
+        """
         damp = 1.0
         if self.isOnTheGround():
             # Damping Operation
