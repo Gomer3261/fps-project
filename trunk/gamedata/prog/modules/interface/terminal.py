@@ -19,6 +19,12 @@ contents = ["Welcome to the terminal! Type help() if you're new here."]
 # Terminal input pipe
 inpipe = []
 
+# Variables for handling the history
+history = []
+history_slot = 0
+HISTORY_MAX = 10
+current_input = ""
+
 
 
 # For opening and closing the terminal (detects single presses)
@@ -27,6 +33,53 @@ termkeyLast = 0
 wraplen = 100
 maxlines = 60
 
+
+
+
+# Methods for handling the history
+
+# Saves a string to the history
+def addToHistory(s):
+    global history, HISTORY_MAX
+
+    history.insert(0, s)
+    
+    history_slot = -1
+    
+    if len(history) > HISTORY_MAX:
+        history.remove(-1)
+
+# Saves the current input so it can be recovered
+def saveCurrentInput(s):
+    global current_input
+    current_input = s
+
+# Gets the next item in the history
+
+def getNextHistoryItem(s):
+    global history, HISTORY_MAX, history_slot
+    history_slot += 1
+    
+    if history_slot == 0:
+        saveCurrentInput(s)
+    elif history_slot > HISTORY_MAX:
+        history_slot = 0
+    elif (len(history)-1) < history_slot:
+        history_slot = len(history) - 1
+        
+
+    return history[history_slot]
+
+# Gets the previous item in the history
+def getPrevHistoryItem():
+    global history, HISTORY_MAX, history_slot, current_input
+    history_slot -= 1
+    
+    if history_slot < 0:
+        history_slot = -1
+        return current_input
+    
+    return history[history_slot]
 
 
 
@@ -148,6 +201,8 @@ def runHandler(con):
     global active
     
     returnKey = con.sensors["RETURN"]
+    upKey = con.sensors["UP"]
+    downKey = con.sensors["DOWN"]
 
     inTextObj = con.actuators["inText"].owner
     outTextObj = con.actuators["outText"].owner
@@ -165,6 +220,13 @@ def runHandler(con):
         input(A)
         inTextObj["input"] = ""
         inTextObj["Text"] = ""
+        
+        # Add the last input into the history
+        addToHistory(A)
+    elif upKey.positive:
+        inTextObj["input"] = getNextHistoryItem(A)
+    elif downKey.positive:
+        inTextObj["input"] = getPrevHistoryItem()
     
 
 
