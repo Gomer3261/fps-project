@@ -8,11 +8,12 @@ INIT = 0
 
 import traceback
 
-sepchar = "\n=------ Settings Above / Controls Below ------=\n\n"
-path = "FPS_options.txt"
+sepchar = "\n=------ Settings Above / Controls Below ------=\n\n" #this can actually be anything, it's just more eye pleasing if you open the file directly.
+path = "FPS_options.txt" #the path for the options file (change it to something more game relative later?)
 settings = {}
 controls = {}
 
+#the init function. Most modules have this.
 def init():
     """Init the module."""
     global INIT
@@ -20,6 +21,7 @@ def init():
     INIT = 1
     print "Options Initiated"
 
+#checks if the module is initiated, ignoring it if it is, and initating it if it isn't.
 def initLoop(con):
     global INIT
     if not INIT:
@@ -31,6 +33,17 @@ def initLoop(con):
 
 
 
+
+
+
+
+####################################
+### ------ OPTIONS SYSTEM ------ ###
+####################################
+
+
+
+#Sets all controls and settings to default, then saves them all to the options file.
 def saveDefaults():
     global sepchar
     global path
@@ -76,7 +89,10 @@ def saveDefaults():
         return result
     except:
         traceback.print_exc()
-    
+
+        
+
+#sets the given setting to the given value, then saves the setting.
 def setSetting(key, value):
     global sepchar
     global path
@@ -90,6 +106,9 @@ def setSetting(key, value):
     r = save()
     return r
 
+
+
+#sets the given control to the given value, then saves the control.
 def setControl(key, value):
     global sepchar
     global path
@@ -103,6 +122,9 @@ def setControl(key, value):
     r = save()
     return r
 
+
+
+#saves current controls to the options file.
 def save():
     global sepchar
     global path
@@ -113,10 +135,12 @@ def save():
     import os
     
     try:
+        #settings
         settingsfile = "// This is the options file for the FPS Project. You can reset these options to default by typing \"options default\" in the in-game terminal." + os.linesep + os.linesep
         for key in settings:
             settingsfile += key + ": " + repr(settings[key]) + os.linesep
 
+        #controls
         controlsfile = ""
         for key in controls:
             controlsfile += key + ": " + repr(controls[key]) + os.linesep
@@ -130,6 +154,7 @@ def save():
 
         print("Options Saved")
 
+        #making changed options effect the game
         import inputs
         if inputs.INIT:
             inputs.controller.setControls(controls)
@@ -140,6 +165,9 @@ def save():
         print "\n\n", settings, "\n\n", controls
         return 0
 
+    
+
+#loads all information from the options file.
 def load():
     global sepchar
     global path

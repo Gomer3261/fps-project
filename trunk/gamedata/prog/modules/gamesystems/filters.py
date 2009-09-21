@@ -76,7 +76,7 @@ def doLum(cont):
     avgPixels = (pixels[0]+pixels1[0]+pixels2[0]+pixels3[0]+pixels4[0])/5.0
 
     #Slow adaptation
-    own.avgL = (own.avgL*0.9 + avgPixels*0.1)
+    own["avgL"] = (own["avgL"]*0.9 + avgPixels*0.1)
 
-    avgPixels = own.avgL
+    avgPixels = own["avgL"]
 
