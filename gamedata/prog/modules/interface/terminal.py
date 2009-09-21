@@ -52,7 +52,7 @@ def addToHistory(s):
     history_slot = -1
     
     if len(history) > HISTORY_MAX:
-        history.remove(-1)
+        history.remove(history[-1])
 
 # Saves the current input so it can be recovered
 def saveCurrentInput(s):
