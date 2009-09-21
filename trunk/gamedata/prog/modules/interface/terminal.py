@@ -203,12 +203,17 @@ def runHandler(con):
     returnKey = con.sensors["RETURN"]
     upKey = con.sensors["UP"]
     downKey = con.sensors["DOWN"]
+    deleteKey = con.sensors["DELETE"]
 
     inTextObj = con.actuators["inText"].owner
     outTextObj = con.actuators["outText"].owner
 
 
     ### INPUT HANDLING ###
+
+    # Delete key clears input field
+    if deleteKey.positive:
+        inTextObj["input"] = ""
     
     # A = Input String
     A = inTextObj["input"]
