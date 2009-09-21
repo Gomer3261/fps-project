@@ -16,9 +16,6 @@ active = 0
 # The contents of the terminal window (output)
 contents = ["Welcome to the terminal! Type help() if you're new here."]
 
-# Terminal input pipe
-inpipe = []
-
 # Variables for handling the history
 history = []
 history_slot = 0
@@ -36,7 +33,15 @@ maxlines = 60
 
 
 
-# Methods for handling the history
+
+
+
+
+
+
+######################################
+### ------ TERMINAL HISTORY ------ ###
+######################################
 
 # Saves a string to the history
 def addToHistory(s):
@@ -84,6 +89,17 @@ def getPrevHistoryItem():
 
 
 
+
+
+
+
+
+
+
+#########################################
+### ------ TERMINAL FORMATTING ------ ###
+#########################################
+
 # Trims a list from the beginning until it reaches the desired length.
 def limit(x, l=10):
     while len(x) > l:
@@ -104,47 +120,46 @@ def formatLines(lines):
 
     return newlines
 
-# Limits the number of lines of contents it remembers.
-def limitContents(l=10):
-    global contents
-    contents = limit(contents, l)
+## -- Deprecated Functions -- ##
 
-# Takes a string and cuts it into n sized chunks (returns a list)
-def textwrap(s, n):
-    return [s[x:x+n] for x in range (0, len(s), n)]
+### Limits the number of lines of contents it remembers.
+##def limitContents(l=10):
+##    global contents
+##    contents = limit(contents, l)
+##
+### Takes a string and cuts it into n sized chunks (returns a list)
+##def textwrap(s, n):
+##    return [s[x:x+n] for x in range (0, len(s), n)]
 
-# Formats contents into a string, and outputs it.
-def getContents(lines=10, wrap=50):
-    global contents
-    
-    data = []
-    for line in contents:
-        linestart = 1
-        for x in textwrap(line, wrap):
-            if linestart:
-                data.append(x)
-            else:
-                data.append("    "+x)
-            linestart = 0
-    return "\n".join(limit(data, lines))
-
-# Outputs something to the terminal
-def output(s):
-    global contents
-    
-    s = s.replace("\r", "")
-    lines = s.split("\n")
-
-    for line in lines:
-        contents.append(line)
+### Formats contents into a string, and outputs it.
+##def getContents(lines=10, wrap=50):
+##    global contents
+##    
+##    data = []
+##    for line in contents:
+##        linestart = 1
+##        for x in textwrap(line, wrap):
+##            if linestart:
+##                data.append(x)
+##            else:
+##                data.append("    "+x)
+##            linestart = 0
+##    return "\n".join(limit(data, lines))
 
 
 
-# Inputs a string to the inpipe
-##def input(s):
-##    global inpipe
-##    inpipe.append(s)
 
+
+
+
+
+
+
+########################################
+### ------ TERMINAL FUNCTIONS ------ ###
+########################################
+
+# runs input commands (maybe rename to run, or command?)
 def input(s):
     output(">> "+s)
     import commandsUser
@@ -166,18 +181,17 @@ def input(s):
         error = error[len(error)-1]
         output(error)
 
+# Outputs something to the terminal.
+def output(s):
+    global contents
+    
+    s = s.replace("\r", "")
+    lines = s.split("\n")
 
+    for line in lines:
+        contents.append(line)
 
-# Enters something to the inpipe
-def enter(s):
-    global inpipe
-    inpipe.append(s)
-
-def clearInpipe():
-    global inpipe
-    inpipe = []
-
-# Clears terminal's output contents
+# Clears terminal's contents.
 def clear():
     global contents
     contents = []
@@ -191,13 +205,12 @@ def clear():
 
 
 
-
-
-######### TERMINAL HANDLER ###########
+######################################
+### ------ TERMINAL HANDLER ------ ###
+######################################
 
 def runHandler(con):
     global contents
-    global inpipe
     global active
     
     returnKey = con.sensors["RETURN"]
