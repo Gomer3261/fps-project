@@ -6,7 +6,7 @@
 
 
 class GAMESTATE:
-	version = 5
+	version = 8
 
 	contents = {}
 
@@ -72,6 +72,8 @@ class GAMESTATE:
 		U["S"]["S"] = 0 # Status
 		U["S"]["K"] = 0 # Kills
 		U["S"]["D"] = 0 # Deaths
+		
+		self.contents["U"][ticket] = U
 		
 		
 	def addPlayer(self, ticket, name="-NameError-"):
@@ -206,6 +208,13 @@ class GAMESTATE:
 	
 	def userIsInGame(self, ticket):
 		if ticket in self.contents["U"]:
+			return 1
+		else:
+			return 0
+	
+	def userNameIsInGame(self, name):
+		names = self.getUserNameList()
+		if name in names:
 			return 1
 		else:
 			return 0

@@ -44,6 +44,14 @@ class PLAYERS:
 		terminal = modules.interface.terminal
 		terminal.output("Player Deleted. Ticket: %s"%(ticket))
 	
+	def killAllPlayers(self):
+		"""
+		Kills and delete all players
+		"""
+		for ticket in self.storage:
+			player = self.storage[ticket]
+			player.alive = 0
+	
 	def getPlayer(self, ticket):
 		"""
 		Gets a player handler
