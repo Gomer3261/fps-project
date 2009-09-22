@@ -23,9 +23,35 @@ class PLAYERS:
 		"""
 		Deletes a player from storage.
 		"""
-		#handler = self.storage[ticket]
-		#handler.kill()
+		handler = self.storage[ticket]
+		handler.terminate()
 		del self.storage[ticket]
+	
+	def getPlayer(self, ticket):
+		"""
+		Gets a player handler
+		"""
+		try:
+			handler = self.storage[ticket]
+			return handler
+		except:
+			return None
+	
+	def getLocalPlayer(self):
+		"""
+		Get's the local player handler, if it exists.
+		"""
+		import modules
+		info = modules.gamecontrol.info
+		gamestate = modules.gamecontrol.gamestate.gamestate
+		
+		if info.inGame and info.ticket and gamestate.playerIsInGame(info.ticket):
+			try:
+				handler = self.getPlayer(info.ticket)
+				return handler
+			except:
+				pass
+		return None
 	
 	def replicate(self, gamestate, con):
 		"""

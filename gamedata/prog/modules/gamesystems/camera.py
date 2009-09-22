@@ -44,14 +44,14 @@ def run(con):
     initLoop(con)
 
     import modules
-    player = modules.gamesystems.player
+    localgame = modules.gamecontrol.localgame
+	player = localgame.getLocalPlayer()
 
     cam = ecam
-
     # Player Camera
-    if player.handler:
-        if player.handler.alive:
-            cam = player.handler.fpcam
+    if player:
+        if player.alive:
+            cam = player.fpcam
 
     scene.active_camera = cam
         
