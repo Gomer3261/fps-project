@@ -6,7 +6,7 @@
 
 
 class GAMESTATE:
-	version = 5
+	version = 7
 
 	contents = {}
 
@@ -72,6 +72,8 @@ class GAMESTATE:
 		U["S"]["S"] = 0 # Status
 		U["S"]["K"] = 0 # Kills
 		U["S"]["D"] = 0 # Deaths
+		
+		self.contents["U"][ticket] = U
 		
 		
 	def addPlayer(self, ticket, name="-NameError-"):
