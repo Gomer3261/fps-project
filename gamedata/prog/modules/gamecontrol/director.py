@@ -5,7 +5,7 @@ INIT = 1
 
 """
 The Director is in charge of high-level game flow.
-It runs the router, and the replicator. It will also join the player
+It runs the router. It will also join the player
 into the game.
 """
 
@@ -13,14 +13,14 @@ def run(con):
     global router
     global replicator
 
-    assertPlayerInGame()
+    assertPlayerIsInGame()
 
     router.run(con)
-    replicator.run(con)
+    #replicator.run(con)
 
 
 
-def assertPlayerInGame():
+def assertPlayerIsInGame():
     import info
     import gamestate
     gamestate = gamestate.gamestate
@@ -28,7 +28,7 @@ def assertPlayerInGame():
     if not info.inGame:
         gamestate.restart()
         info.ticket = -1
-        gamestate.addPlayer(info.ticket, "Loner")
+        gamestate.addUser(info.ticket, "Loner")
         info.inGame = 1
         print "Joined offline game"
         
@@ -89,10 +89,10 @@ router = ROUTER()
 
 
 ### ======------ The Replicator ------====== ###
-
+### DEPRECATED
 class REPLICATOR:
     """
-    Reproduces the world depicted in the gamestate.
+    DEPRECATED! Reproduces the world depicted in the gamestate.
     """
 
     def run(self, con):
