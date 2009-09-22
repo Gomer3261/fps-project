@@ -29,6 +29,9 @@ class PLAYERS:
 		players = modules.entities.players
 		handler = players.PLAYER(ticket, spawnObj, mode)
 		self.storage[ticket] = handler
+		
+		terminal = modules.interface.terminal
+		terminal.output("Player Spawned. Ticket: %s, mode: %s"%(ticket, mode))
 	
 	def deletePlayer(self, ticket):
 		"""
@@ -37,6 +40,9 @@ class PLAYERS:
 		#handler = self.storage[ticket]
 		#handler.terminate()
 		del self.storage[ticket]
+		import modules
+		terminal = modules.interface.terminal
+		terminal.output("Player Deleted. Ticket: %s"%(ticket))
 	
 	def getPlayer(self, ticket):
 		"""
@@ -65,9 +71,13 @@ class PLAYERS:
 		return None
 	
 	def run(self):
-		for ticket in self.storage:
-			player = self.storage[ticket]
-			player.run()
+		try:
+			for ticket in self.storage:
+				player = self.storage[ticket]
+				player.run()
+		except:
+			# Dictionary changed size during iteration...
+			pass
 	
 	def replicate(self, gamestate, con):
 		"""

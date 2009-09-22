@@ -18,11 +18,11 @@ def run(con):
 
 	if (not terminal.active) and info.ticket and gamestate.userIsInGame(info.ticket):
 		if spawn == 1 and (not gamestate.playerIsInGame(info.ticket)):
-			print "Requesting Spawn"
+			#print "Requesting Spawn"
 			requestSpawn()
 
 		if suicide == 1 and gamestate.playerIsInGame(info.ticket):
-			print "Requesting Suicide"
+			#print "Requesting Suicide"
 			requestSuicide()
 
 
