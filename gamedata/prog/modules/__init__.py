@@ -1,3 +1,5 @@
+INIT = 0
+
 __all__ = []
 __all__.append("ai")
 __all__.append("entities")
@@ -19,3 +21,5 @@ import networking
 
 import profiling
 import timetools
+
+INIT = 1

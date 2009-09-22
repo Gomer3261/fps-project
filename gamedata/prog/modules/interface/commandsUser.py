@@ -64,8 +64,21 @@ def listUserCommands():
         # Filter out the python module stuff so we only get our commands
         if not i.startswith("__"):
             output(i)
-            
-            
+
+
+
+
+
+
+
+# -----------------
+# Networking Commands
+# -----------------
+
+def connect(name="-NameError-"):
+	import modules
+	modules.networking.gncore.connect(name)
+
 
 
 
