@@ -4,58 +4,17 @@
 ### The FPS Project
 # This module runs the player object.
 
-handler = None
+#import modules.interface
+#terminal = modules.interface.terminal
 
-import modules.interface
-terminal = modules.interface.terminal
 
-# For the spot light casting shadows
-def followPlayer(con):
-	global handler
-	
-	playerPos = [0.0, 0.0, 0.0]
 
-	if handler:
-		playerPos = handler.pcol.position
-
-	con.owner.position = playerPos
-
-# Easy to call method for the BGE to call to access the correct object's do() method
-def do(con):
+# Easy to call method for the BGE to call to access the correct object's run() method
+def run(con):
 	ob = con.owner
 	
 	import modules
-	modules.gamecontrol.localgame.players[ob[ticket]].do(con)
-
-
-
-# def manage(con):
-	# global handler, HANDLER
-
-	# # Cleanup Dead Handler
-	# if handler:
-		# if not handler.LIFE:
-			# handler = None
-
-# def spawn(con):
-	# global handler, HANDLER
-	# if handler:
-		# raise Exception, "You cannot spawn the local player; the local player is already alive."
-	# handler = HANDLER(con)
-	# terminal.output("Player Spawned.")
-
-# def kill():
-	# global handler
-	# import modules.gamesystems.camera as camera
-
-	# if camera.INIT:
-		# if not handler:
-			# raise Exception, "You cannot kill the local player; the local player is already dead."
-		# handler.alive = 0
-		# camera.reset()
-		# terminal.output("Player Killed.")
-	# else:
-		# raise Exception, "You cannot kill the local player; the local player is already dead"
+	modules.gamecontrol.localgame.players[ob[ticket]].run()
 
 
 
@@ -89,28 +48,25 @@ class PLAYER:
 	noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
 
 
-
-
-	
 	def __init__(self, ticket, spawnObj, mode = "proxy"):
 		self.mode = mode
 		self.ticket = ticket
 		
 		if mode == "proxy":
-			print "Proxy INIT"
 			self.proxyInit(spawnObj)
 		elif mode == "real":
-			print "Real INIT"
 			self.realInit(spawnObj)
 		else:
 			raise ValueError("No acceptable init found for mode: %s" % mode)
+	
+	
+	
 		
 	def proxyInit(self, spawnObj):
 		self.spawnObj = spawnObj
 		
 		# Spawning the player proxy object
-		pcol = self.spawnCol()
-		self.pcol = pcol
+		self.gameObj = self.spawnGameObj("playerProxy")
 	
 	def realInit(self, spawnObj):
 		import modules
@@ -118,10 +74,9 @@ class PLAYER:
 		self.spawnObj = spawnObj
 
 		# Spawning the player object
-		pcol = self.spawnPcol()
-		self.pcol = pcol
+		self.gameObj = self.spawnGameObj("playerReal")
 		
-		con = pcol.controllers[0]
+		con = self.gameObj.controllers[0]
 
 		# Getting some related objects
 		self.YPivot = con.actuators["YPivot"].owner
@@ -146,16 +101,21 @@ class PLAYER:
 
 
 
+
+
+
+
+
 	### ========================================================================
 	### SPAWN PLAYER OBJECT
 	### ========================================================================
 	
-	def spawnPcol(self):
+	def spawnGameObj(self, name="playerobject"):
 		scene = self.GameLogic.getCurrentScene()
-		pcol = scene.addObject("pcol", self.spawnObj)
-		pcol.position = [0.0, 0.0, 10.0]
-		pcol.orientation = [[1,0,0],[0,1,0],[0,0,1]]
-		return pcol
+		obj = scene.addObject(name, self.spawnObj)
+		obj.position = [0.0, 0.0, 10.0]
+		obj.orientation = [[1,0,0],[0,1,0],[0,0,1]]
+		return obj
 		
 
 
@@ -169,7 +129,7 @@ class PLAYER:
 
 
 	### ========================================================================
-	### HIGH-LEVEL DO FUNCTION
+	### HIGH-LEVEL RUN FUNCTION
 	### ========================================================================
 
 	def run(self):
@@ -248,7 +208,7 @@ class PLAYER:
 
 		# Applying the movement
 		if not self.terminal.active:
-			self.pcol.applyForce(movement, 1)
+			self.gameObj.applyForce(movement, 1)
 
 		self.doDamping()
 
@@ -314,7 +274,7 @@ class PLAYER:
 		import Mathutils
 
 		# Getting the Orientation
-		ori = self.pcol.orientation[:]
+		ori = self.gameObj.orientation[:]
 		l1 = ori[0]
 		l2 = ori[1]
 		l3 = ori[2]
@@ -341,7 +301,7 @@ class PLAYER:
 		import Mathutils
 
 		# Getting the Orientation
-		ori = self.pcol.orientation[:]
+		ori = self.gameObj.orientation[:]
 		l1 = ori[0]
 		l2 = ori[1]
 		l3 = ori[2]
@@ -394,7 +354,7 @@ class PLAYER:
 			damp = 25.0
 		else:
 			damp = 0.5
-		self.damper.dampXY(self.pcol, damp)
+		self.damper.dampXY(self.gameObj, damp)
 		
 
 
@@ -553,7 +513,7 @@ class PLAYER:
 		# For an FPS, set the player collision box to Xpivot,
 		# and set up an empty as the Y pivot.
 		Ypivot = self.YPivot
-		Xpivot = self.pcol
+		Xpivot = self.gameObj
 
 
 
@@ -667,12 +627,10 @@ class PLAYER:
 		if self.LIFE:
 			scene = self.GameLogic.getCurrentScene()
 			if scene.active_camera != self.fpcam:
-				self.pcol.endObject()
+				self.gameObj.endObject()
+				# Kill the handle
+				import modules
+				modules.gamecontrol.localgame.players.deletePlayer(self.ticket)
 				self.LIFE = 0
-				
-		# Kill the handle
-		import modules
-		# XXX I don't know where the class instance is stored!
-		modules.gamecontrol.localgame.players.deletePlayer(self.ticket)
 
 		
