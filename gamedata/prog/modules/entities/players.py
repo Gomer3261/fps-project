@@ -97,9 +97,11 @@ class PLAYER:
 		self.ticket = ticket
 		
 		if mode == "proxy":
+			print "Proxy INIT"
 			self.proxyInit(spawnObj)
 		elif mode == "real":
-			self.realInit(spawnObj):
+			print "Real INIT"
+			self.realInit(spawnObj)
 		else:
 			raise ValueError("No acceptable init found for mode: %s" % mode)
 		
@@ -150,7 +152,7 @@ class PLAYER:
 	
 	def spawnPcol(self):
 		scene = self.GameLogic.getCurrentScene()
-		pcol = scene.addObject("pcol", self.spawnOb)
+		pcol = scene.addObject("pcol", self.spawnObj)
 		pcol.position = [0.0, 0.0, 10.0]
 		pcol.orientation = [[1,0,0],[0,1,0],[0,0,1]]
 		return pcol
@@ -202,9 +204,10 @@ class PLAYER:
 	
 	def doReplication(self):
 		import modules
+		gamestate = modules.gamecontrol.gamestate.gamestate
 		
 		if not gamestate.playerIsInGame(self.ticket):
-			self.terminate()
+			self.alive = 0
 
 
 

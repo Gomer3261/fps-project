@@ -1,9 +1,19 @@
 """
 Stores the localgame, and replicates it based on the gamestate.
 """
-INIT = 0
+INIT = 1
 
 players = None
+
+
+def run(con):
+	import modules
+	gamestate = modules.gamecontrol.gamestate.gamestate
+	global players
+	
+	players.replicate(gamestate, con)
+	players.run()
+
 
 class PLAYERS:
 	"""
@@ -18,14 +28,14 @@ class PLAYERS:
 		import modules
 		players = modules.entities.players
 		handler = players.PLAYER(ticket, spawnObj, mode)
-		storage[ticket] = handler
+		self.storage[ticket] = handler
 	
 	def deletePlayer(self, ticket):
 		"""
 		Deletes a player from storage.
 		"""
-		handler = self.storage[ticket]
-		handler.terminate()
+		#handler = self.storage[ticket]
+		#handler.terminate()
 		del self.storage[ticket]
 	
 	def getPlayer(self, ticket):
@@ -53,6 +63,11 @@ class PLAYERS:
 			except:
 				pass
 		return None
+	
+	def run(self):
+		for ticket in self.storage:
+			player = self.storage[ticket]
+			player.run()
 	
 	def replicate(self, gamestate, con):
 		"""
@@ -86,9 +101,4 @@ class PLAYERS:
 				# Now we actually spawn the player.
 				self.spawnPlayer(ticket, spawnObj, mode)
 
-
-
-# XXX A little init to get things rolling, this will probably need to be changed
-if not INIT:
-	global players
-	players = PLAYERS()
+players = PLAYERS()
