@@ -6,7 +6,7 @@
 
 
 class GAMESTATE:
-	version = 4
+	version = 5
 
 	contents = {}
 
@@ -172,13 +172,13 @@ class GAMESTATE:
 		try:
 
 			if request.lower() == "spawn":
-				self.contents["P"][ticket]["SA"]["HP"] = 100
-				self.contents["P"][ticket]["SA"]["L"] = 1
-				self.changes.append( ("ar", [ticket, "spawn", 1]) )
+				name = self.getUserName(ticket)
+				if ticket not in self.contents["P"]:
+					self.addPlayer(ticket, name)
+					self.changes.append( ("ar", [ticket, "spawn", 1]) )
 
 			if request.lower() == "suicide":
-				self.contents["P"][ticket]["SA"]["HP"] = 0
-				self.contents["P"][ticket]["SA"]["L"] = 0
+				del self.contents["P"][ticket]
 				self.changes.append( ("ar", [ticket, "suicide", 1]) )
 
 		except:
@@ -193,7 +193,35 @@ class GAMESTATE:
 	### ========================================================================
 	### === Informational Functions
 	### ========================================================================
-
+	
+	### ======------ User Related ------====== ###
+	
+	def getUserNameList(self):
+		names = []
+		for ticket in self.contents["U"]:
+			user = self.contents["U"][ticket]
+			name = user["N"]
+			names.append(name)
+		return names
+	
+	def userIsInGame(self, ticket):
+		if ticket in self.contents["U"]:
+			return 1
+		else:
+			return 0
+	
+	def getUserName(self, ticket):
+		if self.userIsInGame(ticket):
+			name = self.contents["U"][ticket]["N"]
+		else:
+			return None
+	
+	
+	
+	
+	
+	### ======------ Player Related ------====== ###
+	
 	def getPlayerNameList(self):
 		names = []
 		for ticket in self.contents["P"]:
@@ -227,6 +255,12 @@ class GAMESTATE:
 			life = self.contents["P"][ticket]["SA"]["L"]
 			return life
 		except:
+			return 0
+	
+	def getPlayerAttributes(self, ticket):
+		try:
+			return self.contents["P"][ticket]["A"]
+		except:
 			pass
 
 	def getPlayerHP(self, ticket):
@@ -235,3 +269,9 @@ class GAMESTATE:
 			return HP
 		except:
 			pass
+
+
+
+
+
+gamestate = GAMESTATE()
