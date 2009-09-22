@@ -9,17 +9,17 @@ import GameLogic
 scene = GameLogic.getCurrentScene()
 
 def init(con):
-    global INIT
-    global ecam
-    ecam = con.actuators["ecam"].owner
-    INIT = 1
-    print "Camera Initiated"
+	global INIT
+	global ecam
+	ecam = con.actuators["ecam"].owner
+	INIT = 1
+	print "Camera Initiated"
 
 def initLoop(con):
-    global INIT
+	global INIT
 
-    if not INIT:
-        init(con)
+	if not INIT:
+		init(con)
 
 
 
@@ -27,10 +27,10 @@ def initLoop(con):
 
 
 def reset():
-    global scene
-    global ecam
+	global scene
+	global ecam
 
-    scene.active_camera = ecam
+	scene.active_camera = ecam
 
 
 
@@ -38,20 +38,22 @@ def reset():
 
 
 def run(con):
-    global scene
-    global ecam
+	global scene
+	global ecam
 
-    initLoop(con)
+	initLoop(con)
 
-    import modules
-    localgame = modules.gamecontrol.localgame
-	player = localgame.getLocalPlayer()
+	import modules
+	localgame = modules.gamecontrol.localgame
+	
+	#XXX Gave an error, changing context
+	player = localgame.players.getLocalPlayer()
 
-    cam = ecam
-    # Player Camera
-    if player:
-        if player.alive:
-            cam = player.fpcam
+	cam = ecam
+	# Player Camera
+	if player:
+		if player.alive:
+			cam = player.fpcam
 
-    scene.active_camera = cam
-        
+	scene.active_camera = cam
+		

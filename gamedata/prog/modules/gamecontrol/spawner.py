@@ -6,7 +6,6 @@ Simple and temporary system for player-controlled spawning and suicide.
 import modules
 
 def run(con):
-    player = modules.gamesystems.player
     director = modules.gamecontrol.director
     inputs = modules.interface.inputs
     terminal = modules.interface.terminal

@@ -1,8 +1,9 @@
 """
 Stores the localgame, and replicates it based on the gamestate.
 """
-INIT = 1
+INIT = 0
 
+players = None
 
 class PLAYERS:
 	"""
@@ -87,3 +88,7 @@ class PLAYERS:
 
 
 
+# XXX A little init to get things rolling, this will probably need to be changed
+if not INIT:
+	global players
+	players = PLAYERS()
