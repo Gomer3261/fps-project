@@ -61,6 +61,7 @@ def saveDefaults():
         settings["inverty"] = 0
         settings["invertx"] = 0
         settings["filter-hdr"] = 1
+        settings["lens"] = 15.0
 
         # CONTROLS
         controls["spawn"] = "space-key"
@@ -101,8 +102,17 @@ def setSetting(key, value):
     global traceback
 
     key = key.lower()
+
+    if key == "lens":
+        if value > 25.0:
+            value = 25.0
+        elif value < 15.0:
+            value = 15.0
+        settings[key] = value
     
-    settings[key] = value
+    else:
+        settings[key] = value
+    
     r = save()
     return r
 
