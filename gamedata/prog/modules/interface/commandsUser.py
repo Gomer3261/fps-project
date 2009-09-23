@@ -1,12 +1,9 @@
-helpText = """Welcome to the FPS Project's in game terminal. \
-You can execute Python commands by typing them in and \
-hitting enter. If the command fails to execute properly, it \
-will attempt to send your input as a text message. \
-You can precede your input with a forward slash (/) to \
-explicitly designate your input as a python command (if it \
-fails, it will not be sent as a text message, so you won't be \
-embarassed when you fail). Use listUserCommands() and \
-use help(command) to learn more about a specific command."""
+helpText = """
+Welcome to the FPS Project's in-game terminal.
+All commands are executed as Python scripts.
+Use listUserCommands() for a good time.
+Precede your input with "/" to designate it as a text message.
+"""
 
 # ----------------------------
 # Terminal Specific Commands
