@@ -161,25 +161,34 @@ def formatLines(lines):
 
 # runs input commands (maybe rename to run, or command?)
 def input(s):
-    output(">> "+s)
-    import commandsUser
-    import commandsAdmin
-    modules = [commandsUser, commandsAdmin]
+	isTextMessage = 0
+	if s[0] == "/":
+		isTextMessage = 1
+	
+	if not isTextMessage:
+		output(">> "+s)
+		import commandsUser
+		import commandsAdmin
+		modules = [commandsUser, commandsAdmin]
 
-    namespace = {}
-    
-    for module in modules:
-        for variableName in dir(module):
-            namespace[variableName] = getattr(module, variableName)
+		namespace = {}
+		
+		for module in modules:
+			for variableName in dir(module):
+				namespace[variableName] = getattr(module, variableName)
 
-    import sys
-    import traceback
-    try:
-        exec(s, namespace)
-    except:
-        error = traceback.format_exception_only(sys.exc_type, sys.exc_value)
-        error = error[len(error)-1]
-        output(error)
+		import sys
+		import traceback
+		try:
+			exec(s, namespace)
+		except:
+			error = traceback.format_exception_only(sys.exc_type, sys.exc_value)
+			error = error[len(error)-1]
+			output(error)
+	else:
+		message = s[1:]
+		import modules
+		modules.networking.gncore.text(message)
 
 # Outputs something to the terminal.
 def output(s):

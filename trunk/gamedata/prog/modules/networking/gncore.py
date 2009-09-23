@@ -14,7 +14,7 @@ def connect(name="-NameError-"):
 	
 	gnclient = GNCLIENT(expiration)
 	
-	host = "chase.kicks-ass.net"
+	host = "stokes.dyndns.org" # "chase.kicks-ass.net"
 	TCPport = 2342
 	UDPport = 2343
 	
