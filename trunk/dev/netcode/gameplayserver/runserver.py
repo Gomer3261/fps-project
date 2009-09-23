@@ -1,4 +1,5 @@
 import modules
+from time import sleep
 
 gameplayserver = modules.gameplayserver
 server = gameplayserver.server
@@ -16,14 +17,17 @@ server.connect("chase.kicks-ass.net", 2340, 2342, 2343)
 if server.connected:
 	print "\n~~~ Server is now running happily :D ~~~\n"
 	while server.LIFE:
-			# Networking
-			server.doNetworking()
+		# Networking
+		server.doNetworking()
 
-			# Interaction
-			server.interact()
+		# Interaction
+		server.interact()
 
-			# Gameplay
-			server.play()
+		# Gameplay
+		server.play()
+		
+		# Sleep a little bit so this loop isn't CPU hungry
+		sleep(0.01)
 
 	print "\nJob done."
 else:
