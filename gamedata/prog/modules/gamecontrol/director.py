@@ -79,12 +79,13 @@ class ROUTER:
 					gamestate.applyChanges(self.throwRequests)
 			else:
 				# Send the requests to the remote host
-				print "Supposed to be sending stuff to remote host..."
+				#print "Supposed to be sending stuff to remote host..."
 				import modules.networking.gncore as gncore
+				import modules.gamecontrol.info as info
 				if self.sendRequests:
 					gncore.gnclient.send("gsc", self.sendRequests)
 				if self.throwRequests:
-					gncore.gnclient.throw("gsc", self.throwRequests)
+					gncore.gnclient.throw(info.ticket, "gsc", self.throwRequests)
 			
 			self.reset()
 

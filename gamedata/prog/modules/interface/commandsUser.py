@@ -72,9 +72,20 @@ def listUserCommands():
 # Networking Commands
 # -----------------
 
-def connect(name="-NameError-"):
+stokes = "stokes.dyndns.org"
+chase = "chase.kicks-ass.net"
+
+def connect(name="-NameError-", host="stokes.dyndns.org"):
 	import modules
-	modules.networking.gncore.connect(name)
+	modules.networking.gncore.connect(name, host)
+
+def disconnect():
+	import modules.networking.gncore as gncore
+	import modules.gamecontrol.info as info
+	gncore.gnclient.kissGoodbye()
+	gncore.gnclient.terminate()
+	info.set("offline")
+	output("You've disconnected from the server, and you're now offline.")
 
 def text(msg="Hi."):
 	import modules
