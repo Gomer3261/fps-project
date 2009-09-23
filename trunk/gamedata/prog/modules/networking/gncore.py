@@ -5,7 +5,7 @@ basicUpdateTimer = None
 checkTimer = None
 expiration = 5.0
 
-def connect(name="-NameError-"):
+def connect(name="-NameError-", host="stokes.dyndns.org"):
 	global gnclient, GNCLIENT
 	
 	import modules
@@ -14,16 +14,15 @@ def connect(name="-NameError-"):
 	
 	gnclient = GNCLIENT(expiration)
 	
-	host = "stokes.dyndns.org" # "chase.kicks-ass.net"
 	TCPport = 2342
 	UDPport = 2343
 	
-	terminal.output("Attempting connection...")
+	terminal.output('Attempting connection with "%s"'%(host))
 	
 	gnclient.connect(host, TCPport, UDPport)
 	
 	if gnclient.connected:
-		terminal.output("You have connected to the gameplay server.")
+		terminal.output("Connection success!")
 		gnclient.requestTicket()
 		gnclient.joinGame(name)
 		info.set("online")
@@ -82,7 +81,7 @@ def run(con):
 			timeToSendCheck = checkTimer.do(0.5) # Every half second
 			if timeToSendCheck:
 				gnclient.throw(gnclient.ticket, "CH", 1)
-				print "    CH SENT"
+				print "	   CH SENT"
 			
 			
 			
@@ -139,16 +138,16 @@ def run(con):
 				
 				if flag.lower() == "fd":
 					# Full gamestate distribution
-					print "    GOT FD"
+					print "	   GOT FD"
 					gamestate.applyFulldistro(data)
 				
 				if flag.lower() == "sh":
-					print "    GOT SH"
+					print "	   GOT SH"
 					# Shout containing changes
 					gamestate.applyChanges(data)
 				
 				if flag.lower() == "ch":
-					print "    GOT CH"
+					print "	   GOT CH"
 			
 			
 			
@@ -174,14 +173,17 @@ def run(con):
 
 import handlers
 class GNCLIENT(handlers.CLIENT):
-    
-    ticket = None # You cannot send any data over UDP until you get your ticket.
-    
-    def requestTicket(self):
-        self.send("ticket", "plz")
+	
+	ticket = None # You cannot send any data over UDP until you get your ticket.
+	
+	def requestTicket(self):
+		self.send("ticket", "plz")
 
-    def joinGame(self, name):
-        self.send("join", name)
+	def joinGame(self, name):
+		self.send("join", name)
+	
+	def kissGoodbye(self):
+		self.send("bye", 1)
 
 gnclient = GNCLIENT(expiration)
 
