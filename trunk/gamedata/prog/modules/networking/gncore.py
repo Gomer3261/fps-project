@@ -18,6 +18,8 @@ def connect(name="-NameError-"):
 	TCPport = 2342
 	UDPport = 2343
 	
+	terminal.output("Attempting connection...")
+	
 	gnclient.connect(host, TCPport, UDPport)
 	
 	if gnclient.connected:
@@ -25,6 +27,8 @@ def connect(name="-NameError-"):
 		gnclient.requestTicket()
 		gnclient.joinGame(name)
 		info.set("online")
+		print info.mode
+		print "set to online?"
 	else:
 		terminal.output("Error: Connection to gameplay server failed.")
 		info.set("offline")
@@ -57,7 +61,7 @@ def run(con):
 	
 	gamecontrol = modules.gamecontrol
 	info = gamecontrol.info
-	gamestate = gamecontrol.gamestate
+	gamestate = gamecontrol.gamestate.gamestate
 	director = gamecontrol.director
 	router = director.router
 	localgame = gamecontrol.localgame
@@ -67,9 +71,11 @@ def run(con):
 	networking = modules.networking
 	
 	if info.mode == "online":
+		#print "ONLINE"
 		# Okay, we need to get the communication going I suppose
 		
 		if gnclient.connected:
+			#print "CONNECTED"
 			# Woot! We're already connected!
 			
 			# Let's do a UDP checkup loop, eh?
@@ -135,9 +141,11 @@ def run(con):
 				
 				if flag.lower() == "fd":
 					# Full gamestate distribution
+					print "FD"
 					gamestate.applyFulldistro(data)
 				
 				if flag.lower() == "sh":
+					print "SH"
 					# Shout containing changes
 					gamestate.applyChanges(data)
 				
@@ -148,8 +156,11 @@ def run(con):
 			
 			
 			### TERMINATE IF STALE ###
+			#print "CHECKING STALE"
 			terminated = gnclient.terminateIfStale()
 			if terminated:
+				print "WENTSTALE"
+				terminal.output("Connection to the server went stale. You've been disconnected.")
 				info.set("offline")
 				localgame.players.killAllPlayers()
 
