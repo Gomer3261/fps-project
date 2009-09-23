@@ -6,7 +6,7 @@
 
 
 class GAMESTATE:
-	version = 8
+	version = 9
 
 	contents = {}
 
@@ -222,6 +222,7 @@ class GAMESTATE:
 	def getUserName(self, ticket):
 		if self.userIsInGame(ticket):
 			name = self.contents["U"][ticket]["N"]
+			return name
 		else:
 			return None
 	

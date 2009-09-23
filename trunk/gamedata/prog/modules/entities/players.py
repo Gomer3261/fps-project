@@ -190,6 +190,7 @@ class PLAYER:
 	
 	def doUpdate(self):
 		if self.updateTimer.do(self.updateInterval):
+			print "DO UPDATE"
 			import modules
 			router = modules.gamecontrol.director.router
 			
@@ -205,6 +206,7 @@ class PLAYER:
 			A["O"] = oriVec
 
 			# Throw the data
+			print "THROWING DATA TO ROUTER"
 			router.throw(["upa", [self.ticket, A]])
 
 
