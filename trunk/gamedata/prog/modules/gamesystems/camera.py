@@ -54,6 +54,8 @@ def run(con):
 	if player:
 		if player.alive:
 			cam = player.fpcam
+			player.fpcam.lens = modules.interface.options.settings["lens"]
 
 	scene.active_camera = cam
+
 		
