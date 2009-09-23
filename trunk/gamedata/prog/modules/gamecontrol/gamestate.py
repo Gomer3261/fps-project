@@ -85,7 +85,7 @@ class GAMESTATE:
 		# Attributes
 		P["A"] = {}
 		P["A"]["P"] = [0.0, 0.0, 0.0]
-		P["A"]["O"] = 0
+		P["A"]["O"] = [0.0, 0.0, 0.0]
 
 		# Server-controlled Attributes
 		P["SA"] = {}
