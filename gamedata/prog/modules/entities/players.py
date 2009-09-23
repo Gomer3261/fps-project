@@ -191,7 +191,7 @@ class PLAYER:
 	def doUpdate(self):
 		if self.updateTimer.do(self.updateInterval):
 			import modules
-			router = modules.gamecontrol.router
+			router = modules.gamecontrol.director.router
 			
 			# Position
 			posVec = self.gameObj.position[:]
