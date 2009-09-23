@@ -84,7 +84,7 @@ class ROUTER:
 				if self.sendRequests:
 					gncore.gnclient.send("gsc", self.sendRequests)
 				if self.throwRequests:
-					gncore.gnclient.send("gsc", self.throwRequests)
+					gncore.gnclient.throw("gsc", self.throwRequests)
 			
 			self.reset()
 
