@@ -305,8 +305,9 @@ class SERVER:
 
 					if flag.lower() == "txt":
 						message = data
-						print "TXT: %s: %s" % (callsign, message)
-						self.textEverybody(ticket, self.gamestate.getUserName(ticket), message)
+						username = self.gamestate.getUserName(ticket)
+						print "TXT: %s: %s" % (username, message)
+						self.textEverybody(ticket, username, message)
 
 					if flag.lower() == "hi":
 						print "Got Hi!"

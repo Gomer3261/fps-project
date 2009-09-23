@@ -27,8 +27,6 @@ def connect(name="-NameError-"):
 		gnclient.requestTicket()
 		gnclient.joinGame(name)
 		info.set("online")
-		print info.mode
-		print "set to online?"
 	else:
 		terminal.output("Error: Connection to gameplay server failed.")
 		info.set("offline")
@@ -84,7 +82,7 @@ def run(con):
 			timeToSendCheck = checkTimer.do(0.5) # Every half second
 			if timeToSendCheck:
 				gnclient.throw(gnclient.ticket, "CH", 1)
-				print "CH SENT"
+				print "    CH SENT"
 			
 			
 			
@@ -141,16 +139,16 @@ def run(con):
 				
 				if flag.lower() == "fd":
 					# Full gamestate distribution
-					print "FD"
+					print "    GOT FD"
 					gamestate.applyFulldistro(data)
 				
 				if flag.lower() == "sh":
-					print "SH"
+					print "    GOT SH"
 					# Shout containing changes
 					gamestate.applyChanges(data)
 				
 				if flag.lower() == "ch":
-					print "GOT CH"
+					print "    GOT CH"
 			
 			
 			
