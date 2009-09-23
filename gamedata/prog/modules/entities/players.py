@@ -34,6 +34,8 @@ class PLAYER:
 	con = None # Controller attached to all the player object's actuators and stuff.
 	
 	mode = "" # The mode of the handler (either proxy or real)
+	
+	updateInterval = 0.1 # How often to send updates to the gamestate
 
 	alive = 1 # Set this to 0 to kill the player.
 
@@ -90,6 +92,9 @@ class PLAYER:
 		self.feet.append(con.sensors["foot3"])
 		self.feet.append(con.sensors["foot4"])
 		self.feet.append(con.sensors["foot5"])
+		
+		# A timer for knowing when to update
+		self.updateTimer = modules.timetools.TIMER()
 
 	
 		self.inputs = modules.interface.inputs
@@ -152,6 +157,7 @@ class PLAYER:
 		self.doCamera() # Deprecated
 		self.doPlayerMovement() # Running, Sprinting, Jumping, etc...
 		self.doMouseLook() # Looking around with mouse in first person...
+		self.doUpdate() # Send updates to the gamestate
 		#self.doInventory() # Managing the player's inventory (switching weapons, etc)
 		#self.doInteraction() # Using current selected inventory item, interacting with buttons, etc..
 
@@ -166,9 +172,40 @@ class PLAYER:
 		import modules
 		gamestate = modules.gamecontrol.gamestate.gamestate
 		
+		# Check to make sure the player should still be alive
 		if not gamestate.playerIsInGame(self.ticket):
 			self.alive = 0
+			
+		if self.mode == "proxy":
+			self.gameObj.position = gamestate.contents["P"][self.ticket]["A"]["P"]
+			oriVec = gamestate.contents["P"][self.ticket]["A"]["O"]
+			self.gameObj.alignAxisToVect(oriVec, 1)
 
+
+
+
+	### ========================================================================
+	### DO UPDATE
+	### ========================================================================
+	
+	def doUpdate(self):
+		if self.updateTimer.do(self.updateInterval):
+			import modules
+			router = modules.gamecontrol.router
+			
+			# Position
+			posVec = self.gameObj.position[:]
+			
+			# Orientation
+			oriVec = self.gameObj.getAxisVect((0, 1, 0))
+			
+			# Attribute dictionary
+			A = {}
+			A["P"] = posVec
+			A["O"] = oriVec
+
+			# Throw the data
+			router.throw(["upa", [self.ticket, A]])
 
 
 	### ========================================================================
@@ -631,6 +668,9 @@ class PLAYER:
 				# Kill the handle
 				import modules
 				modules.gamecontrol.localgame.players.deletePlayer(self.ticket)
+				# XXX Kill the game object here for now
+				self.gameObj.endObject()
 				self.LIFE = 0
+				
 
 		
