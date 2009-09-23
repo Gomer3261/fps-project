@@ -79,6 +79,11 @@ def connect(name="-NameError-"):
 	import modules
 	modules.networking.gncore.connect(name)
 
+def text(msg="Hi."):
+	import modules
+	modules.networking.gncore.text(msg)
+
+
 
 
 
