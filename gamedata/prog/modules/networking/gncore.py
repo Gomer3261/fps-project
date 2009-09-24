@@ -138,16 +138,17 @@ def run(con):
 				
 				if flag.lower() == "fd":
 					# Full gamestate distribution
-					print "	   GOT FD"
+					#print "	   GOT FD"
 					gamestate.applyFulldistro(data)
 				
 				if flag.lower() == "sh":
-					print "	   GOT SH"
+					#print "	   GOT SH"
 					# Shout containing changes
 					gamestate.applyChanges(data)
 				
 				if flag.lower() == "ch":
-					print "	   GOT CH"
+					pass
+					#print "	   GOT CH"
 			
 			
 			
@@ -156,7 +157,7 @@ def run(con):
 			#print "CHECKING STALE"
 			terminated = gnclient.terminateIfStale()
 			if terminated:
-				print "WENTSTALE"
+				#print "WENTSTALE"
 				terminal.output("Connection to the server went stale. You've been disconnected.")
 				info.set("offline")
 				localgame.players.killAllPlayers()
