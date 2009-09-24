@@ -1,5 +1,5 @@
 import inputs
-import notifications
+import notes
 import options
 import terminal
 

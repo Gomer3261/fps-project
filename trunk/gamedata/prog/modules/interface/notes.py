@@ -1,6 +1,53 @@
 ### Notifications ###
 INIT = 1
 
+# A note looks like (text, time)
+notes = []
+
+# When active, we are currently in the process of "notifying" the user.
+active = 0
+
+# This shows/hides the notification panel.
+show = 0
+
+# The current note text to display
+currentText = ""
+
+displayTime = 0.0
+startTime = 0.0
+currentTime = 0.0
+
+
+
+def notify(text, time=0.0):
+	global notes
+	notes.append((text, time))
+
+def run(con):
+	global notes, active, show, currentText
+	
+	if not active:
+		if notes:
+			# Get the next notice
+			note = self.notes.pop(0)
+			
+			# Set the text
+			import textwrap
+			currentText = textwrap.fill(note[0], 34)
+			
+			# Set the display time
+			displayTime = (float(len(note[0])) * 0.05) + 0.5 # Dynamic Display Time (0.05 seconds per character)
+			
+
+
+
+
+
+
+
+
+
+
 class NOTIFIER:
 
     notifications = []
