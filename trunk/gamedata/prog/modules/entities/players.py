@@ -171,9 +171,11 @@ class PLAYER:
 	def doReplication(self):
 		import modules
 		gamestate = modules.gamecontrol.gamestate.gamestate
+		localgame = modules.gamecontrol.localgame
 		
 		# Check to make sure the player should still be alive
 		if not gamestate.playerIsInGame(self.ticket):
+			localgame.players.deletePlayer(self.ticket)
 			self.alive = 0
 			
 		if self.mode == "proxy":
@@ -190,7 +192,7 @@ class PLAYER:
 	
 	def doUpdate(self):
 		if self.updateTimer.do(self.updateInterval):
-			print "DO UPDATE"
+			#print "DO UPDATE"
 			import modules
 			router = modules.gamecontrol.director.router
 			
@@ -206,7 +208,7 @@ class PLAYER:
 			A["O"] = oriVec
 
 			# Throw the data
-			print "THROWING DATA TO ROUTER"
+			#print "THROWING DATA TO ROUTER"
 			router.throw(["upa", [self.ticket, A]])
 
 

@@ -74,6 +74,7 @@ def listUserCommands():
 
 stokes = "stokes.dyndns.org"
 chase = "chase.kicks-ass.net"
+geoff = "24.108.77.237"
 
 def connect(name="-NameError-", host="stokes.dyndns.org"):
 	import modules
