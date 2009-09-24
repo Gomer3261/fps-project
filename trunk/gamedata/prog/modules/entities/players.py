@@ -30,7 +30,9 @@ class PLAYER:
 
 	import GameLogic
 
-	pcol = None # The Player Collision Box (which is the parent of all of the other game objects that go along with that
+	# DEPRECATED
+	#pcol = None # The Player Collision Box (which is the parent of all of the other game objects that go along with that
+	
 	con = None # Controller attached to all the player object's actuators and stuff.
 	
 	mode = "" # The mode of the handler (either proxy or real)
@@ -45,8 +47,8 @@ class PLAYER:
 
 	speedforce = 80.0 # Speed in force of general player movement
 	sprintmod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
-	jumpforce = 200.0 # Upward force when jump is executed.
-	slopeInfluence = 0.5 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
+	jumpforce = 250.0 # Upward force when jump is executed.
+	slopeInfluence = 0.8 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
 	noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
 
 
@@ -487,6 +489,11 @@ class PLAYER:
 		if self.isOnTheGround():
 			slopeFactor = self.getSlopeFactor(movement)
 			slopeFactor *= self.slopeInfluence
+			
+			# Maximum negative slope...
+			if slopeFactor < -0.5:
+				slopeFactor = -1.0
+				
 			newMovement = self.applySlopeFactor(movement, slopeFactor)
 			return newMovement
 		else:
