@@ -3,7 +3,7 @@
 gnclient = None
 basicUpdateTimer = None
 checkTimer = None
-expiration = 5.0
+expiration = 10.0
 
 def connect(name="-NameError-", host="stokes.dyndns.org"):
 	global gnclient, GNCLIENT
@@ -81,7 +81,6 @@ def run(con):
 			timeToSendCheck = checkTimer.do(0.5) # Every half second
 			if timeToSendCheck:
 				gnclient.throw(gnclient.ticket, "CH", 1)
-				print "	   CH SENT"
 			
 			
 			
