@@ -138,7 +138,10 @@ class PLAYER:
 	### ========================================================================
 
 	def run(self):
-		if self.alive:
+		import modules
+		gamestate = modules.gamecontrol.gamestate.gamestate
+	
+		if gamestate.playerIsInGame(self.ticket):
 			self.doReplication() # Replicating the current gamestate
 			
 			if self.mode == "proxy":
@@ -146,7 +149,7 @@ class PLAYER:
 			elif self.mode == "real":
 				self.doReal()
 			else:
-				raise ValueError("No acceptable do() found for mode: %s" % mode)
+				raise ValueError("No acceptable do() found for mode: %s" % self.mode)
 		else:
 			self.doDeath()
 			
@@ -173,11 +176,6 @@ class PLAYER:
 		gamestate = modules.gamecontrol.gamestate.gamestate
 		localgame = modules.gamecontrol.localgame
 		
-		# Check to make sure the player should still be alive
-		if not gamestate.playerIsInGame(self.ticket):
-			localgame.players.deletePlayer(self.ticket)
-			self.alive = 0
-			
 		if self.mode == "proxy":
 			self.gameObj.position = gamestate.contents["P"][self.ticket]["A"]["P"]
 			oriVec = gamestate.contents["P"][self.ticket]["A"]["O"]
@@ -664,16 +662,41 @@ class PLAYER:
 	### DO DEATH
 	### ========================================================================
 	
+	
 	def doDeath(self):
+		if self.mode == "proxy":
+			self.doProxyDeath()
+		elif self.mode == "real":
+			self.doRealDeath()
+		else:
+			raise ValueError("No acceptable doDeath() found for mode: %s" % self.mode)
+			
+
+	def doProxyDeath(self):
+		if self.LIFE:
+			# Kill the game object
+			self.gameObj.endObject()
+			
+			# Kill the handle
+			import modules
+			modules.gamecontrol.localgame.players.deletePlayer(self.ticket)
+			
+			# Set the LIFE to 0, this object is completely dead
+			self.LIFE = 0
+			
+			
+	def doRealDeath(self):
 		if self.LIFE:
 			scene = self.GameLogic.getCurrentScene()
 			if scene.active_camera != self.fpcam:
+				# Kill the game object
 				self.gameObj.endObject()
+				
 				# Kill the handle
 				import modules
 				modules.gamecontrol.localgame.players.deletePlayer(self.ticket)
-				# XXX Kill the game object here for now
-				self.gameObj.endObject()
+				
+				# Set the LIFE to 0, this object is completely dead
 				self.LIFE = 0
 				
 
