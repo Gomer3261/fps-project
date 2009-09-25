@@ -24,12 +24,15 @@ def assertPlayerIsInGame():
 	import info
 	import gamestate
 	gamestate = gamestate.gamestate
+	import modules.interface.terminal as terminal
 	
-	if not info.inGame:
-		gamestate.restart()
-		info.ticket = -1
-		gamestate.addUser(info.ticket, "Loner")
-		info.inGame = 1
+	if info.mode == "offline":
+		if not info.inGame:
+			gamestate.restart()
+			info.ticket = -1
+			gamestate.addUser(info.ticket, "Loner")
+			info.inGame = 1
+			terminal.output("Joined into online game as -1")
 		
 
 

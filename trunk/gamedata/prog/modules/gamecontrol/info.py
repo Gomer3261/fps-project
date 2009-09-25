@@ -10,3 +10,10 @@ def set(newMode="offline"):
 	mode = newMode
 	ticket = 0
 	inGame = 0
+
+def weAreTheHost():
+	global mode
+	if mode == "online":
+		return 0
+	else:
+		return 1
