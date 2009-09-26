@@ -64,6 +64,7 @@ def run(con):
 	localgame = gamecontrol.localgame
 	
 	terminal = modules.interface.terminal
+	notes = modules.interface.notes
 	
 	networking = modules.networking
 	
@@ -131,6 +132,8 @@ def run(con):
 					senderMessage = data["M"]
 					m = "%s: %s"%(senderName, senderMessage)
 					terminal.output(m)
+					if senderTicket != info.ticket:
+						notes.notify(m)
 				
 				
 				### ======------ Gamestate Operations ------====== ###
@@ -157,9 +160,11 @@ def run(con):
 			terminated = gnclient.terminateIfStale()
 			if terminated:
 				#print "WENTSTALE"
-				terminal.output("Connection to the server went stale. You've been disconnected.")
 				info.set("offline")
 				localgame.players.killAllPlayers()
+				m = "Connection to the server went stale; you've been disconnected."
+				terminal.output(m)
+				notes.notify(m)
 
 						
 					
