@@ -30,6 +30,7 @@ Important functions:
 
 openingText = openingText.replace("\r", "")
 contents = openingText.split("\n")
+oldcontents = []
 
 # Variables for handling the history
 history = []
@@ -238,6 +239,7 @@ def clear():
 def runHandler(con):
 	global contents
 	global active
+	global oldcontents
 	
 	returnKey = con.sensors["RETURN"]
 	upKey = con.sensors["UP"]
@@ -260,6 +262,7 @@ def runHandler(con):
 	A = A.replace("\n", "")
 	inTextObj["Text"] = A + "|"
 
+	
 	if A and returnKey.positive:
 		input(A)
 		inTextObj["input"] = ""
@@ -267,26 +270,30 @@ def runHandler(con):
 		
 		# Add the last input into the history
 		addToHistory(A)
+
+		
+		
 	elif upKey.positive:
 		inTextObj["input"] = getNextHistoryItem(A)
 	elif downKey.positive:
 		inTextObj["input"] = getPrevHistoryItem()
 	
-
-
-	### OUTPUT HANDLING ###
-	contents = formatLines(contents)
-	output = "\n".join(contents)
-	
-	output = output.replace("\r", "")
-	
-	outTextObj["Text"] = output
+	if oldcontents != contents:
+		### OUTPUT HANDLING ###
+		contents = formatLines(contents)
+		output = "\n".join(contents)
+		
+		output = output.replace("\r", "")
+		
+		outTextObj["Text"] = output
+		oldcontents = contents[:]
 
 
 
 def handleOpenClose(con):
 	global active
 	global termkeyLast
+	global oldcontents
 	
 	termkey = con.sensors["termkey"]
 
@@ -299,5 +306,6 @@ def handleOpenClose(con):
 			openTerminal = con.actuators["openTerminal"]
 			con.activate(openTerminal)
 			active = 1
+			oldcontents = []
 
 	termkeyLast = termkey.positive
