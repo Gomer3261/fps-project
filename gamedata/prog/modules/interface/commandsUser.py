@@ -32,15 +32,6 @@ def output(s):
 
     
 
-def fill():
-    """
-    Usage: fill()
-        Fills the terminal window with text. Good for testing terminal changes.
-    """
-    output(helpText*100)
-
-    
-
 def clear():
     """
     Usage: clear()
@@ -92,6 +83,21 @@ def text(msg="Hi."):
 	import modules
 	modules.networking.gncore.text(msg)
 
+
+
+
+
+
+
+
+
+# -----------------
+# Notification Commands
+# -----------------
+
+def notify(text="This is a notice.", time=0.0):
+	import modules.interface.notes as notes
+	notes.notify(text, time)
 
 
 

@@ -43,7 +43,13 @@ def notify(text, time=0.0):
 	notes.append((text, time))
 
 def run(con):
+	"""
+	Runs the notification object on the notes scene.
+	This function is in serious need of optimization; the same sort
+	of optimizations that Geoff did on the terminal system.
+	"""
 	global notes, active, show, currentText
+	global displayTime, startTime, currentTime
 	global noteShowTime, noteHideTime
 	import time
 	
@@ -52,11 +58,11 @@ def run(con):
 		# And there is a note read in the queue...
 		if notes:
 			# Get the next note
-			note = self.notes.pop(0) # note looks like (text, time)
+			note = notes.pop(0) # note looks like (text, time)
 			
 			# Textwrapping
 			import textwrap
-			currentText = textwrap.fill(text, 34)
+			currentText = textwrap.fill(note[0], 32)
 			
 			# Set the display time
 			if not note[1]:
@@ -87,5 +93,6 @@ def run(con):
 	# Okay, so we've got all our information for our notifier object,
 	# so now we just give it to the object so it can display it graphically :)
 	obj = con.owner
-	obj["Text"] = currentText
+	textObj = con.actuators["noteText"].owner
+	textObj["Text"] = currentText
 	obj["show"] = show
