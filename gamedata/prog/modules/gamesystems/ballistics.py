@@ -172,7 +172,7 @@ class MANAGER:
             bullet.normal = normal
 
             # Passing the bullet to the terminal simulation
-            self.toTerminalSim.append(bullet)
+            self.toTerminalSim.append(bullet) # The bullet is removed from the bullet pool by the terminal simulation
 
         else:
             # The bullet didn't hit anything, so we can safely
