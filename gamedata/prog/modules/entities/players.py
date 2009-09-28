@@ -179,9 +179,30 @@ class PLAYER:
 		localgame = modules.gamecontrol.localgame
 		
 		if self.mode == "proxy":
+			from Mathutils import Vector
+		
 			self.gameObj.position = gamestate.contents["P"][self.ticket]["A"]["P"]
-			oriVec = gamestate.contents["P"][self.ticket]["A"]["O"]
-			self.gameObj.alignAxisToVect(oriVec, 1)
+			v = gamestate.contents["P"][self.ticket]["A"]["O"]
+			v[2] = 0
+			
+			y = Vector(v[0], v[1], v[2])
+			z = Vector([0, 0, 1])
+			x = oriVec.cross(z)
+			
+			mat = [
+				[x[0], y[0], z[0]],
+				[x[1], y[1], z[1]],
+				[x[2], y[2], z[2]]
+				]
+				
+			self.gameObject.localOrientation = mat
+			
+			# A quick fix for orientation problems
+			# vec = self.gameObj.getAxisVect((0, 0, 1))
+			# if vec[2] < 0:
+				# vec[2] = -vec[2]
+				
+			# self.gameObj.alignAxisToVect(vec, 2)
 
 
 
