@@ -26,11 +26,7 @@ domains = {}
 #use FACE.contains(position) to check if the position is inside the FACE object.
 #use FACE.quickContains(position) to roughly check if the position is inside the FACE object. This function is 7x faster than contains().
 
-
-
 class FACE:
-
-
 	
 	##  #################################  ##
 	### ### --- Polygon variables --- ### ###
@@ -53,33 +49,22 @@ class FACE:
 	#I know it's gross, but it's the easiest way for me.
 	orgverts = []
 	
-	
-	
 	#Side lists. Stores the two points that make up the sides.
 	leftside = []
 	rightside = []
 	top = []
 	bottom = []
 	
-	
-	
 	#Height variables.
 	extraheight = 10
 	height = [0, 10]
 	
-	
-	
 	#Polygon type variable (3 for tri, 4 for quad)
 	sides = 4
-	
-	
-	
 	
 	##  ########################  ##
 	### ### --- __init__ --- ### ###
 	##  ########################  ##
-	
-	
 	
 	#takes vertices and height values, and calculates the polygon. This saves a lot of processing power when using contains() and quickContains()
 	def __init__(self, vertices, height=10):
@@ -89,32 +74,19 @@ class FACE:
 	
 	
 	
-
-	
-	
-	
-	
-	
-	
 	##  ##########################  ##
 	### ### --- contains() --- ### ###
 	##  ##########################  ##	
 	
-	
-	
 	#contains works by calculating intercepts from the given position to the sides of the polygon.
 	#then it compares the given position to the intercepts to figure out if the given position is within the polygon.
 	#it can cause slowdown when looping through many FACE objects.
-	
-	
 	
 	def contains(self, position):
 		
 		#calculating the top and bottom intercepts.
 		toppoint = self.calcIntercept(self.top, position, 1)
 		bottompoint = self.calcIntercept(self.bottom, position, 1)
-		
-		
 		
 		#this detects if your object is within the height range, before anything else is calculated. It's a nice calculation saver when it's false.	
 		if not inRange(position[2], [self.height[0], self.height[1]]):
@@ -156,12 +128,6 @@ class FACE:
 					return 1
 				else:
 					return 0
-					
-
-
-
-
-
 
 
 
@@ -170,13 +136,9 @@ class FACE:
 	### ### --- quickContains() --- ### ###
 	##  ###############################  ##	
 	
-	
-					
 	#this is a faster algorythm for checking if a position is within a face.
 	#It checks the bounding box rather than the actual 2D object.
 	#this function is 7x faster last time I checked.
-	
-	
 	
 	def quickContains(self, position):
 		
@@ -184,36 +146,25 @@ class FACE:
 		orgverts = self.orgverts
 		verts = self.vertices
 		
-		
-		
 		#this detects if your object is within the height range, before anything else is calculated. It's a nice calculation saver when it's false.	
 		if not inRange(position[2], [self.height[0], self.height[1]]):
 			return 0
-		
-		
 		
 		#4 sided polygon bounding box search.
 		if self.sides == 4:
 			if inRange(position[0], [verts[orgverts[0][3]][0], verts[orgverts[0][0]][0]]) and inRange(position[1] [verts[orgverts[1][3]][1], verts[orgverts[1][0]][1]]):
 				return 0
-			else
+			else:
 				return 1
-		
-		
 		
 		#3 sided polygon bounding box search.
 		else:
 			if inRange(position[0], [verts[orgverts[0][2]][0], verts[orgverts[0][0]][0]]) and inRange(position[1] [verts[orgverts[1][2]][1], verts[orgverts[1][0]][1]]):
 				return 0
-			else
+			else:
 				return 1
-				
-				
-				
-				
-				
-				
-				
+
+		
 				
 				
 	
@@ -228,8 +179,6 @@ class FACE:
 	# ----------------------- #
 	#calculating the interception point for each side (direction is weither it uses x or y co-ordinates)
 	
-	
-	
 	def calcIntercept(self, side, position, direction):
 		
 		#if the line is straight
@@ -239,21 +188,15 @@ class FACE:
 			else:
 				return [position[0], side[0][direction], position[2]]
 		
-		
-		
 		#otherwise use slope y-intercept to figure it out.
 		else:
 			slope = (side[1][1]-side[0][1])/(side[1][0]-side[0][0])
 			yint = side[0][1] + ((0 - side[0][0]) * slope)
 			
-			
-			
 			#if we are calculating for x
 			if direction == 0:
 				xpos = (position[1]-yint)/slope
 				return [xpos, position[1], position[2]]
-				
-				
 				
 			#if we are calculating for y
 			else:
@@ -267,20 +210,11 @@ class FACE:
 	# ----------------- #
 	#inRange() checks if a given value is between a list of 2 other given values.
 	
-	
-	
 	def inRange(value, range):
 		if (value >= range[0] and value <= range[1]) or (value <= range[0] and value >= range[1]):
 			return 1
 		else:
 			return 0
-			
-	
-	
-
-	
-	
-	
 	
 	
 	
@@ -288,20 +222,14 @@ class FACE:
 	### ### --- calcSides() --- ### ###
 	##  ###########################  ##
 	
-	
-	
 	#calcsSides sorts the verticies into self.orgverts
 	#Then using orgverts calcSides check for certain polygon shapes that can ruin the basic algorythm.
 	#Once that is done. calcSides find the left, right, top and bottom edges of the polygon, and saves them for later use.
 	
-	
-	
 	def calcSides(self):
-		
 		
 		verts = self.vertices
 		orgverts = [[], [], []]
-		
 		
 		#organizing verts left-right, top-bottom
 		orgverts = self.sortVerts(orgverts, 0)
@@ -310,23 +238,16 @@ class FACE:
 		
 		self.orgverts = orgverts
 		
-		
 		#4 sided polygon.
 		if len(self.vertices) == 4:
 			self.sides = 4
 			
-			
-			
 			#calculating self.height based on the highest and lowest vertices in the polygon.
 			self.height = [verts[orgverts[2][3]][2], verts[orgverts[2][0]][2] + self.extraheight]
-			
-			
 			
 			#calculating sides if the polygon is 4 sided.
 			self.top = [verts[orgverts[1][0]],verts[orgverts[1][1]]]
 			self.bottom = [verts[orgverts[1][3]],verts[orgverts[1][2]]]
-			
-			
 			
 			#this checks for a glitchy shape that used to ruin the algorythm.
 			if (orgverts[0][0] == orgverts[1][0] and orgverts[0][1] == orgverts[1][1]) or (orgverts[0][0] == orgverts[1][1] and orgverts[0][1] == orgverts[1][0]) or (orgverts[0][0] == orgverts[1][2] and orgverts[0][1] == orgverts[1][3]) or (orgverts[0][0] == orgverts[1][3] and orgverts[0][1] == orgverts[1][2]):
@@ -343,16 +264,11 @@ class FACE:
 		else:
 			self.sides = 3
 			
-			
-			
 			#calculating self.height based on the highest and lowest vertices in the polygon.
 			self.height = [verts[orgverts[2][2]][2], verts[orgverts[2][0]][2] + self.extraheight]
 			
-			
-			
 			#calculating sides if the polygon is 3 sided
 			self.rightside = [verts[orgverts[0][0]],verts[orgverts[0][1]]]
-			
 			
 			#calculating top and bottom.
 			if verts[orgverts[0][0]][1] >= verts[orgverts[0][1]][1]:
@@ -362,14 +278,11 @@ class FACE:
 				self.top = [verts[orgverts[0][1]],verts[orgverts[0][2]]]
 				self.bottom = [verts[orgverts[0][0]],verts[orgverts[0][2]]]
 			
-			
-			
 			#if top or bottom happen to be straight lines, it broke the script, this replaces the straight line with left side, and rightside becomes the replaced value.
 			if self.top[0][0] == self.top[1][0]:
 				self.leftside = self.top
 				self.top = self.rightside
 				self.rightside = []
-			
 			elif self.bottom[0][0] == self.bottom[1][0]:
 				self.leftside = self.bottom
 				self.bottom = self.rightside
@@ -378,45 +291,28 @@ class FACE:
 				
 				
 				
-				
-				
-				
-				
-				
-				
-				
 	##  ###########################################  ##
 	### ### --- calcSides private functions --- ### ###
 	##  ###########################################  ##
-	
-	
 	
 	# ----------------- #
 	# --- sortVerts --- #
 	# ----------------- #
 	#sortVerts() calculates the 2nd value of a tuple from highest to lowest, then returns a list of the first terms in that order.
-	
-	
 				
 	#sorts the given list of tuples according to the second value of each.
 	def sortVerts(self, orgverts, pos):
 		import operator
 		
-		
 		#calculating verts according to position (orgverts is the vertice order pos is weither it's based on x or y co-ordinates)
 		for i in range(len(self.vertices)):
-		orgverts[pos].append([self.vertices[i][pos], i])
-		
+			orgverts[pos].append([self.vertices[i][pos], i])
 		
 		getcount = operator.itemgetter(0)
 		orgverts[pos] = sorted(orgverts[pos], key=getcount)
 		
-		
-		
 		#sorted sorts from lowest to highest, I wanted highest to lowest, so I reverse the list.
 		orgverts[pos].reverse()
-		
-		
 		
 		#trust me this needs to happen, deal with it.
 		for i in range(len(self.vertices)):
@@ -426,29 +322,17 @@ class FACE:
 
 
 
-
-
-
-
-
-
-
-
 ######   ######################   ######
 ####     ######################     ####
 ##       ### --- DOMAIN --- ###       ##
 ###      ######################     ####
 #####    ######################   ######
 
-
-
 #this class holds a group of FACE objects and tools to search them.
 class DOMAIN():
 	
 	faces = []
-	
-	
-	
+		
 	def __init__(self, name, FACE):
 		self.name = name
 		self.FACE = FACE
@@ -458,8 +342,6 @@ class DOMAIN():
 	##  #######################  ##
 	### ### --- addMesh --- ### ###
 	##  #######################  ##
-	
-	
 	
 	#addMesh loops through all the faces in a MeshProxy, and converts them into FACE objects.
 	def addMesh(self, obj, height):
@@ -482,8 +364,6 @@ class DOMAIN():
 	### ### --- contains --- ### ###
 	##  ########################  ##
 	
-	
-	
 	#contains loops through all the FACE objects stored in faces and checks if te given position is in one of them.
 	def contains(self, position):
 		for face in self.faces:
@@ -497,8 +377,6 @@ class DOMAIN():
 	### ### --- quickContains --- ### ###
 	##  #############################  ##
 	
-	
-	
 	#quickcontains does the same thing as contains, but it uses a faster less accurate algorythm.
 	def quickContains(self, position):
 		for face in self.faces:
@@ -509,25 +387,15 @@ class DOMAIN():
 
 
 
-
-
-
-
-
-
 ######   ##########################   ######
 ####     ##########################     ####
 ##       ### --- initiate() --- ###       ##
 ###      ##########################     ####
 #####    ##########################   ######
 
-
-
 #initiate is called at the beginning of the game. It searches the current scene for domain objects and creates python based domains out of it.
 def initiate(scene):
 	objects = scene.objects
-	
-	
 	
 	#for each object in the scene
 	for obj in objects:
@@ -541,20 +409,11 @@ def initiate(scene):
 				#add the objects mesh to domains.
 				domains[obj["domain"]].addMesh(obj, obj["height"])
 			
-			
-			
 			else:
-			
 				#create a new domain for the object.
 				domain = DOMAIN(obj["domain"], FACE)
 				domain.addMesh(obj, obj["height"])
 				domains[obj["domain"]] = domain
-
-
-
-
-
-
 
 
 
@@ -565,17 +424,11 @@ def initiate(scene):
 ###      ######################     ####
 #####    ######################   ######
 
-
-
 #data can be a position (list of 3 floats) or a GameObject.
 #if domain is left blank, a list of domains containing the object will be returned.
 
-
-
 #isIn() is used to check if a position or an object is within the given domain name
 def isIn(data, domain="", quick=0):
-
-
 	
 	#checks if data is a game object
 	try:
@@ -583,8 +436,6 @@ def isIn(data, domain="", quick=0):
 			position = data.position
 	except:
 		position = data
-		
-		
 	
 	#returns 1 if the object is in the domain, else returns 0
 	if domain != "":
@@ -594,9 +445,7 @@ def isIn(data, domain="", quick=0):
 			else:
 				return domains[domain].quickContains(position)
 		else:
-			return 0
-			
-			
+			return 0	
 	
 	#returns a list of domains the object is in.
 	else:
