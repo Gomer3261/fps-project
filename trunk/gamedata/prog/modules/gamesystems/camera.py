@@ -29,7 +29,7 @@ def initLoop(con):
 def reset():
 	global scene
 	global ecam
-
+	#print "Resetting to", ecam
 	scene.active_camera = ecam
 
 
@@ -40,22 +40,20 @@ def reset():
 def run(con):
 	global scene
 	global ecam
-
+	
 	initLoop(con)
 
 	import modules
 	localgame = modules.gamecontrol.localgame
-	
-	#XXX Gave an error, changing context
 	player = localgame.players.getLocalPlayer()
-
+	
 	cam = ecam
 	# Player Camera
 	if player:
 		if player.alive:
 			cam = player.fpcam
 			player.fpcam.lens = modules.interface.options.settings["lens"]
-
+	
 	scene.active_camera = cam
 
 		

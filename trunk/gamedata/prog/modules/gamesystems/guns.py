@@ -1,38 +1,141 @@
-### #################################### ###
-### ### ------ GUN SIMULATORS ------ ### ###
-### #################################### ###
+### ################################### ###
+### ### ------ GUN SIMULATOR ------ ### ###
+### ################################### ###
 ### # The FPS Project
 INIT = 1
 
-### To test it:
-# Run this in IDLE so you can play with it in the python shell.
-# Start calling the gun's methods to play with it.
-# First, you'll want to gun.cock() it, then maybe gun.pullTrigger().
-# You can change the firing mode, etc... but burst fire is not yet supported.
+
+
+
+
 
 class GUN:
 	"""
 	A Gun object represents and simulates the action of a modern firearm.
+	Split into two main sections: GUN simulator stuff, and animation system stuff
 	"""
+	
+	###### ######################################################## ######
+	###	   ######===-----------------------------------------===###	   ###
+	##	   ###======------ GUN SIMULATOR ATTRIBUTES ------======###		##
+	###	   ######===-----------------------------------------===###	   ###
+	###### ######################################################## ######
+	
+	###======------ GUN CONSTANTS ------======###
+	isLocker = 1 # 1 if it locks the bolt back when the magazine and chamber are empty.
+	
+	###======------ GUN VARIABLES ------======###
 	chamber = None # Bullet in the chamber
 	magazine = [] # List of bullet objects
 	bolt = "forward" # Position of the bolt. Either "back" or "forward"
 	boltLock = 0 # If the bolt is locked in position
 	hammer = "forward" # Position of the hammer. "back" or "forward"
-	
-	isLocker = 1 # 1 if it locks the bolt back when the magazine and chamber are empty.
-	
 	mode = "single" # Firing mode. auto, burst, single, safety, manual.
-
 	lastTrigger = 0 # last time's trigger status was 0 (released)
-
-
+	
+	
+	###### #################################################### ######
+	###	   ######===-------------------------------------===###	   ###
+	##	   ###======------ ANIMATION ATTRIBUTES ------======###		##
+	###	   ######===-------------------------------------===###	   ###
+	###### #################################################### ######
+	
+	###======------ ANIMATION SYSTEM CONSTANTS ------======###
+	# The length of time for each operation in frames.
+	removeMagazineTime = 30
+	insertMagazineTime = 30
+	cockTime = 30
+	boltReleaseTime = 20
+	
+	reloadTime = removeMagazineTime + insertMagazineTime + cockTime
+	
+	###======------ ANIMATION SYSTEM VARIABLES ------======###
+	currentFrame = 0
+	operationQueue = []
+	currentOperation = ""
+	
+	###======------ DYNAMIC ACTION VARIABLES ------======###
+	reloadStep = 0
+	
+	
+	
+	
+	
+	
+	
+	###### ########################################################## ######
+	###	   ######===-------------------------------------------===###	 ###
+	##	   ###======------ ANIMATION SYSTEM FUNCTIONS ------======###	  ##
+	###	   ######===-------------------------------------------===###	 ###
+	###### ########################################################## ######
+	
+	##########################################################
+	###======------ ANIMATION SYSTEM INTERFACE ------======###
+	##########################################################
+	
+	def run(self, ammopile):
+		"""
+		Simulates the gun operations, while providing the animation system with the information it needs.
+		Requires an ammopile object provided by the inventory system to produce magazines from.
+		"""
+		if self.currentOperation == "reload":
+			if self.currentFrame >= self.reloadTime:
+				newMagazine = ammopile.produceMagazine()
+				self.removeMagazine()
+				self.insertMagazine()
+				self.cock()
+				self.completeOperation()
+		
+		self.currentFrame += 1
+	
+	
+		
+	def completeOperation(self):
+		self.currentFrame = 0
+		self.currentOperation = ""
+	
+	def setOperation(self, op="reload"):
+		self.currentFrame = 0
+		self.currentOperation = op
+	
+	
+	
+	################################################################
+	###======------ ANIMATION SYSTEM PRIVATE METHODS ------======###
+	################################################################
+	
+	# None right now :)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	###### ####################################################### ######
+	###	   ######===----------------------------------------===###	  ###
+	##	   ###======------ GUN SIMULATOR FUNCTIONS ------======###	   ##
+	###	   ######===----------------------------------------===###	  ###
+	###### ####################################################### ######
+	
+	
+	
+	
+	#######################################################
+	###======------ GUN SIMULATOR INTERFACE ------======###
+	#######################################################
+	
 	def pullTrigger(self):
 		"""
 		Squeezes the trigger, then releases it.
 		"""
 		self.squeezeTrigger()
 		self.releaseTrigger()
+
+
 
 	def squeezeTrigger(self):
 		"""
@@ -55,12 +158,55 @@ class GUN:
 			
 			self.lastTrigger = 1 # Trigger was pulled
 
+
+
 	def releaseTrigger(self):
 		"""
 		Releases the trigger.
 		"""
 		self.lastTrigger = 0 # Trigger was released
 	
+	
+	
+	def removeMagazine(self):
+		"""
+		Replaces the current magazine with a new one.
+		"""
+		oldMagazine = self.magazine
+		self.magazine = []
+		print "Magazine Removed"
+		return oldMagazine
+	
+	
+	def insertMagazine(self, newMag):
+		"""
+		Replaces the current magazine with a new one.
+		"""
+		self.magazine = newMag
+		print "New magazine loaded! %s rounds in magazine."%(len(self.magazine))
+	
+	
+	
+	def cock(self):
+		"""
+		Slides the bolt assembly back then forth.
+		If the gun is a locking gun and it's out of ammo, the bolt locks back
+		"""
+		self.boltBack()
+		if self.isLocker:
+			if (not self.magazine) and (not self.chamber):
+				self.boltLock = 1
+				print "The bolt locks in the back position; no loaded ammo."
+		if not self.boltLock:
+			self.boltForth()
+	
+	
+	
+	
+	
+	#############################################################
+	###======------ GUN SIMULATOR PRIVATE METHODS ------======###
+	#############################################################
 	
 	def boltRelease(self):
 		"""
@@ -113,20 +259,6 @@ class GUN:
 		print "In Magazine:", mag
 		print "Total in weapon:", cham+mag
 	
-	
-	def cock(self):
-		"""
-		Slides the bolt assembly back then forth.
-		If the gun is a locking gun and it's out of ammo, the bolt locks back
-		"""
-		self.boltBack()
-		if self.isLocker:
-			if (not self.magazine) and (not self.chamber):
-				self.boltLock = 1
-				print "The bolt locks in the back position; no loaded ammo."
-		if not self.boltLock:
-			self.boltForth()
-	
 	def boltBack(self):
 		"""
 		Slides the bolt backwards.
@@ -161,12 +293,20 @@ class GUN:
 		"""
 		print "*click*: the hammer made a clacking sound. No ready round loaded."
 
-	def replaceMagazine(self, newMag):
-		"""
-		Replaces the current magazine with a new one.
-		"""
-		self.magazine = newMag
-		print "New magazine loaded! %s rounds in magazine."%(len(self.magazine))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -178,20 +318,20 @@ class GUN:
 
 ### EVERYTHING BELOW HERE IS FOR TESTING PURPOSES ONLY!!! ###
 
-import bullets
+#import bullets
 
-def produceMagazine(n=30):
-	mag = []
-	for i in range(n):
-		mag.append(bullets.STA())
-	return mag
+#def produceMagazine(n=30):
+#	mag = []
+#	for i in range(n):
+#		mag.append(bullets.STA())
+#	return mag
 
-gun = GUN()
+#gun = GUN()
 
-def loadMag(n=30):
-	global gun
-	gun.replaceMagazine(produceMagazine(n))
+#def loadMag(n=30):
+#	global gun
+#	gun.replaceMagazine(produceMagazine(n))
 
-loadMag()
+#loadMag()
 
 

@@ -34,7 +34,7 @@ class BULLET:
 	### ================================================
 	description = "Standard Assault Round"
 	cost = 1.0 # in dollars
-	weight = (mass*3.0) / 1000.0 # In kilograms. Mass is tripled because mass is just for the bullet; not the entire cartridge.
+	weight = (mass*3.0) / 1000.0 # Of entire cartridge, in kilograms. Mass is tripled because mass is just for the bullet.
 
 	### ================================================
 	### BALLISTICS CONSTANTS

@@ -2,9 +2,6 @@
 ### ------ inventory ------ ####
 ################################
 
-# This module stores the INVENTORY class for managing items
-from modules.items.data import *
-
 class INVENTORY:
 	"""Manages the player's items"""
 	
@@ -26,11 +23,15 @@ class INVENTORY:
 	grenades = []
 	
 	# Ammo
-	ammopile = AMMOPILE()
+	ammopile = None
 	
 	def __init__(self):
+		import modules.items.data as data
+		self.data = data
 		# We need a starting belt
-		self.belt = BELT()
+		self.belt = self.data.BELT()
+		# And an ammopile
+		self.ammopile = self.data.AMMOPILE()
 	
 	def changePrimary(self, weapon):
 		self.primary = weapon
@@ -60,15 +61,4 @@ class INVENTORY:
 		else:
 			# Pass for now, but we need to raise an error
 			pass
-			
-	def addAmmo(self, bullet, number):
-		name = self.bullet.name
-		
-		if name == "PTL":
-			self.ammopile.ptl += number
-		elif name == "STA":
-			self.ammopile.sta += number
-		elif name == "DMR":
-			self.ammopile.dmr += number
-		elif name == "AMR":
-			self.ammopile.amr += number
+

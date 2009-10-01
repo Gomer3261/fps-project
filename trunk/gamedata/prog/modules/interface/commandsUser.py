@@ -58,6 +58,28 @@ def listUserCommands():
 
 
 
+# ------------------------
+# Informational Commands
+# ------------------------
+def ammo():
+	"""
+	Outputs the ammopile contents to the terminal.
+	"""
+	try:
+		import modules
+		localPlayer = modules.gamecontrol.localgame.players.getLocalPlayer()
+		ammopile = localPlayer.inventory.ammopile
+		for ammoType in ammopile.contents:
+			output("   %s: %s" % (ammoType, ammopile.contents[ammoType]))
+	except:
+		output("Error getting the requested inventory information. Maybe you're not alive?")
+		
+
+
+
+
+
+
 
 # -----------------
 # Networking Commands

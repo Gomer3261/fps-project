@@ -98,13 +98,20 @@ class PLAYER:
 		# A timer for knowing when to update
 		self.updateTimer = modules.timetools.TIMER()
 
-	
+		# Various modules.
 		self.inputs = modules.interface.inputs
 		self.terminal = modules.interface.terminal
 		self.options = modules.interface.options
 
 		self.mousetools = modules.gamesystems.mousetools
 		self.damper = modules.gamesystems.damper
+		
+		
+		# Okay, now we make an inventory for the player :)
+		import modules.items.inventory as inventoryModule
+		self.inventory = inventoryModule.INVENTORY()
+		print "Player Inventory Created."
+		print "Ammopile weighs in at %.1f kilograms." % (self.inventory.ammopile.getWeight())
 
 
 

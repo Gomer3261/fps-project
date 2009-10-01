@@ -1,0 +1,388 @@
+### ################################### ###
+### ### ------ GUN SIMULATOR ------ ### ###
+### ################################### ###
+### # The FPS Project
+INIT = 1
+
+
+# This is a concept of what the guns system could maybe be like.
+# be like. Check out the gun's run() function.
+
+# The gun code for the game has taken a simplified approach for now.
+
+
+
+
+
+
+class GUN:
+	"""
+	A Gun object represents and simulates the action of a modern firearm.
+	Split into two main sections: GUN simulator stuff, and animation system stuff
+	"""
+	
+	###### ######################################################## ######
+	###	   ######===-----------------------------------------===###	   ###
+	##	   ###======------ GUN SIMULATOR ATTRIBUTES ------======###		##
+	###	   ######===-----------------------------------------===###	   ###
+	###### ######################################################## ######
+	
+	###======------ GUN CONSTANTS ------======###
+	isLocker = 1 # 1 if it locks the bolt back when the magazine and chamber are empty.
+	
+	###======------ GUN VARIABLES ------======###
+	chamber = None # Bullet in the chamber
+	magazine = [] # List of bullet objects
+	bolt = "forward" # Position of the bolt. Either "back" or "forward"
+	boltLock = 0 # If the bolt is locked in position
+	hammer = "forward" # Position of the hammer. "back" or "forward"
+	mode = "single" # Firing mode. auto, burst, single, safety, manual.
+	lastTrigger = 0 # last time's trigger status was 0 (released)
+	
+	
+	###### #################################################### ######
+	###	   ######===-------------------------------------===###	   ###
+	##	   ###======------ ANIMATION ATTRIBUTES ------======###		##
+	###	   ######===-------------------------------------===###	   ###
+	###### #################################################### ######
+	
+	###======------ ANIMATION SYSTEM CONSTANTS ------======###
+	# The length of time for each operation in frames.
+	insertMagazineTime = 30
+	removeMagazineTime = 30
+	cockTime = 30
+	boltReleaseTime = 20
+	
+	###======------ ANIMATION SYSTEM VARIABLES ------======###
+	currentFrame = 0
+	operationQueue = []
+	currentOperation = ""
+	
+	###======------ DYNAMIC ACTION VARIABLES ------======###
+	reloadStep = 0
+	
+	
+	
+	
+	
+	
+	
+	###### ########################################################## ######
+	###	   ######===-------------------------------------------===###	 ###
+	##	   ###======------ ANIMATION SYSTEM FUNCTIONS ------======###	  ##
+	###	   ######===-------------------------------------------===###	 ###
+	###### ########################################################## ######
+	
+	##########################################################
+	###======------ ANIMATION SYSTEM INTERFACE ------======###
+	##########################################################
+	
+	def run(self, ammopile):
+		"""
+		Simulates the gun operations, while providing the animation system with the information it needs.
+		Requires an ammopile object provided by the inventory system to produce magazines from.
+		
+		What you see in this method right here won't work at all, it was just an concept of an idea of how 
+		this system could be accomplished. I will redo this later, in a much cleaner fashion, promise. But 
+		it will take quite a bit of planning...
+		"""
+		if self.currentOperation == "removeMagazine":
+			if not self.magazine:
+				self.completeOperation()
+			if self.currentFrame >= self.removeMagazineTime:
+				self.removeMagazine()
+				self.completeOperation()
+		
+		if self.currentOperation == "insertMagazine":
+			if self.magazine:
+				self.completeOperation()
+			if self.currentFrame >= self.insertMagazineTime:
+				self.insertMagazine()
+				self.completeOperation()
+		
+		if self.currentOperation == "cock":
+			if self.currentFrame >= self.cockTime:
+				self.cock()
+				self.completeOperation()
+		
+		
+		
+		if currentOperation == "reload":
+			removeMagazineTime = self.removeMagazineTime
+			insertMagazineTime = removeMagazineTime + self.insertMagazineTime
+			
+			cockTime = insertMagazineTime + self.cockTime
+			boltReleaseTime = insertMagazineTime + self.boltReleaseTime
+			
+			if self.reloadStep == 0:
+				if self.currentFrame >= removeMagazineTime:
+					self.removeMagazine()
+					self.reloadStep = 1
+			
+			if self.reloadStep == 1:
+				if self.currentFrame >= insertMagazineTime:
+					if self.currentFrame >= insertMagazineTime:
+						self.insertMagazine()
+						self.reloadStep = 2
+			
+			if self.reloadStep == 2:
+				if self.boltLock:
+					if self.currentFrame >= boltReleaseTime:
+						self.boltRelease()
+						self.reloadStep = 0
+						self.completeOperation()
+				else:
+					if self.chamber:
+						self.reloadStep = 0
+						self.completeOperation()
+					else:
+						# GUN WANTS COCK
+						if self.currentFrame >= cockTime:
+							self.cock()
+							self.reloadStep = 0
+							self.completeOperation()
+			
+			self.completeOperation()
+		
+		
+		self.currentFrame += 1
+		
+	def completeOperation(self):
+		self.currentFrame = 0
+		self.currentOperation = ""
+	
+	
+	
+	################################################################
+	###======------ ANIMATION SYSTEM PRIVATE METHODS ------======###
+	################################################################
+	
+	# None right now :)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	###### ####################################################### ######
+	###	   ######===----------------------------------------===###	  ###
+	##	   ###======------ GUN SIMULATOR FUNCTIONS ------======###	   ##
+	###	   ######===----------------------------------------===###	  ###
+	###### ####################################################### ######
+	
+	
+	
+	
+	#######################################################
+	###======------ GUN SIMULATOR INTERFACE ------======###
+	#######################################################
+	
+	def pullTrigger(self):
+		"""
+		Squeezes the trigger, then releases it.
+		"""
+		self.squeezeTrigger()
+		self.releaseTrigger()
+
+
+
+	def squeezeTrigger(self):
+		"""
+		Calling this repeatedly is the same as just pressing and holdind the trigger.
+		"""
+		if self.mode != "safety" and self.bolt == "forward":
+			
+			if self.lastTrigger == 0: # If it was Just Pressed
+				if self.hammer == "forward":
+					self.hammer = "back"
+					print "	   Hammer cocked back"
+
+			if self.mode == "single":
+				# If we're in single fire, we only release the trigger
+				# when it is just pressed
+				if self.lastTrigger == 0: # If it was Just Pressed
+					self.releaseHammer()
+			else:
+				self.releaseHammer()
+			
+			self.lastTrigger = 1 # Trigger was pulled
+
+
+
+	def releaseTrigger(self):
+		"""
+		Releases the trigger.
+		"""
+		self.lastTrigger = 0 # Trigger was released
+	
+	
+	
+	def removeMagazine(self):
+		"""
+		Replaces the current magazine with a new one.
+		"""
+		self.magazine = []
+		print "Magazine Removed"
+	
+	
+	def insertMagazine(self, newMag):
+		"""
+		Replaces the current magazine with a new one.
+		"""
+		self.magazine = newMag
+		print "New magazine loaded! %s rounds in magazine."%(len(self.magazine))
+	
+	
+	
+	def cock(self):
+		"""
+		Slides the bolt assembly back then forth.
+		If the gun is a locking gun and it's out of ammo, the bolt locks back
+		"""
+		self.boltBack()
+		if self.isLocker:
+			if (not self.magazine) and (not self.chamber):
+				self.boltLock = 1
+				print "The bolt locks in the back position; no loaded ammo."
+		if not self.boltLock:
+			self.boltForth()
+	
+	
+	
+	
+	
+	#############################################################
+	###======------ GUN SIMULATOR PRIVATE METHODS ------======###
+	#############################################################
+	
+	def boltRelease(self):
+		"""
+		Releases the bolt when it's locked.
+		"""
+		self.boltLock = 0 # Unlock the bolt
+		self.boltForth() # Slide the bolt forward
+
+
+	def releaseHammer(self):
+		"""
+		Releases the hammer to hit the firing pin.
+		"""
+		if self.hammer == "back":
+			self.hammer = "forward"
+			
+			willFire = 0
+			if self.chamber:
+				if not self.chamber.fired:
+					willFire = 1
+
+			if willFire:
+				self.fire()
+			else:
+				self.noAmmoHammerClack()
+	
+	
+	def fire(self):
+		"""
+		Ignites the round's primer, burns the propellant, and fires the bullet.
+		If the weapon is not in manual mode, the weapon is auto-cocked via gas operation.
+		"""
+		self.chamber.fired = 1
+		# FIRE THE BULLET!
+		print "*BANG!* BULLET FIRED!"
+		if self.mode != "manual":
+			print "	   Gas operated auto-cocking..."
+			self.cock()
+
+
+	def ammoCount(self):
+		"""
+		Prints out ammo information.
+		"""
+		cham = 0
+		if self.chamber:
+			cham = 1
+		mag = len(self.magazine)
+		print "In Chamber:", cham
+		print "In Magazine:", mag
+		print "Total in weapon:", cham+mag
+	
+	def boltBack(self):
+		"""
+		Slides the bolt backwards.
+		Ejects any rounds in the chamber, cocks the hammer back.
+		"""
+		if self.chamber:
+			if self.chamber.fired:
+				print "	   A case has been ejected"
+			else:
+				print "	   An unfired bullet has been ejected"
+		self.chamber = None
+		self.bolt = "back"
+		print "	   Bolt is in back position"
+		self.hammer = "back"
+		print "	   Hammer auto-cocked back"
+
+	def boltForth(self):
+		"""
+		Slides the bolt forwards.
+		Loads the next round from the magazine into the chamber.
+		"""
+		if self.magazine:
+			bullet = self.magazine.pop(0)
+			self.chamber = bullet
+			print "	   A bullet has been loaded from the magazine into the chamber."
+		self.bolt = "forward"
+		print "	   Bolt is in forward position"
+
+	def noAmmoHammerClack(self):
+		"""
+		This happens when the trigger mechanism fires without a loaded round.
+		"""
+		print "*click*: the hammer made a clacking sound. No ready round loaded."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### EVERYTHING BELOW HERE IS FOR TESTING PURPOSES ONLY!!! ###
+
+#import bullets
+
+#def produceMagazine(n=30):
+#	mag = []
+#	for i in range(n):
+#		mag.append(bullets.STA())
+#	return mag
+
+#gun = GUN()
+
+#def loadMag(n=30):
+#	global gun
+#	gun.replaceMagazine(produceMagazine(n))
+
+#loadMag()
+
+
