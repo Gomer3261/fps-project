@@ -1,0 +1,24 @@
+// This is the options file for the FPS Project. You can reset these options to default by typing "options default" in the in-game terminal.
+
+mysens: 5.0
+lens: 15.0
+filter-hdr: 1
+inverty: 0
+invertx: 0
+mxsens: 5.0
+
+=------ Settings Above / Controls Below ------=
+
+spawn: 'space-key'
+aim: 'rmb'
+use: 'lmb'
+suicide: 'del-key'
+menu: 'tab-key'
+interact: 'e-key'
+jump: 'space-key'
+reload: 'r-key'
+right: 'd-key'
+forward: 'w-key'
+sprint: 'leftshift-key'
+backward: 's-key'
+left: 'a-key'
