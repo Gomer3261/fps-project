@@ -44,7 +44,7 @@ class GRENADE(ITEM):
 
 class AMMOPILE(ITEM):
 	"""Keeps track of the number of bullets"""
-	import bullets
+	import modules.classes.bullets as bullets
 	contents = {}
 	
 	# Default ammunition values

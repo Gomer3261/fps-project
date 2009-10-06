@@ -11,7 +11,7 @@ manager = None # initiated at bottom
 
 def dependenciesAreHappy():
     import modules
-    return (modules.items.bullets and modules.timetools)
+    return (modules.classes.bullets and modules.timetools)
 
 def init(con):
     global INIT
@@ -44,7 +44,7 @@ class MANAGER:
     import modules
 
     def __init__(self, con):
-        self.bullets = self.modules.items.bullets
+        self.bullets = self.modules.classes.bullets
         self.timetools= self.modules.timetools
 
     pool = [] # Pool of bullets to be simulated.

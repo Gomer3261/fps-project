@@ -10,7 +10,7 @@ class GUN:
 	Contains a firearm object. It handles the operation of a firearm in the game, 
 	including animations and timing and such. 
 	"""
-	import firearms
+	import modules.classes.firearms as firearms
 	firearm = firearms.FIREARM()
 	
 	def run(self, player):

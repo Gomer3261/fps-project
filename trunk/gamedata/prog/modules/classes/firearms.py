@@ -26,7 +26,7 @@ class MAGAZINE:
 	contents = []
 	capacity = 30
 	
-	def __init__(self, contents=[], capacity=30)
+	def __init__(self, contents=[], capacity=30):
 		self.contents = contents
 		self.capacity = capacity
 	
