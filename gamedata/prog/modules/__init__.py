@@ -2,6 +2,7 @@ INIT = 0
 
 __all__ = []
 __all__.append("ai")
+__all__.append("classes")
 __all__.append("entities")
 __all__.append("gamecontrol")
 __all__.append("gamesystems")
@@ -12,6 +13,7 @@ __all__.append("profiling")
 __all__.append("timetools")
 
 import ai
+import classes
 import entities
 import gamecontrol
 import gamesystems
