@@ -21,7 +21,7 @@ def users():
 	gamestate = modules.gamecontrol.gamestate.gamestate
 	for ticket in gamestate.contents["U"]:
 		name = gamestate.contents["U"][ticket]["N"]
-		terminal.output( str(name) )
+		terminal.output( "%s: %s"%(str(name), ticket) )
 
 def players():
 	"""
@@ -31,7 +31,7 @@ def players():
 	gamestate = modules.gamecontrol.gamestate.gamestate
 	for ticket in gamestate.contents["P"]:
 		name = gamestate.contents["P"][ticket]["N"]
-		terminal.output( str(name) )
+		terminal.output( "%s: %s"%(str(name), ticket) )
 
 def playerDetails():
 	"""
@@ -39,16 +39,22 @@ def playerDetails():
 	"""
 	terminal = modules.interface.terminal
 	gamestate = modules.gamecontrol.gamestate.gamestate
+	localgame = modules.gamecontrol.localgame
 	
 	#terminal.output( "\n\n" )
 	
 	for ticket in gamestate.contents["P"]:
 		player = gamestate.contents["P"][ticket]
 		name = player["N"]
-		terminal.output( str(name) )
+		terminal.output( "%s, %s, %s"%(str(name), ticket, localgame.players.getPlayer(ticket).mode) )
 		
-		for attrName in player["A"]:
-			terminal.output( "  - %s: %s"%(attrName, str(player["A"][attrName])))
+		for infopack in player:
+			if hasattr(player[infopack], "keys"):
+				terminal.output("   %s:"%(infopack))
+				for attrName in player[infopack]:
+					terminal.output( "      - %s: %s"%(attrName, str(player[infopack][attrName])))
+			else:
+				terminal.output("   %s: %s"%(infopack, player[infopack]))
 
 def info():
 	"""

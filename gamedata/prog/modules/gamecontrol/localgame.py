@@ -83,8 +83,11 @@ class PLAYERS:
 			for ticket in self.storage:
 				player = self.storage[ticket]
 				player.run()
+				#print "Running: %s"%(ticket)
 		except:
 			# Dictionary changed size during iteration...
+			import traceback
+			traceback.print_exc()
 			pass
 	
 	def replicate(self, gamestate, con):
