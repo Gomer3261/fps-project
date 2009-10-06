@@ -189,7 +189,10 @@ class PLAYER:
 		
 			self.gameObject.position = gamestate.contents["P"][self.ticket]["A"]["P"]
 			v = gamestate.contents["P"][self.ticket]["A"]["O"]
-			v[2] = 0
+			try:
+				v[2] = 0
+			except:
+				pass
 			
 			y = Vector(v[0], v[1], v[2])
 			z = Vector([0, 0, 1])
