@@ -56,9 +56,9 @@ class PLAYER:
 		self.mode = mode
 		self.ticket = ticket
 		
-		if mode == "proxy":
+		if self.mode == "proxy":
 			self.proxyInit(spawnObj)
-		elif mode == "real":
+		elif self.mode == "real":
 			self.realInit(spawnObj)
 		else:
 			raise ValueError("No acceptable init found for mode: %s" % mode)
@@ -70,7 +70,7 @@ class PLAYER:
 		self.spawnObj = spawnObj
 		
 		# Spawning the player proxy object
-		self.gameObj = self.spawnGameObj("playerProxy")
+		self.gameObject = self.spawnGameObject("playerProxy")
 	
 	def realInit(self, spawnObj):
 		import modules
@@ -78,9 +78,9 @@ class PLAYER:
 		self.spawnObj = spawnObj
 
 		# Spawning the player object
-		self.gameObj = self.spawnGameObj("playerReal")
+		self.gameObject = self.spawnGameObject("playerReal")
 		
-		con = self.gameObj.controllers[0]
+		con = self.gameObject.controllers[0]
 
 		# Getting some related objects
 		self.YPivot = con.actuators["YPivot"].owner
@@ -124,7 +124,7 @@ class PLAYER:
 	### SPAWN PLAYER OBJECT
 	### ========================================================================
 	
-	def spawnGameObj(self, name="playerobject"):
+	def spawnGameObject(self, name="playerobject"):
 		scene = self.GameLogic.getCurrentScene()
 		obj = scene.addObject(name, self.spawnObj)
 		obj.position = [0.0, 0.0, 10.0]
@@ -151,8 +151,6 @@ class PLAYER:
 		gamestate = modules.gamecontrol.gamestate.gamestate
 	
 		if gamestate.playerIsInGame(self.ticket):
-			self.doReplication() # Replicating the current gamestate
-			
 			if self.mode == "proxy":
 				self.doProxy()
 			elif self.mode == "real":
@@ -163,10 +161,11 @@ class PLAYER:
 			self.doDeath()
 			
 	def doProxy(self):
-		pass #self.doReplication() # Replicating the current gamestate
+		self.doReplication() # Replicating the current gamestate
 
 	def doReal(self):
-		self.doCamera() # Deprecated
+		self.doReplication()
+		#self.doCamera() # Deprecated
 		self.doPlayerMovement() # Running, Sprinting, Jumping, etc...
 		self.doMouseLook() # Looking around with mouse in first person...
 		self.doUpdate() # Send updates to the gamestate
@@ -188,13 +187,13 @@ class PLAYER:
 		if self.mode == "proxy":
 			from Mathutils import Vector
 		
-			self.gameObj.position = gamestate.contents["P"][self.ticket]["A"]["P"]
+			self.gameObject.position = gamestate.contents["P"][self.ticket]["A"]["P"]
 			v = gamestate.contents["P"][self.ticket]["A"]["O"]
 			v[2] = 0
 			
 			y = Vector(v[0], v[1], v[2])
 			z = Vector([0, 0, 1])
-			x = oriVec.cross(z)
+			x = y.cross(z)
 			
 			mat = [
 				[x[0], y[0], z[0]],
@@ -205,11 +204,11 @@ class PLAYER:
 			self.gameObject.localOrientation = mat
 			
 			# A quick fix for orientation problems
-			# vec = self.gameObj.getAxisVect((0, 0, 1))
+			# vec = self.gameObject.getAxisVect((0, 0, 1))
 			# if vec[2] < 0:
 				# vec[2] = -vec[2]
 				
-			# self.gameObj.alignAxisToVect(vec, 2)
+			# self.gameObject.alignAxisToVect(vec, 2)
 
 
 
@@ -220,15 +219,14 @@ class PLAYER:
 	
 	def doUpdate(self):
 		if self.updateTimer.do(self.updateInterval):
-			#print "DO UPDATE"
 			import modules
 			router = modules.gamecontrol.director.router
 			
 			# Position
-			posVec = self.gameObj.position[:]
+			posVec = self.gameObject.position[:]
 			
 			# Orientation
-			oriVec = self.gameObj.getAxisVect((0, 1, 0))
+			oriVec = self.gameObject.getAxisVect((0, 1, 0))
 			
 			# Attribute dictionary
 			A = {}
@@ -277,7 +275,7 @@ class PLAYER:
 
 		# Applying the movement
 		if not self.terminal.active:
-			self.gameObj.applyForce(movement, 1)
+			self.gameObject.applyForce(movement, 1)
 
 		self.doDamping()
 
@@ -343,7 +341,7 @@ class PLAYER:
 		import Mathutils
 
 		# Getting the Orientation
-		ori = self.gameObj.orientation[:]
+		ori = self.gameObject.orientation[:]
 		l1 = ori[0]
 		l2 = ori[1]
 		l3 = ori[2]
@@ -370,7 +368,7 @@ class PLAYER:
 		import Mathutils
 
 		# Getting the Orientation
-		ori = self.gameObj.orientation[:]
+		ori = self.gameObject.orientation[:]
 		l1 = ori[0]
 		l2 = ori[1]
 		l3 = ori[2]
@@ -423,7 +421,7 @@ class PLAYER:
 			damp = 25.0
 		else:
 			damp = 0.5
-		self.damper.dampXY(self.gameObj, damp)
+		self.damper.dampXY(self.gameObject, damp)
 		
 
 
@@ -587,7 +585,7 @@ class PLAYER:
 		# For an FPS, set the player collision box to Xpivot,
 		# and set up an empty as the Y pivot.
 		Ypivot = self.YPivot
-		Xpivot = self.gameObj
+		Xpivot = self.gameObject
 
 
 
@@ -710,7 +708,7 @@ class PLAYER:
 	def doProxyDeath(self):
 		if self.LIFE:
 			# Kill the game object
-			self.gameObj.endObject()
+			self.gameObject.endObject()
 			
 			# Kill the handle
 			import modules
@@ -725,7 +723,7 @@ class PLAYER:
 			scene = self.GameLogic.getCurrentScene()
 			if scene.active_camera != self.fpcam:
 				# Kill the game object
-				self.gameObj.endObject()
+				self.gameObject.endObject()
 				
 				# Kill the handle
 				import modules
