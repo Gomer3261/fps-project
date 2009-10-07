@@ -1,1 +1,0 @@
-Environments categorize levels so that they can share assets for maximum resource reusability.
