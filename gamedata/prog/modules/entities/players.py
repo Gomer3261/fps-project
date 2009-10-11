@@ -47,6 +47,7 @@ class PLAYER:
 
 	speedforce = 80.0 # Speed in force of general player movement
 	sprintmod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
+	crouchmod = 0.5 # Speed multiplier when crouching (sprint effects crouching speed as well)
 	jumpforce = 250.0 # Upward force when jump is executed.
 	slopeInfluence = 0.8 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
 	noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
@@ -164,8 +165,8 @@ class PLAYER:
 		self.doReplication() # Replicating the current gamestate
 
 	def doReal(self):
-		self.doReplication()
-		#self.doCamera() # Deprecated
+		self.doReplication() # Nothing for doReal yet.
+		self.doPlayerStance() # Checking and applying different player stances.
 		self.doPlayerMovement() # Running, Sprinting, Jumping, etc...
 		self.doMouseLook() # Looking around with mouse in first person...
 		self.doUpdate() # Send updates to the gamestate
@@ -205,13 +206,7 @@ class PLAYER:
 				]
 				
 			self.gameObject.localOrientation = mat
-			
-			# A quick fix for orientation problems
-			# vec = self.gameObject.getAxisVect((0, 0, 1))
-			# if vec[2] < 0:
-				# vec[2] = -vec[2]
-				
-			# self.gameObject.alignAxisToVect(vec, 2)
+
 
 
 
@@ -241,26 +236,69 @@ class PLAYER:
 			router.throw(["upa", [self.ticket, A]])
 
 
+
+
+
+
+
+
+
 	### ========================================================================
-	### DO CAMERA (Deprecated)s
+	### DO PLAYER STANCE
 	### ========================================================================
+
+	def doPlayerStance(self):
 	
-	def doCamera(self):
-		# Deprecated
-		pass
-		# Just sets the camera
-##        if self.LIFE:
-##            scene = self.GameLogic.getCurrentScene()
-##            if scene.active_camera != self.fpcam:
-##                scene.active_camera = self.fpcam
-
-
-
-
-
-
-
-
+		oldstance = self.stance
+	
+		self.getStance()
+		
+		#if stance changed
+		if oldstance != self.stance:
+		
+			#apply stance
+			if self.stance == 1:
+				self.crouch()
+			else:
+				self.stand()
+	
+	
+				
+	def getStance(self):
+		crouch = self.inputs.controller.getStatus("crouch")
+		crouchType = self.options.settings["crouch"]
+		
+		if crouchType == "Hold" and crouch:
+			self.stance = 1
+		
+		elif crouchType == "Toggle":
+			if crouch == 1:
+				if self.stance != 1:
+					self.stance = 1
+				else:
+					self.stance = 0
+					
+		else:
+			self.stance = 0
+						
+						
+	def crouch(self):
+		import modules
+		modules.interface.terminal.output("crouching")
+		
+		self.gameObject.localScale = [1.0, 1.0, 0.6]
+		
+		
+		
+	def stand(self):
+		import modules
+		modules.interface.terminal.output("standing")
+		
+		self.gameObject.localScale = [1.0, 1.0, 1.0]
+		
+		
+	
+	
 	### ========================================================================
 	### DO PLAYER MOVEMENT
 	### ========================================================================
@@ -270,9 +308,12 @@ class PLAYER:
 		Does player movement.
 		"""
 		
+		
+		
 		movement = self.getDesiredMovement()
 		
 		movement = self.applySprint(movement)
+		movement = self.applyStance(movement)
 		movement = self.doSlopeDamping(movement)
 		movement = self.degradeMovementWhenNotOnTheGround(movement)
 
@@ -282,6 +323,7 @@ class PLAYER:
 
 		self.doDamping()
 
+	
 	
 
 	def getDesiredMovement(self):
@@ -301,10 +343,10 @@ class PLAYER:
 		# Input Status
 		con = self.con
 		
-		forward = self.inputs.controller.getStatus("forward")
-		backward = self.inputs.controller.getStatus("backward")
-		left = self.inputs.controller.getStatus("left")
-		right = self.inputs.controller.getStatus("right")
+		forward = self.inputs.controller.isPositive("forward")
+		backward = self.inputs.controller.isPositive("backward")
+		left = self.inputs.controller.isPositive("left")
+		right = self.inputs.controller.isPositive("right")
 		
 		jump = self.inputs.controller.getStatus("jump")
 
@@ -402,7 +444,20 @@ class PLAYER:
 				newMovement[i] = movement[i] * self.sprintmod
 		#newMovement[2] = movement[2] # Leaves Z axis movement unchanged (jumping)
 		return newMovement
-
+		
+		
+		
+	def applyStance(self, movement):
+		newMovement = movement[:]
+		
+		#apply crouch
+		if self.stance == 1:
+			for i in range(2):
+				newMovement[i] = movement[i] * self.crouchmod
+		
+		return newMovement
+		
+	
 
 	def degradeMovementWhenNotOnTheGround(self, movement):
 		if self.isOnTheGround():
