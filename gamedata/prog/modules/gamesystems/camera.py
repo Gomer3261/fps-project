@@ -46,6 +46,7 @@ def run(con):
 	import modules
 	localgame = modules.gamecontrol.localgame
 	player = localgame.players.getLocalPlayer()
+	explorer = localgame.explorers.explorer
 	
 	cam = ecam
 	# Player Camera
@@ -53,6 +54,14 @@ def run(con):
 		if player.alive:
 			cam = player.fpcam
 			player.fpcam.lens = modules.interface.options.settings["lens"]
+		elif explorer:
+			if explorer.alive:
+				cam = explorer.fpcam
+				explorer.fpcam.lens = modules.interface.options.settings["lens"]
+	elif explorer:
+		if explorer.alive:
+			cam = explorer.fpcam
+			explorer.fpcam.lens = modules.interface.options.settings["lens"]
 	
 	scene.active_camera = cam
 

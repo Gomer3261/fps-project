@@ -10,9 +10,12 @@ def run(con):
 	import modules
 	gamestate = modules.gamecontrol.gamestate.gamestate
 	global players
+	global explorers
 	
 	players.replicate(gamestate, con)
+	explorers.replicate(con)
 	players.run()
+	explorers.run()
 
 
 class PLAYERS:
@@ -121,5 +124,58 @@ class PLAYERS:
 					mode = "proxy"
 				# Now we actually spawn the player.
 				self.spawnPlayer(ticket, spawnObj, mode)
+				
+				
+				
+				
+				
+				
+				
+				
+class EXPLORERS:
+	"""
+	Stores the explorer object.
+	"""
+	
+	explorer = None
+	
+	spawnRequest = 0
+	
+	def spawnExplorer(self, spawnObj):
+		"""
+		Creates an explorer handler and saves it.
+		"""
+		
+		import modules
+		explorer = modules.entities.explorer
+		handler = explorer.EXPLORER(spawnObj)
+		self.explorer = handler
+		
+		terminal = modules.interface.terminal
+		terminal.output("Explorer Spawned.")
+
+	
+	def run(self):
+		try: 
+			
+			if self.explorer:
+				self.explorer.run()
+
+		
+		except:
+			# Dictionary changed size during iteration...
+			import traceback
+			traceback.print_exc()
+			pass
+			
+	def replicate(self, con):
+		spawnObj = con.owner
+		if self.spawnRequest and not self.explorer:
+			self.spawnExplorer(spawnObj)
+			self.spawnRequest = 0
+			
+
+	
 
 players = PLAYERS()
+explorers = EXPLORERS()
