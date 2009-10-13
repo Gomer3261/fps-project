@@ -95,12 +95,11 @@ class EXPLORER:
 
 	def run(self):
 		import modules
-		info = modules.gamecontrol.info
-		gamestate = modules.gamecontrol.gamestate.gamestate
+		#info = modules.gamecontrol.info
+		#gamestate = modules.gamecontrol.gamestate.gamestate
 	
-		if not gamestate.playerIsInGame(info.ticket):
+		if self.alive:
 			self.do()
-
 		else:
 			self.doDeath()
 
@@ -120,17 +119,15 @@ class EXPLORER:
 		"""
 		Does player movement.
 		"""
-		
-		
-		
 		movement = self.getDesiredMovement()
-		
 		movement = self.applySprint(movement)
 
 		# Applying the movement
 		if not self.terminal.active:
-			self.gameObject.applyMovement([movement[0], movement[1], 0], 1)
-			#self.gameObject.applyMovement([0, 0, movement[2]], 0)
+			# Local XY Movement
+			self.gameObject.applyMovement([movement[0], movement[1], 0.0], 1)
+			# Global Z (Rise/Sink) Movement.
+			self.gameObject.applyMovement([0.0, 0.0, movement[2]], 0)
 
 	
 	
@@ -140,14 +137,10 @@ class EXPLORER:
 		Gets the explorer's desired movement (based on inputs)
 		in local coords
 		"""
-
-		
 		# Initial Movement Values (in local coords)
 		X = 0.0
 		Y = 0.0
 		Z = 0.0
-
-
 
 		# Input Status
 		con = self.con
@@ -156,9 +149,6 @@ class EXPLORER:
 		backward = self.inputs.controller.isPositive("backward")
 		left = self.inputs.controller.isPositive("left")
 		right = self.inputs.controller.isPositive("right")
-		up = self.inputs.controller.isPositive("jump")
-		down = self.inputs.controller.isPositive("crouch")
-
 
 		# Figuring out desired movement
 		if forward:
@@ -170,19 +160,34 @@ class EXPLORER:
 			X -= self.speed
 		if right:
 			X += self.speed
-			
-		if up:
-			Z -= self.speed
-		if down:
-			Z += self.speed
 
 		if X and Y:
 			X *= 0.7071
 			Y *= 0.7071
+		
+		Z = self.getDesiredRiseOrSink()
 
 		return [X, Y, Z]
+	
+	
+	def getDesiredRiseOrSink(self):
+		"""
+		Gets the explorer's desired movement for sinking and rising (in global coords)
+		"""
+		# Initial Movement Values (in local coords)
+		Z = 0.0
+		
+		# Input Status
+		con = self.con
+		up = self.inputs.controller.isPositive("rise")
+		down = self.inputs.controller.isPositive("sink")
 
+		if up:
+			Z += self.speed
+		if down:
+			Z -= self.speed
 
+		return Z
 
 
 	def applySprint(self, movement):
@@ -196,8 +201,6 @@ class EXPLORER:
 				newMovement[i] *= self.sprintmod
 
 		return newMovement
-
-		return avgnormal
 		
 		
 
@@ -380,10 +383,6 @@ class EXPLORER:
 				# Kill the handle
 				import modules
 				modules.gamecontrol.localgame.explorers.explorer = None
-				print "Killed Explorer"
 				
 				# Set the LIFE to 0, this object is completely dead
 				self.LIFE = 0
-				
-
-		

@@ -200,23 +200,3 @@ def loadOptions():
 	options = modules.interface.options
 	r = options.load()
 	output("Success value: %s"%(r))
-
-
-
-
-
-
-
-
-# -----------------
-# Option Commands
-# -----------------
-
-def spawnExplorer():
-	"""
-	Usage: spawnExplorer()
-		Creates a floating camera object to explore the map and take screenshots.
-	"""
-	import modules
-	localgame = modules.gamecontrol.localgame
-	localgame.explorers.spawnRequest = 1
