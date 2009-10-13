@@ -49,7 +49,9 @@ class PLAYERS:
 	
 	def killAllPlayers(self):
 		"""
+		===DEPRECATED===
 		Kills and delete all players
+		( The new way to do it is to remove them from the gamestate instead)
 		"""
 		for ticket in self.storage:
 			player = self.storage[ticket]
@@ -89,8 +91,8 @@ class PLAYERS:
 				#print "Running: %s"%(ticket)
 		except:
 			# Dictionary changed size during iteration...
-			import traceback
-			traceback.print_exc()
+			#import traceback
+			#traceback.print_exc()
 			pass
 	
 	def replicate(self, gamestate, con):
@@ -151,8 +153,8 @@ class EXPLORERS:
 		handler = explorer.EXPLORER(spawnObj)
 		self.explorer = handler
 		
-		terminal = modules.interface.terminal
-		terminal.output("Explorer Spawned.")
+		#terminal = modules.interface.terminal
+		#terminal.output("Explorer Spawned.")
 
 	
 	def run(self):
@@ -167,12 +169,21 @@ class EXPLORERS:
 			import traceback
 			traceback.print_exc()
 			pass
-			
+	
 	def replicate(self, con):
-		spawnObj = con.owner
-		if self.spawnRequest and not self.explorer:
-			self.spawnExplorer(spawnObj)
-			self.spawnRequest = 0
+		"""
+		This method should not exist.
+		"Replication" is the process of modifying the local game world to 
+		represent that which is described by the gamestate.
+		
+		What is seen here, is the action of spawning explorer objects, 
+		which has nothing to do with replication.
+		"""
+		#spawnObj = con.owner
+		#if self.spawnRequest and not self.explorer:
+		#	self.spawnExplorer(spawnObj)
+		#	self.spawnRequest = 0
+		pass
 			
 
 	

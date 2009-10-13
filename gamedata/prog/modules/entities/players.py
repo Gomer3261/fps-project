@@ -111,8 +111,8 @@ class PLAYER:
 		# Okay, now we make an inventory for the player :)
 		import modules.items.inventory as inventoryModule
 		self.inventory = inventoryModule.INVENTORY()
-		print "Player Inventory Created."
-		print "Ammopile weighs in at %.1f kilograms." % (self.inventory.ammopile.getWeight())
+		#print "Player Inventory Created."
+		#print "Ammopile weighs in at %.1f kilograms." % (self.inventory.ammopile.getWeight())
 
 
 

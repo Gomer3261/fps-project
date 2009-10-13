@@ -32,7 +32,7 @@ def assertPlayerIsInGame():
 			info.ticket = -1
 			gamestate.addUser(info.ticket, "Loner")
 			info.inGame = 1
-			terminal.output("Joined into online game as -1")
+			terminal.output("Joined into offline game as -1")
 		
 
 

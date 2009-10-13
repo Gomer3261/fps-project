@@ -75,6 +75,9 @@ def saveDefaults():
 		controls["jump"] = "space-key"
 		controls["sprint"] = "leftshift-key"
 		controls["crouch"] = "leftctrl-key"
+		
+		controls["rise"] = "e-key"
+		controls["sink"] = "q-key"
 	
 		controls["use"] = "lmb"
 		controls["aim"] = "rmb"
