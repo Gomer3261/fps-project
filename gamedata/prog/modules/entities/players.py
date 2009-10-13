@@ -150,8 +150,10 @@ class PLAYER:
 	def run(self):
 		import modules
 		gamestate = modules.gamecontrol.gamestate.gamestate
-	
+		
+		### MANAGES THE PLAYER ###
 		if gamestate.playerIsInGame(self.ticket):
+			# When they're in gamestate, call the do method
 			if self.mode == "proxy":
 				self.doProxy()
 			elif self.mode == "real":
@@ -159,6 +161,7 @@ class PLAYER:
 			else:
 				raise ValueError("No acceptable do() found for mode: %s" % self.mode)
 		else:
+			# When they are NOT in the gamestate, doDeath().
 			self.doDeath()
 			
 	def doProxy(self):
@@ -187,8 +190,11 @@ class PLAYER:
 		
 		if self.mode == "proxy":
 			from Mathutils import Vector
-		
+			
+			### REPLICATING POSITION ###
 			self.gameObject.position = gamestate.contents["P"][self.ticket]["A"]["P"]
+			
+			### REPLICATING ORIENTATION ###
 			v = gamestate.contents["P"][self.ticket]["A"]["O"]
 			try:
 				v[2] = 0
@@ -284,7 +290,7 @@ class PLAYER:
 						
 	def crouch(self):
 		import modules
-		modules.interface.terminal.output("crouching")
+		#modules.interface.terminal.output("crouching")
 		
 		self.gameObject.localScale = [1.0, 1.0, 0.6]
 		
@@ -292,11 +298,14 @@ class PLAYER:
 		
 	def stand(self):
 		import modules
-		modules.interface.terminal.output("standing")
+		#modules.interface.terminal.output("standing")
 		
 		self.gameObject.localScale = [1.0, 1.0, 1.0]
 		
 		
+	
+	
+	
 	
 	
 	### ========================================================================
