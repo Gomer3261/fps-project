@@ -42,6 +42,8 @@ class PLAYER:
 	alive = 1 # Set this to 0 to kill the player.
 
 	stance = 0 # 0=stand, 1=crouch, 2=prone
+	crouchframe = 0
+	
 	HP = 100 # Health.
 	stamina = 100 # Used for sprint bar and character fatigue effects
 
@@ -255,22 +257,17 @@ class PLAYER:
 
 	def doPlayerStance(self):
 	
-		oldstance = self.stance
-	
-		self.getStance()
+		self.findStance()
 		
-		#if stance changed
-		if oldstance != self.stance:
-		
-			#apply stance
-			if self.stance == 1:
-				self.crouch()
-			else:
-				self.stand()
+		#apply stance
+		if self.stance == 1:
+			self.crouch()
+		else:
+			self.stand()
 	
 	
 				
-	def getStance(self):
+	def findStance(self):
 		crouch = self.inputs.controller.getStatus("crouch")
 		crouchType = self.options.settings["crouch"]
 		
@@ -291,16 +288,26 @@ class PLAYER:
 	def crouch(self):
 		import modules
 		#modules.interface.terminal.output("crouching")
+		crouchamount = 0.0
 		
-		self.gameObject.localScale = [1.0, 1.0, 0.6]
+		if self.crouchframe < 10:
+			self.crouchframe += 1
+			crouchamount = self.crouchframe * 0.04
+		
+			self.gameObject.localScale = [1.0, 1.0, (1.0 - crouchamount)]
 		
 		
 		
 	def stand(self):
 		import modules
 		#modules.interface.terminal.output("standing")
+		crouchamount = 0.0
 		
-		self.gameObject.localScale = [1.0, 1.0, 1.0]
+		if self.crouchframe > 0:
+			self.crouchframe -= 1.0
+			crouchamount = self.crouchframe * 0.04
+		
+			self.gameObject.localScale = [1.0, 1.0, (1.0 - crouchamount)]
 		
 		
 	
