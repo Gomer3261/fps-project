@@ -140,7 +140,7 @@ class CONTROLLER:
                     if self.lastpositive:
                         status = 3 # just released
                     else:
-                        status = 0
+                        status = 0 # nothing
 
                 self.lastpositive = positive
                 return status

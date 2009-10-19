@@ -62,7 +62,7 @@ def saveDefaults():
 		settings["invertx"] = 0
 		settings["filter-hdr"] = 1
 		settings["lens"] = 15.0
-		settings["crouch"] = "Hold"
+		settings["crouch"] = "Hold" # should be changed to lowercase
 		
 		# CONTROLS
 		controls["spawn"] = "space-key"
@@ -72,6 +72,7 @@ def saveDefaults():
 		controls["backward"] = "s-key"
 		controls["left"] = "a-key"
 		controls["right"] = "d-key"
+		
 		controls["jump"] = "space-key"
 		controls["sprint"] = "leftshift-key"
 		controls["crouch"] = "leftctrl-key"
@@ -82,6 +83,8 @@ def saveDefaults():
 		controls["use"] = "lmb"
 		controls["aim"] = "rmb"
 		controls["reload"] = "r-key"
+		controls["cock"] = "t-key"
+		controls["boltrelease"] = "f-key"
 	
 		controls["interact"] = "e-key"
 		

@@ -112,7 +112,7 @@ class PLAYER:
 		
 		# Okay, now we make an inventory for the player :)
 		import modules.items.inventory as inventoryModule
-		self.inventory = inventoryModule.INVENTORY()
+		self.inventory = inventoryModule.INVENTORY(self)
 		#print "Player Inventory Created."
 		#print "Ammopile weighs in at %.1f kilograms." % (self.inventory.ammopile.getWeight())
 
@@ -175,7 +175,8 @@ class PLAYER:
 		self.doPlayerMovement() # Running, Sprinting, Jumping, etc...
 		self.doMouseLook() # Looking around with mouse in first person...
 		self.doUpdate() # Send updates to the gamestate
-		#self.doInventory() # Managing the player's inventory (switching weapons, etc)
+		
+		self.doInventory() # Managing the player's inventory (switching weapons, etc)
 		#self.doInteraction() # Using current selected inventory item, interacting with buttons, etc..
 
 
@@ -242,7 +243,21 @@ class PLAYER:
 			# Throw the data
 			#print "THROWING DATA TO ROUTER"
 			router.throw(["upa", [self.ticket, A]])
-
+	
+	
+	
+	
+	
+	
+	
+	### ========================================================================
+	### DO INVENTORY
+	### ========================================================================
+	
+	def doInventory(self):
+		# Just calling the active item's run method..
+		active = self.inventory.getActiveItem()
+		active.run(self)
 
 
 

@@ -24,7 +24,7 @@ Important functions:
    /disconnect() # disconnects you from the gameplay server.
    /users() # outputs a list of users in the game.
    /players() # outputs a list of players currently alive.
-   /playerDetails() # outputs player gamestate attribtes for each living player.
+   /playerDetails() # outputs player gamestate attributes for each living player.
    /info() # gives you game information.
 """
 
