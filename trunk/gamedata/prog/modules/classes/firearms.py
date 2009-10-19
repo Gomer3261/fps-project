@@ -62,6 +62,10 @@ class FIREARM:
 	
 	###======------ FIREARM CONSTANTS ------======###
 	isLocker = 1 # 1 if it locks the bolt back when the magazine and chamber are empty.
+	bulletType = "STA"
+	fireRate = 12.0 # In Rounds Per Second
+	actionTime = 1.0 / fireRate # The length of time of the weapon's automatic action.
+	debug = 1
 	
 	###======------ FIREARM VARIABLES ------======###
 	chamber = None # Bullet in the chamber
@@ -69,9 +73,14 @@ class FIREARM:
 	bolt = "forward" # Position of the bolt. Either "back" or "forward"
 	boltLock = 0 # If the bolt is locked in position
 	hammer = "forward" # Position of the hammer. "back" or "forward"
-	mode = "single" # Firing mode. auto, burst, single, safety, manual.
+	mode = "auto" # Firing mode. auto, burst, single, safety, manual.
 	lastTrigger = 0 # last time's trigger status was 0 (released)
 	
+	
+	
+	def __init__(self):
+		import modules.interface.terminal as terminal
+		self.terminal = terminal
 	
 
 ###### ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -89,7 +98,7 @@ class FIREARM:
 			if self.lastTrigger == 0: # If it was Just Pressed
 				if self.hammer == "forward":
 					self.hammer = "back"
-					print "	   Hammer cocked back"
+					if self.debug: self.terminal.output("	   Hammer cocked back")
 
 			if self.mode == "single":
 				# If we're in single fire, we only release the trigger
@@ -126,7 +135,7 @@ class FIREARM:
 		"""
 		oldMagazine = self.magazine
 		self.magazine = None
-		print "Magazine Removed"
+		if self.debug: self.terminal.output("Magazine Removed")
 		return oldMagazine
 	
 	
@@ -135,7 +144,7 @@ class FIREARM:
 		Replaces the current magazine with a new one.
 		"""
 		self.magazine = newMag
-		print "New magazine loaded! %s rounds in magazine."%(len(self.magazine))
+		if self.debug: self.terminal.output("New magazine loaded! %s rounds in magazine."%(len(self.magazine)))
 	
 	
 	
@@ -148,7 +157,7 @@ class FIREARM:
 		if self.isLocker:
 			if (not self.magazine) and (not self.chamber):
 				self.boltLock = 1
-				print "The bolt locks in the back position; no loaded ammo."
+				if self.debug: self.terminal.output("The bolt locks in the back position; no loaded ammo.")
 		if not self.boltLock:
 			self.boltForth()
 	
@@ -156,8 +165,11 @@ class FIREARM:
 		"""
 		Releases the bolt when it's locked.
 		"""
-		self.boltLock = 0 # Unlock the bolt
-		self.boltForth() # Slide the bolt forward
+		if self.boltLock and self.bolt == "back":
+			self.boltLock = 0 # Unlock the bolt
+			self.boltForth() # Slide the bolt forward
+		else:
+			self.terminal.output("Cannot release bolt; it's already unlocked and in the forward position.")
 	
 	
 	
@@ -194,9 +206,9 @@ class FIREARM:
 		"""
 		self.chamber.fired = 1
 		# FIRE THE BULLET!
-		print "*BANG!* BULLET FIRED!"
+		if self.debug: self.terminal.output("*BANG!* BULLET FIRED!")
 		if self.mode != "manual":
-			print "	   Gas operated auto-cocking..."
+			if self.debug: self.terminal.output("	   Gas operated auto-cocking...")
 			self.cock()
 
 
@@ -208,9 +220,9 @@ class FIREARM:
 		if self.chamber:
 			cham = 1
 		mag = len(self.magazine)
-		print "In Chamber:", cham
-		print "In Magazine:", mag
-		print "Total in weapon:", cham+mag
+		if self.debug: self.terminal.output("In Chamber:", cham)
+		if self.debug: self.terminal.output("In Magazine:", mag)
+		if self.debug: self.terminal.output("Total in weapon:", cham+mag)
 	
 	def boltBack(self):
 		"""
@@ -219,14 +231,14 @@ class FIREARM:
 		"""
 		if self.chamber:
 			if self.chamber.fired:
-				print "	   A case has been ejected"
+				if self.debug: self.terminal.output("	   A case has been ejected")
 			else:
-				print "	   An unfired bullet has been ejected"
+				if self.debug: self.terminal.output("	   An unfired bullet has been ejected")
 		self.chamber = None
 		self.bolt = "back"
-		print "	   Bolt is in back position"
+		if self.debug: self.terminal.output("	   Bolt is in back position")
 		self.hammer = "back"
-		print "	   Hammer auto-cocked back"
+		if self.debug: self.terminal.output("	   Hammer auto-cocked back")
 
 	def boltForth(self):
 		"""
@@ -234,14 +246,14 @@ class FIREARM:
 		Loads the next round from the magazine into the chamber.
 		"""
 		if self.magazine:
-			bullet = self.magazine.getBullet()
+			bullet = self.magazine.pop(0)
 			self.chamber = bullet
-			print "	   A bullet has been loaded from the magazine into the chamber."
+			if self.debug: self.terminal.output("	   A bullet has been loaded from the magazine into the chamber.")
 		self.bolt = "forward"
-		print "	   Bolt is in forward position"
+		if self.debug: self.terminal.output("	   Bolt is in forward position")
 
 	def noAmmoHammerClack(self):
 		"""
 		This happens when the trigger mechanism fires without a loaded round.
 		"""
-		print "*click*: the hammer made a clacking sound. No ready round loaded."
+		if self.debug: self.terminal.output("*click*: the hammer made a clacking sound. No ready round loaded.")

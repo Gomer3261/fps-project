@@ -63,14 +63,27 @@ def listUserCommands():
 # ------------------------
 def ammo():
 	"""
-	Outputs the ammopile contents to the terminal.
+	Use this to see how much ammo you have.
 	"""
 	try:
 		import modules
 		localPlayer = modules.gamecontrol.localgame.players.getLocalPlayer()
 		ammopile = localPlayer.inventory.ammopile
-		for ammoType in ammopile.contents:
-			output("   %s: %s" % (ammoType, ammopile.contents[ammoType]))
+		output("Bullets in Ammopile:")
+		for bulletType in ammopile.bullets:
+			output("   %s: %s" % (bulletType, ammopile.bullets[bulletType]))
+		output("Bullets in Current Weapon:")
+		item = localPlayer.inventory.getActiveItem()
+		try:
+			c = 0
+			if item.firearm.chamber: c = 1
+			if item.firearm.magazine:
+				output("   %s (%s)"%(len(item.firearm.magazine)+c, item.firearm.bulletType))
+			else:
+				output("   None")
+		except:
+			import traceback
+			traceback.print_exc()
 	except:
 		output("Error getting the requested inventory information. Maybe you're not alive?")
 		

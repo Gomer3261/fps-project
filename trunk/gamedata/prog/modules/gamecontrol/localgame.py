@@ -86,9 +86,13 @@ class PLAYERS:
 	def run(self):
 		try:
 			for ticket in self.storage:
-				player = self.storage[ticket]
-				player.run()
-				#print "Running: %s"%(ticket)
+				try:
+					player = self.storage[ticket]
+					player.run()
+					#print "Running: %s"%(ticket)
+				except:
+					import traceback
+					traceback.print_exc()
 		except:
 			# Dictionary changed size during iteration...
 			#import traceback
