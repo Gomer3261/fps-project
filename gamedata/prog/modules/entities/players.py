@@ -98,6 +98,14 @@ class PLAYER:
 		self.feet.append(con.sensors["foot4"])
 		self.feet.append(con.sensors["foot5"])
 		
+		# Getting the roof sensors
+		self.roofDetectors = []
+		self.roofDetectors.append(con.sensors["roofDetector1"])
+		self.roofDetectors.append(con.sensors["roofDetector2"])
+		self.roofDetectors.append(con.sensors["roofDetector3"])
+		self.roofDetectors.append(con.sensors["roofDetector4"])
+		self.roofDetectors.append(con.sensors["roofDetector5"])
+		
 		# A timer for knowing when to update
 		self.updateTimer = modules.timetools.TIMER()
 
@@ -293,11 +301,17 @@ class PLAYER:
 			if crouch == 1:
 				if self.stance != 1:
 					self.stance = 1
-				else:
+				elif not self.detectRoof():
 					self.stance = 0
 					
-		else:
+		elif not self.detectRoof():
 			self.stance = 0
+			
+			
+	def detectRoof(self):
+		for i in self.roofDetectors:
+			if i.positive:
+				return 1
 						
 						
 	def crouch(self):
