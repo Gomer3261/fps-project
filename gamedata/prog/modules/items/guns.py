@@ -17,13 +17,16 @@ class GUN:
 	meant only to cause a delay; it has no matching operationFunction.
 	"""
 	import modules.classes.firearms as firearms
-	firearm = firearms.FIREARM()
-	bulletType = firearm.bulletType
+	
+	firearm = None
+	bulletType = None
 	
 	player = None
 	
 	def __init__(self, player):
 		self.player = player
+		self.firearm = self.firearms.FIREARM(player)
+		self.bulletType = self.firearm.bulletType
 	
 ###### ------------------------------------------------------------------------------------------------------------------------------------------------
 	#################################################################

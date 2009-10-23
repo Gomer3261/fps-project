@@ -55,7 +55,7 @@ class PLAYER:
 	noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
 
 
-	def __init__(self, ticket, spawnObj, mode = "proxy"):
+	def __init__(self, ticket, spawnObj, mode="proxy"):
 		self.mode = mode
 		self.ticket = ticket
 		
@@ -74,6 +74,13 @@ class PLAYER:
 		
 		# Spawning the player proxy object
 		self.gameObject = self.spawnGameObject("playerProxy")
+		con = self.gameObject.controllers[0]
+		
+		# Getting some related objects
+		self.YPivot = con.actuators["YPivot"].owner
+		self.centerhinge = con.actuators["centerhinge"].owner
+		self.fpcam = con.actuators["fpcam"].owner
+		self.trueAim = con.actuators["trueAim"].owner
 	
 	def realInit(self, spawnObj):
 		import modules
@@ -82,13 +89,14 @@ class PLAYER:
 
 		# Spawning the player object
 		self.gameObject = self.spawnGameObject("playerReal")
-		
 		con = self.gameObject.controllers[0]
 
 		# Getting some related objects
 		self.YPivot = con.actuators["YPivot"].owner
 		self.centerhinge = con.actuators["centerhinge"].owner
 		self.fpcam = con.actuators["fpcam"].owner
+		self.trueAim = con.actuators["trueAim"].owner
+
 
 		# Getting the foot sensors
 		self.feet = []
@@ -98,7 +106,7 @@ class PLAYER:
 		self.feet.append(con.sensors["foot4"])
 		self.feet.append(con.sensors["foot5"])
 		
-		# Getting the roof sensors
+		# Getting the roof sensors (should be renamed to ceiling detectors?)
 		self.roofDetectors = []
 		self.roofDetectors.append(con.sensors["roofDetector1"])
 		self.roofDetectors.append(con.sensors["roofDetector2"])
@@ -106,14 +114,13 @@ class PLAYER:
 		self.roofDetectors.append(con.sensors["roofDetector4"])
 		self.roofDetectors.append(con.sensors["roofDetector5"])
 		
-		# A timer for knowing when to update
+		# A timer for knowing when to update (networking)
 		self.updateTimer = modules.timetools.TIMER()
 
-		# Various modules.
+		# Various modules (use of these deprecated?)
 		self.inputs = modules.interface.inputs
 		self.terminal = modules.interface.terminal
 		self.options = modules.interface.options
-
 		self.mousetools = modules.gamesystems.mousetools
 		self.damper = modules.gamesystems.damper
 		
@@ -144,8 +151,22 @@ class PLAYER:
 		
 
 
-
-
+	
+	
+	
+	
+	
+	### ========================================================================
+	### USEFUL FUNCTIONS
+	### ========================================================================
+	
+	def getAimOrigin(self):
+		return self.trueAim.position
+	
+	def getAimDirection(self):
+		ori = self.trueAim.orientation
+		YY = ori[2][2]
+		return YY
 
 
 
@@ -637,7 +658,7 @@ class PLAYER:
 
 
 	### ========================================================================
-	### DO MOUSE LOOK
+	### DO MOUSELOOK
 	### ========================================================================
 
 	def doMouseLook(self):
