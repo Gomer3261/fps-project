@@ -46,6 +46,7 @@ class BULLET:
 	### ================================================
 	### BALLISTICS VARIABLES
 	### ================================================
+	owner = None # The ticket of the owner player.
 
 	### Basic Variables ###
 	step = 0

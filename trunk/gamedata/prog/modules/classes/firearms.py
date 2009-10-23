@@ -76,12 +76,29 @@ class FIREARM:
 	mode = "auto" # Firing mode. auto, burst, single, safety, manual.
 	lastTrigger = 0 # last time's trigger status was 0 (released)
 	
+	###======------ INTERNAL BALLISTICS ------======###
+	velocityModifier = 1.0 # This is multiplied by the bullet's regularVelocity to produce the bullet's velocity.
+	stability = 1.0 # The stability the firearm provides (assumingly in the form of rifling in the barrel giving the bullet spin)
 	
 	
-	def __init__(self):
+	
+	def __init__(self, player):
+		# The player who owns this firearm...
+		self.player = player
+		
 		import modules.interface.terminal as terminal
 		self.terminal = terminal
 	
+	
+	
+	
+	def doInternalBallistics(self, bullet):
+		bullet.velocity = bullet.regularVelocity * self.velocityModifier
+		bullet.position = self.player.getAimOrigin()
+		bullet.direction = self.player.getAimDirection()
+		bullet.stability = self.stability
+		bullet.owner = self.player.ticket
+		
 
 ###### ------------------------------------------------------------------------------------------------------------------------------------------------
 	###########################################################
