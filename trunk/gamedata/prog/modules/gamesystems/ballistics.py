@@ -154,8 +154,7 @@ class MANAGER:
 		bullet.step += 1
 		if bullet.step >= bullet.maxsteps:
 			# Bullet has run out of simulation time; killing bullet
-			#print "    Bullet Expired..."
-			self.deleteBullet(bullet)
+			self.terminateBullet(bullet)
 
 
 
