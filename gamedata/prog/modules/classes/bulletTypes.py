@@ -40,7 +40,6 @@ class BULLET:
 	### BALLISTICS CONSTANTS
 	### ================================================
 	maxsteps = 200 # Maximum external ballistics simulation steps.
-	owner = None # Gameblender object for raycasting
 	timer = None # Timer for ballistics simulation
 
 	### ================================================

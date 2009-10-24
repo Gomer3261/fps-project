@@ -2,5 +2,5 @@
 ### ------ classes ------ ####
 ##############################
 
-import bullets
+import bulletTypes
 import firearms
