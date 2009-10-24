@@ -83,4 +83,18 @@ def run(con):
 	# Okay, now we actually assign the active_camera.
 	scene.active_camera = cam
 
-		
+
+
+
+
+
+def followCamera(con):
+	"""
+	Just a quick little convenient function for getting an object to follow the active camera.
+	Meant to be called from a module controller.
+	"""
+	global scene
+	own = con.owner
+	own.position = scene.active_camera.position
+
+
