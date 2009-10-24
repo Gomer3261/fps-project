@@ -10,8 +10,9 @@ def perFrame(ticrate=60.0):
 class TIMER():
     import time
     last = 0.0
-    def __init__(self):
-        self.reset()
+	
+    def __init__(self, headstart=0.0):
+		self.last = self.time.time() - headstart
 
     def reset(self):
         self.last = self.time.time()

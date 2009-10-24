@@ -222,8 +222,15 @@ class FIREARM:
 		If the weapon is not in manual mode, the weapon is auto-cocked via gas operation.
 		"""
 		self.chamber.fired = 1
+		
 		# FIRE THE BULLET!
 		if self.debug: self.terminal.output("*BANG!* BULLET FIRED!")
+		
+		# ADDING TO THE BALLISTICS ENGINE
+		import modules.gamesystems.ballistics as ballistics
+		self.doInternalBallistics(self.chamber)
+		ballistics.manager.addToSimulation(self.chamber)
+		
 		if self.mode != "manual":
 			if self.debug: self.terminal.output("	   Gas operated auto-cocking...")
 			self.cock()

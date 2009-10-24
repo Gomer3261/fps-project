@@ -161,12 +161,16 @@ class PLAYER:
 	### ========================================================================
 	
 	def getAimOrigin(self):
-		return self.trueAim.position
+		pos = self.trueAim.position
+		return pos
 	
 	def getAimDirection(self):
 		ori = self.trueAim.orientation
-		YY = ori[2][2]
-		return YY
+		YX = ori[0][1]
+		YY = ori[1][1]
+		YZ = ori[2][1]
+		direction = [YX, YY, YZ]
+		return direction
 
 
 
