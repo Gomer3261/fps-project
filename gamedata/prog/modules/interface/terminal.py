@@ -20,6 +20,7 @@ Remember:
    Precede all python commands with a slash (/), otherwise it is regarded as a text message.
 
 Important functions:
+	/defaultOptions() # Use this whenever things seem to be not working.
 	/listUserCommands()
 	/help(cmd)
 	/connect("YourName", stokes) # 'stokes' is the server, you can also use 'chase' or 'geoff'

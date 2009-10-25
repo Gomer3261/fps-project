@@ -9,12 +9,17 @@
 
 
 
-# Easy to call method for the BGE to call to access the correct object's run() method
-def run(con):
-	ob = con.owner
-	
+def runRealSelf(con):
+	"""
+	The real local player runs this each frame as a form of self maintenance.
+	This is required because the player has some actuators that need to be activated,
+	but actuators can only be called by an active controller, which is what this
+	whole shenanigan is meant to provide.
+	"""
 	import modules
-	modules.gamecontrol.localgame.players[ob[ticket]].run()
+	localPlayer = modules.gamecontrol.localgame.players.getLocalPlayer()
+	if localPlayer:
+		localPlayer.runRealSelf(con)
 
 
 
@@ -29,9 +34,6 @@ class PLAYER:
 	# When this is == 0, it means the player object is gone, and this handler is dead and ready to be cleared.
 
 	import GameLogic
-
-	# DEPRECATED
-	#pcol = None # The Player Collision Box (which is the parent of all of the other game objects that go along with that
 	
 	con = None # Controller attached to all the player object's actuators and stuff.
 	
@@ -39,7 +41,7 @@ class PLAYER:
 	
 	updateInterval = 0.1 # How often to send updates to the gamestate
 
-	alive = 1 # Set this to 0 to kill the player.
+	alive = True # Set this to 0 to kill the player.
 
 	stance = 0 # 0=stand, 1=crouch, 2=prone
 	crouchframe = 0
@@ -68,6 +70,35 @@ class PLAYER:
 	
 	
 	
+	def runRealSelf(self, activeController):
+		"""
+		The real local player calls this method to run things that
+		need to activate actuators on the player gameobjects.
+		These gameobjects require to be called by an active controller,
+		so this method is called by the real controller so we can
+		get access to the controller in its active state.
+		"""
+		
+		# FPG STUFF!
+		# When the real player is in the gamestate,
+		# The FPG will be overlayed.
+		# otherwise, the FPG will be removed.
+		# doDeath() will wait until FPG is removed before
+		# terminating this player.
+		if self.isInGame():
+			if not self.FPG:
+				addFPG = activeController.actuators["addFPG"]
+				activeController.activate(addFPG)
+				#print "FPG Added"
+				self.FPG = True
+		else:
+			if self.FPG:
+				removeFPG = activeController.actuators["removeFPG"]
+				activeController.activate(removeFPG)
+				#print "FPG Removed"
+				self.FPG = False
+	
+	
 		
 	def proxyInit(self, spawnObj):
 		self.spawnObj = spawnObj
@@ -75,6 +106,7 @@ class PLAYER:
 		# Spawning the player proxy object
 		self.gameObject = self.spawnGameObject("playerProxy")
 		con = self.gameObject.controllers[0]
+		self.con = con
 		
 		# Getting some related objects
 		self.YPivot = con.actuators["YPivot"].owner
@@ -90,6 +122,10 @@ class PLAYER:
 		# Spawning the player object
 		self.gameObject = self.spawnGameObject("playerReal")
 		con = self.gameObject.controllers[0]
+		self.con = con
+		
+		# FPGraphics Scene
+		self.FPG = False
 
 		# Getting some related objects
 		self.YPivot = con.actuators["YPivot"].owner
@@ -171,6 +207,11 @@ class PLAYER:
 		YZ = ori[2][1]
 		direction = [YX, YY, YZ]
 		return direction
+	
+	def isInGame(self):
+		import modules
+		gamestate = modules.gamecontrol.gamestate.gamestate
+		return gamestate.playerIsInGame(self.ticket)
 
 
 
@@ -187,7 +228,7 @@ class PLAYER:
 		gamestate = modules.gamecontrol.gamestate.gamestate
 		
 		### MANAGES THE PLAYER ###
-		if gamestate.playerIsInGame(self.ticket):
+		if self.isInGame():
 			# When they're in gamestate, call the do method
 			if self.mode == "proxy":
 				self.doProxy()
@@ -197,6 +238,7 @@ class PLAYER:
 				raise ValueError("No acceptable do() found for mode: %s" % self.mode)
 		else:
 			# When they are NOT in the gamestate, doDeath().
+			self.alive = False
 			self.doDeath()
 			
 	def doProxy(self):
@@ -849,7 +891,9 @@ class PLAYER:
 	def doRealDeath(self):
 		if self.LIFE:
 			scene = self.GameLogic.getCurrentScene()
-			if scene.active_camera != self.fpcam:
+			# The active camera is not the fpcam, so we can safely terminate the game object.
+			# Also, the FPGraphics Scene must not be active.
+			if (scene.active_camera != self.fpcam) and (not self.FPG):
 				# Kill the game object
 				self.gameObject.endObject()
 				
