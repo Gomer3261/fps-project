@@ -138,7 +138,20 @@ class AMR(BULLET):
 bullets["AMR"] = AMR
 
 
+### ================================================
+### FUNCTIONS
+### ================================================
 
+def produceFreeMagazine(bulletType, magazineCapacity):
+	global bullets
+	bulletClass = bullets[bulletType]
+	
+	magazine = []
+	for i in range(magazineCapacity):
+		bullet = bulletClass()
+		magazine.append(bullet)
+	
+	return magazine
 
 
 

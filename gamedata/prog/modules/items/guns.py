@@ -25,8 +25,14 @@ class GUN:
 	
 	def __init__(self, player):
 		self.player = player
+		
 		self.firearm = self.firearms.FIREARM(player)
 		self.bulletType = self.firearm.bulletType
+		
+		import modules.classes.bulletTypes as bulletTypes
+		newMag = bulletTypes.produceFreeMagazine(self.bulletType, 30)
+		self.firearm.insertMagazine(newMag)
+		self.firearm.cock()
 	
 ###### ------------------------------------------------------------------------------------------------------------------------------------------------
 	#################################################################

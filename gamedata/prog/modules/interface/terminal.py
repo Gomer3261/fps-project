@@ -16,16 +16,20 @@ active = 0
 # The contents of the terminal window (output)
 openingText = """Welcome to the terminal!
 
-New syntax:
+Remember:
    Precede all python commands with a slash (/), otherwise it is regarded as a text message.
 
 Important functions:
-   /connect("YourName", stokes) # 'stokes' is the server. you can also use 'chase'.
-   /disconnect() # disconnects you from the gameplay server.
-   /users() # outputs a list of users in the game.
-   /players() # outputs a list of players currently alive.
-   /playerDetails() # outputs player gamestate attributes for each living player.
-   /info() # gives you game information.
+	/listUserCommands()
+	/help(cmd)
+	/connect("YourName", stokes) # 'stokes' is the server, you can also use 'chase' or 'geoff'
+	/disconnect() # disconnects you from the gameplay server.
+	/users() # outputs a list of users in the game.
+	/players() # outputs a list of players currently alive.
+	/info() # gives you game information.
+	/ammo() # gives you information about your ammunition.
+
+================================================================
 """
 
 openingText = openingText.replace("\r", "")

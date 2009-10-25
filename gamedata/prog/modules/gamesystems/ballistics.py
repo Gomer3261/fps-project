@@ -126,7 +126,7 @@ class MANAGER:
 		debug = 1
 		
 		# Getting the length of time that this simulation step is simulating.
-		stepTime = bullet.timer.get() / 100
+		stepTime = bullet.timer.get()# / 100
 		bullet.timer.reset()
 		
 		# Let's pretend we're actually factoring in cool stuff for now...
@@ -165,21 +165,32 @@ class MANAGER:
 		related to that on the bullet.
 		Includes velocity loss and stability loss.
 		"""
-		return None
+		### VELOCITY LOSS ###
+		damping = bullet.diameter**2 / bullet.mass
+		velocityLoss = (bullet.velocity * (damping/10.0)) * stepTime
+		newVelocity = bullet.velocity - velocityLoss
+		bullet.velocity = newVelocity
+		
+		### STABILITY LOSS ###
+		# I'll get around to that...
 
 	def factorGravity(self, bullet, stepTime):
 		"""
-		Simulates the affects of gravity on the bullet.
+		Calculates the bullet's gravity value (which is truly factored during projection)
 		"""
-		return None
+		terminalVelocity = 98.0
+		gravity = 9.8
+		bullet.gravity += gravity * stepTime
+		if bullet.gravity > terminalVelocity:
+			bullet.gravity = terminalVelocity
 
 	def factorRandomness(self, bullet, stepTime):
 		"""
 		Simulates the randomization of certain factors.
-		For example, bullet direction is randomely affected
+		For example, bullet direction is randomly affected
 		based on the bullets stability (or lack thereof).
 		"""
-		return None
+		# I'll get around to it...
 
 
 
@@ -199,6 +210,7 @@ class MANAGER:
 		X = D[0] * M
 		Y = D[1] * M
 		Z = D[2] * M
+		Z -= bullet.gravity * stepTime
 		offset = [X, Y, Z]
 		
 		# Globalizing said local offset...
