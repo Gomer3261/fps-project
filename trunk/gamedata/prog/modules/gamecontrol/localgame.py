@@ -75,7 +75,7 @@ class PLAYERS:
 		info = modules.gamecontrol.info
 		gamestate = modules.gamecontrol.gamestate.gamestate
 		
-		if info.inGame and info.ticket and gamestate.playerIsInGame(info.ticket):
+		if info.ticket:
 			try:
 				handler = self.getPlayer(info.ticket)
 				return handler

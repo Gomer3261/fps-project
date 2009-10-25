@@ -79,7 +79,6 @@ def run(con):
 			cam = player.fpcam
 			player.fpcam.lens = modules.interface.options.settings["lens"]
 	
-	
 	# Okay, now we actually assign the active_camera.
 	scene.active_camera = cam
 
