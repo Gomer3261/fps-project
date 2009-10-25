@@ -105,3 +105,20 @@ class AMMOPILE:
 			newMagazine.append(bullet)
 		# Returns the newMagazine (which is a list of bullet object, for now)
 		return newMagazine
+	
+	def produceFreeMagazine(self, bulletType, magazineCapacity):
+		"""
+		Based off produceMagazine(), but doesn't actually consume any ammo from the ammopile.
+		"""
+		# Amount of ammunition obtained
+		#obtainedAmmo = self.takeBullets(bulletType, magazineCapacity)
+		obtainedAmmo = magazineCapacity
+		
+		newMagazine = []
+		# Makes an instance of BULLET for each bullet in obtainedAmmo.
+		for i in range(obtainedAmmo):
+			BULLET = self.bulletTypes.bullets[bulletType]
+			bullet = BULLET()
+			newMagazine.append(bullet)
+		# Returns the newMagazine (which is a list of bullet object, for now)
+		return newMagazine

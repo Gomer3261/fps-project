@@ -19,8 +19,6 @@ def help(cmd = None):
 	else:
 		output(helpText)
 
-		
-
 def output(s):
 	"""
 	Usage: output(string)
@@ -29,8 +27,6 @@ def output(s):
 	s = str(s)
 	import modules
 	modules.interface.terminal.output(s)
-
-	
 
 def clear():
 	"""
@@ -61,6 +57,7 @@ def listUserCommands():
 # ------------------------
 # Informational Commands
 # ------------------------
+
 def ammo():
 	"""
 	Use this to see how much ammo you have.
@@ -156,8 +153,6 @@ def defaultOptions():
 	options.saveDefaults()
 	output("Options have been set to defaults. I think.")
 
-	
-
 def setSetting(key, value):
 	"""
 	Usage: setSetting(setting, value)
@@ -168,8 +163,6 @@ def setSetting(key, value):
 	r = options.setSetting(key, value)
 	output("Success value: %s"%(r))
 
-	
-	
 def getSetting(key):
 	"""
 	Usage: getSetting(setting)
@@ -179,8 +172,6 @@ def getSetting(key):
 	options = modules.interface.options
 	output("Setting %s is set to %s" % (key, options.settings[key]))
 
-	
-	
 def setControl(key, value):
 	"""
 	Usage: setControl(control, value)
@@ -191,8 +182,6 @@ def setControl(key, value):
 	r = options.setControl(key, value)
 	output("Success value: %s"%(r))
 
-	
-	
 def getControl(key):
 	"""
 	Usage: getControl(control)
@@ -201,8 +190,6 @@ def getControl(key):
 	import modules
 	options = modules.interface.options
 	output("Control %s is set to %s" % (key, options.controls[key]))
-
-	
 
 def loadOptions():
 	"""
