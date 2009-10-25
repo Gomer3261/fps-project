@@ -78,8 +78,23 @@ class MANAGER:
 		"""
 		self.deadPool.append(bullet)
 	
-	def doBulletImpact(self, bullet):
+	def doBulletImpactEffect(self, bullet):
 		pass
+	
+	def physicallyImpactObject(self, bullet, object, magnitude=1.0):
+		hitPoint = bullet.point
+		localPoint = [0.0, 0.0, 0.0]
+		localPoint[0] = hitPoint[0] - object.position[0]
+		localPoint[1] = hitPoint[1] - object.position[1]
+		localPoint[2] = hitPoint[2] - object.position[2]
+		point = localPoint
+				
+		impulse = bullet.direction[:]
+		impulse[0] *= (bullet.velocity * bullet.mass / 1000) * magnitude
+		impulse[1] *= (bullet.velocity * bullet.mass / 1000) * magnitude
+		impulse[2] *= (bullet.velocity * bullet.mass / 1000) * magnitude
+		
+		object.applyImpulse(point, impulse)
 	
 	
 
@@ -140,6 +155,7 @@ class MANAGER:
 		# Projecting the bullet... (which also will move the bullet's position...)
 		hit, point, normal = self.projectBullet(bullet, stepTime)
 		if hit:
+			#print "Hit: %s" % hit.name
 			# If the bullet hits anything, then we'll factor the impact for fun.
 			self.factorImpact(bullet, hit, point, normal, stepTime)
 		
@@ -154,6 +170,7 @@ class MANAGER:
 		bullet.step += 1
 		if bullet.step >= bullet.maxsteps:
 			# Bullet has run out of simulation time; killing bullet
+			#print "Bullet Expired"
 			self.terminateBullet(bullet)
 
 
@@ -217,7 +234,7 @@ class MANAGER:
 		newPosition = self.offset(bullet.position, offset)
 		
 		# rayCast(objto, objfrom, dist, prop, face, xray, poly)
-		hit, point, normal = self.raycaster.rayCast(bullet.position, newPosition, 0, "ballistics", 0, 1, 0) # Raycasting...
+		hit, point, normal = self.raycaster.rayCast(newPosition, bullet.position, 0, "ballistics", 0, 1, 0) # Raycasting...
 
 		if hit: # If the bullet hit something...
 			bullet.position = point
@@ -246,7 +263,13 @@ class MANAGER:
 		perhaps along with a fancy bullet impact effect, or perhaps it should penetrate and keep
 		on going, or even deflect... This will be a fun method.
 		"""
-		self.doBulletImpact(bullet)
+		self.doBulletImpactEffect(bullet)
+		try:
+			if hit["dyn"]:
+				#print "Dyn: Physically impacting..."
+				self.physicallyImpactObject(bullet, hit)
+		except:
+			pass
 		self.terminateBullet(bullet)
 			
 
