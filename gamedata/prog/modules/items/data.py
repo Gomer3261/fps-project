@@ -8,28 +8,25 @@ class AMMOPILE:
 	"""
 	import modules.classes.bulletTypes as bulletTypes
 	
-	# Default bullet values
-	bullets = {}
-	bullets["PTL"] = 36
-	bullets["STA"] = 150
-	bullets["DMR"] = 80
-	bullets["AMR"] = 20
-	
-	# Default grenade values
-	grenades = {}
-	grenades["frag"] = 2
-	grenades["smoke"] = 1
-	
-	# Default med values
-	meds = {}
-	meds["syrette"] = 2
-	meds["kit"] = 0
-	
-	
-	
-	player = None
 	def __init__(self, player):
 		self.player = player
+		
+		# Default bullet values
+		self.bullets = {}
+		self.bullets["PTL"] = 36
+		self.bullets["STA"] = 150
+		self.bullets["DMR"] = 80
+		self.bullets["AMR"] = 20
+		
+		# Default grenade values
+		self.grenades = {}
+		self.grenades["frag"] = 2
+		self.grenades["smoke"] = 1
+		
+		# Default med values
+		self.meds = {}
+		self.meds["syrette"] = 2
+		self.meds["kit"] = 0
 	
 	
 	

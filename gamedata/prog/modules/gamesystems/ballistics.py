@@ -79,7 +79,9 @@ class MANAGER:
 		self.deadPool.append(bullet)
 	
 	def doBulletImpactEffect(self, bullet):
-		pass
+		import modules.gamesystems.FX as FX
+		effect = FX.spawn("FX_cubeSplode", {"size":1.0, "num":12})
+		effect.position = bullet.position
 	
 	def physicallyImpactObject(self, bullet, object, magnitude=1.0):
 		hitPoint = bullet.point

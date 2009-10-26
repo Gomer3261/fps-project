@@ -30,36 +30,33 @@ def runRealSelf(con):
 	
 
 class PLAYER:
-	LIFE = 1 # This is the object's life, not a representation of the player's life.
-	# When this is == 0, it means the player object is gone, and this handler is dead and ready to be cleared.
-
-	import GameLogic
-	
-	con = None # Controller attached to all the player object's actuators and stuff.
-	
-	mode = "" # The mode of the handler (either proxy or real)
-	
-	updateInterval = 0.1 # How often to send updates to the gamestate
-
-	alive = True # Set this to 0 to kill the player.
-
-	stance = 0 # 0=stand, 1=crouch, 2=prone
-	crouchframe = 0
-	
-	HP = 100 # Health.
-	stamina = 100 # Used for sprint bar and character fatigue effects
-
-	speedforce = 80.0 # Speed in force of general player movement
-	sprintmod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
-	crouchmod = 0.5 # Speed multiplier when crouching (sprint effects crouching speed as well)
-	jumpforce = 250.0 # Upward force when jump is executed.
-	slopeInfluence = 0.8 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
-	noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
 
 
 	def __init__(self, ticket, spawnObj, mode="proxy"):
-		self.mode = mode
+		self.mode = mode # The mode of the handler (either proxy or real)
 		self.ticket = ticket
+		
+		
+		self.alive = True # Set this to 0 to kill the player.
+		LIFE = 1 # This is the object's life, not a representation of the player's life.
+		# When this is == 0, it means the player object is gone, and this handler is dead and ready to be cleared.
+		
+		self.updateInterval = 0.1 # How often to send updates to the gamestate
+
+		self.stance = 0 # 0=stand, 1=crouch, 2=prone
+		self.crouchframe = 0
+		
+		self.HP = 100 # Health.
+		self.stamina = 100 # Used for sprint bar and character fatigue effects
+
+		self.speedforce = 80.0 # Speed in force of general player movement
+		self.sprintmod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
+		self.crouchmod = 0.5 # Speed multiplier when crouching (sprint effects crouching speed as well)
+		self.jumpforce = 250.0 # Upward force when jump is executed.
+		self.slopeInfluence = 0.8 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
+		self.noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
+			
+		
 		
 		if self.mode == "proxy":
 			self.proxyInit(spawnObj)
@@ -179,7 +176,8 @@ class PLAYER:
 	### ========================================================================
 	
 	def spawnGameObject(self, name="playerobject"):
-		scene = self.GameLogic.getCurrentScene()
+		import GameLogic
+		scene = GameLogic.getCurrentScene()
 		obj = scene.addObject(name, self.spawnObj)
 		obj.position = [0.0, 0.0, 10.0]
 		obj.orientation = [[1,0,0],[0,1,0],[0,0,1]]
@@ -890,7 +888,8 @@ class PLAYER:
 			
 	def doRealDeath(self):
 		if self.LIFE:
-			scene = self.GameLogic.getCurrentScene()
+			import GameLogic
+			scene = GameLogic.getCurrentScene()
 			# The active camera is not the fpcam, so we can safely terminate the game object.
 			# Also, the FPGraphics Scene must not be active.
 			if (scene.active_camera != self.fpcam) and (not self.FPG):

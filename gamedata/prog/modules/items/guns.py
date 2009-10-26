@@ -30,7 +30,8 @@ class GUN:
 		self.bulletType = self.firearm.bulletType
 		
 		import modules.classes.bulletTypes as bulletTypes
-		newMag = bulletTypes.produceFreeMagazine(self.bulletType, 30)
+		#=HAX=: We start with a 3000 round magazine :D
+		newMag = bulletTypes.produceFreeMagazine(self.bulletType, 3000)
 		self.firearm.insertMagazine(newMag)
 		self.firearm.cock()
 	
