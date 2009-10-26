@@ -20,28 +20,25 @@ class INVENTORY:
 	A med item might consume meds (like syrettes or medkits) from the ammopile.
 	"""
 	
-	activeItem = "primary" # The active item! For example, could be "primary", or "grenade".
-	
-	items = {}
-	items["primary"] = None
-	items["secondary"] = None
-	items["sidearm"] = None
-	items["grenade"] = None
-	items["med"] = None
-	
-	# (Currently useless)
-	armor = None
-	helmet = None
-	
-	# Ammunition (includes bullets, grenades, meds)
-	ammopile = None
-	
-	
 	
 	def __init__(self, player):
 		import modules.items.data as data
 		self.data = data
-		# Initiating the Ammopile.
+		
+		self.activeItem = "primary" # The active item! For example, could be "primary", or "grenade".
+		
+		self.items = {}
+		self.items["primary"] = None
+		self.items["secondary"] = None
+		self.items["sidearm"] = None
+		self.items["grenade"] = None
+		self.items["med"] = None
+		
+		# (Currently useless)
+		self.armor = None
+		self.helmet = None
+		
+		# Ammunition (includes bullets, grenades, meds)
 		self.ammopile = self.data.AMMOPILE(player)
 		
 		# Giving the player a basic gun.

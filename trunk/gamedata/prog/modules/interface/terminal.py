@@ -30,6 +30,9 @@ Important functions:
 	/info() # gives you game information.
 	/ammo() # gives you information about your ammunition.
 
+Tip: Your first magazine is loaded with 3000 rounds, for debug reasons.
+Game developers don't need to reload.
+
 ================================================================
 """
 

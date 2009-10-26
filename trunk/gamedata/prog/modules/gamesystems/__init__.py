@@ -6,4 +6,5 @@ import explorerControl
 import filters
 import lines
 import mousetools
-import guns
+#import guns
+import FX
