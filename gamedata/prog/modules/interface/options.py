@@ -60,7 +60,7 @@ def saveDefaults():
 		settings["mysens"] = 5.0
 		settings["inverty"] = 0
 		settings["invertx"] = 0
-		settings["filter-hdr"] = 1
+		settings["filter-hdr"] = 0
 		settings["lens"] = 15.0
 		settings["crouch"] = "Hold" # should be changed to lowercase
 		
