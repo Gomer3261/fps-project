@@ -38,7 +38,7 @@ class PLAYER:
 		
 		
 		self.alive = True # Set this to 0 to kill the player.
-		LIFE = 1 # This is the object's life, not a representation of the player's life.
+		self.LIFE = 1 # This is the object's life, not a representation of the player's life.
 		# When this is == 0, it means the player object is gone, and this handler is dead and ready to be cleared.
 		
 		self.updateInterval = 0.1 # How often to send updates to the gamestate

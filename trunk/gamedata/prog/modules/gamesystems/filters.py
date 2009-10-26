@@ -1,7 +1,7 @@
 ### 2D Filters! ###
 # WIP!
 
-FILTER_SYSTEM = False # Filter system is OFF. This code doesn't do anything right now.
+FILTER_SYSTEM = True # Filter system is OFF. This code doesn't do anything right now.
 
 
 
@@ -103,7 +103,7 @@ def refreshFilterActivity(con):
 ### Lum: A lovely companion to HDR ###
 
 def doLum(cont):
-	print "LUM"
+	#print "LUM"
 	import GameLogic as G
 	import BGL
 	import Rasterizer as R
