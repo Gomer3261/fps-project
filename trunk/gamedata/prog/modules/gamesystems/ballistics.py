@@ -259,6 +259,17 @@ class MANAGER:
 		return hit, point, normal
 	
 	
+	def calculateDamage(self, bullet):
+		power = ((bullet.mass/1000.0) * (bullet.velocity**2)) / 2.0 # E = MV^2/2, mass converted into kilograms
+		momentum = bullet.mass/1000.0 * bullet.velocity # MV, mass converted into kilograms
+		drag = bullet.diameter**2 / bullet.mass
+
+		# Damage Formula (at muzzle velocity, hit in chest)
+		damage = ((bullet.diameter**2) * power/1000.0)
+		damage *= 0.25 # Weakening the damage for gameplay reasons. 1.0 for Hardcore mode, 0.25 for Normal mode, and 0.1 for Arcade mode.
+		
+		return damage
+	
 	def factorImpact(self, bullet, hit, normal, point, stepTime):
 		"""
 		It's supposed to factor an impact and decide if the bullet should be terminated,
@@ -270,8 +281,12 @@ class MANAGER:
 			if hit["dyn"]:
 				#print "Dyn: Physically impacting..."
 				self.physicallyImpactObject(bullet, hit)
-		except:
-			pass
+				print "Dynamic object was hit, calculated damage: %s" % self.calculateDamage(bullet)
+		except: pass
+		try:
+			if hit["player"]:
+				print "\nHit a player!\n    Ticket: %s\n    Calculated Damage: %s" % (hit["player"], self.calculateDamage(bullet))
+		except: pass
 		self.terminateBullet(bullet)
 			
 
