@@ -47,8 +47,9 @@ class ROUTER:
 	and either sends it straight to the local gamestate (when you are host),
 	or sends it to a remote gamestate over the internet.
 	"""
-	sendRequests = []
-	throwRequests = []
+	def __init__(self):
+		self.sendRequests = []
+		self.throwRequests = []
 
 	def reset(self):
 		self.sendRequests = []
@@ -182,5 +183,3 @@ class REPLICATOR:
 			# They delete themselves, so we don't worry about that.
 		# Job done!
 
-		
-replicator = REPLICATOR()
