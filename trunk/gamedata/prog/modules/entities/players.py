@@ -111,7 +111,7 @@ class PLAYER:
 		self.trueAim = con.actuators["trueAim"].owner
 		
 		self.ppVis = con.actuators["pp-vis"].owner
-		self.ppVis.player = self.ticket
+		self.ppVis["player"] = self.ticket
 		
 		# Proxies don't have cameras...
 		#self.fpcam = con.actuators["fpcam"].owner
@@ -292,7 +292,7 @@ class PLAYER:
 			self.gameObject.localOrientation = mat
 			
 			y = Vector(v[0], v[1], v[2])
-			z = y.cross(y.cross([0, 0, 1]))
+			z = y.cross(y.cross(Vector([0, 0, 1])))
 			x = y.cross(z)
 			
 			mat = [
@@ -320,7 +320,7 @@ class PLAYER:
 			posVec = self.gameObject.position[:]
 			
 			# Orientation
-			aimVec = self.trueAim.getAxisVect((0, 1, 0))
+			aimVec = self.getAimDirection()
 			
 			# Attribute dictionary
 			A = {}
