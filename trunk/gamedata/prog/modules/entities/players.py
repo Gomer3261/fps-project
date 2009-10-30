@@ -292,7 +292,7 @@ class PLAYER:
 			self.gameObject.localOrientation = mat
 			
 			y = Vector(v[0], v[1], v[2])
-			z = y.cross(y.cross([0, 0, 1))
+			z = y.cross(y.cross([0, 0, 1]))
 			x = y.cross(z)
 			
 			mat = [
