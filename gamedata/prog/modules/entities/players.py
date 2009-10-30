@@ -289,7 +289,7 @@ class PLAYER:
 				[x[2], y[2], z[2]]
 				]
 				
-			self.gameObject.localOrientation = mat
+			self.gameObject.orientation = mat
 			
 			y = Vector(v[0], v[1], v[2])
 			z = y.cross(y.cross(Vector([0, 0, 1])))
@@ -301,7 +301,7 @@ class PLAYER:
 				[x[2], y[2], z[2]]
 				]
 				
-			self.trueAim.localOrientation = mat
+			self.trueAim.orientation = mat
 
 
 
