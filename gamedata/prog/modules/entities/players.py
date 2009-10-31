@@ -108,8 +108,11 @@ class PLAYER:
 		# Getting some related objects
 		self.YPivot = con.actuators["YPivot"].owner
 		self.centerhinge = con.actuators["centerhinge"].owner
-		self.fpcam = con.actuators["fpcam"].owner
 		self.trueAim = con.actuators["trueAim"].owner
+		self.ppVis = con.actuators["ppVis"].owner
+		self.ppVis["player"] = self.ticket # Setting the pp-Vis player ticket thing for ballistics to get who it hit.
+		
+		#self.fpcam = con.actuators["fpcam"].owner # Proxy player's aren't supposed to have cameras...
 	
 	def realInit(self, spawnObj):
 		import modules
