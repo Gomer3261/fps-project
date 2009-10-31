@@ -100,6 +100,10 @@ class PLAYER:
 	def proxyInit(self, spawnObj):
 		self.spawnObj = spawnObj
 		
+		### INTERPOLATION VALUES ###
+		self.positionalInterpolationSpeed = 0.2
+		self.targetPosition = [0.0, 0.0, 0.0] # For interpolation...
+		
 		# Spawning the player proxy object
 		self.gameObject = self.spawnGameObject("playerProxy")
 		con = self.gameObject.controllers[0]
@@ -202,7 +206,7 @@ class PLAYER:
 		return pos
 	
 	def getAimDirection(self):
-		ori = self.trueAim.orientation
+		ori = self.trueAim.worldOrientation
 		YX = ori[0][1]
 		YY = ori[1][1]
 		YZ = ori[2][1]
@@ -244,6 +248,7 @@ class PLAYER:
 			
 	def doProxy(self):
 		self.doReplication() # Replicating the current gamestate
+		self.doInterpolation() # Smoothing out the movements of the proxy player.
 
 	def doReal(self):
 		self.doReplication() # Nothing for doReal yet.
@@ -271,13 +276,26 @@ class PLAYER:
 			from Mathutils import Vector
 			
 			### REPLICATING POSITION ###
-			self.gameObject.position = gamestate.contents["P"][self.ticket]["A"]["P"]
+			pos = gamestate.contents["P"][self.ticket]["A"]["P"]
+			self.targetPosition = pos
 			
 			### REPLICATING ORIENTATION ###
 			ori = gamestate.contents["P"][self.ticket]["A"]["O"]
-			self.gameObject.orientation = ori
-
-
+			self.gameObject.worldOrientation = ori
+	
+	
+	### ========================================================================
+	### DO INTERPOLATION
+	### ========================================================================
+	
+	def doInterpolation(self):
+		import modules.gametools as gametools
+		
+		targetPosition = self.targetPosition
+		startingPosition = self.gameObject.worldPosition
+		
+		newPosition = gametools.interpolatePosition(startingPosition, targetPosition, self.positionalInterpolationSpeed)
+		self.gameObject.worldPosition = newPosition
 
 
 
@@ -291,10 +309,10 @@ class PLAYER:
 			router = modules.gamecontrol.director.router
 			
 			# Position
-			posVec = self.gameObject.position[:]
+			posVec = self.gameObject.worldPosition
 			
 			# Orientation
-			ori = self.gameObject.orientation
+			ori = self.gameObject.worldOrientation
 			
 			# Attribute dictionary
 			A = {}
