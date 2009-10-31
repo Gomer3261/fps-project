@@ -108,13 +108,8 @@ class PLAYER:
 		# Getting some related objects
 		self.YPivot = con.actuators["YPivot"].owner
 		self.centerhinge = con.actuators["centerhinge"].owner
+		self.fpcam = con.actuators["fpcam"].owner
 		self.trueAim = con.actuators["trueAim"].owner
-		
-		self.ppVis = con.actuators["pp-vis"].owner
-		self.ppVis["player"] = self.ticket
-		
-		# Proxies don't have cameras...
-		#self.fpcam = con.actuators["fpcam"].owner
 	
 	def realInit(self, spawnObj):
 		import modules
@@ -277,9 +272,12 @@ class PLAYER:
 			
 			### REPLICATING ORIENTATION ###
 			v = gamestate.contents["P"][self.ticket]["A"]["O"]
+			try:
+				v[2] = 0
+			except:
+				pass
 			
-			y = Vector(v[0], v[1], 0.0)
-			y.normalize()
+			y = Vector(v[0], v[1], v[2])
 			z = Vector([0, 0, 1])
 			x = y.cross(z)
 			
@@ -289,19 +287,7 @@ class PLAYER:
 				[x[2], y[2], z[2]]
 				]
 				
-			self.gameObject.orientation = mat
-			
-			y = Vector(v[0], v[1], v[2])
-			z = y.cross(y.cross(Vector([0, 0, 1])))
-			x = y.cross(z)
-			
-			mat = [
-				[x[0], y[0], z[0]],
-				[x[1], y[1], z[1]],
-				[x[2], y[2], z[2]]
-				]
-				
-			self.trueAim.orientation = mat
+			self.gameObject.localOrientation = mat
 
 
 
@@ -320,12 +306,12 @@ class PLAYER:
 			posVec = self.gameObject.position[:]
 			
 			# Orientation
-			aimVec = self.getAimDirection()
+			oriVec = self.gameObject.getAxisVect((0, 1, 0))
 			
 			# Attribute dictionary
 			A = {}
 			A["P"] = posVec
-			A["O"] = aimVec
+			A["O"] = oriVec
 
 			# Throw the data
 			#print "THROWING DATA TO ROUTER"
