@@ -274,23 +274,8 @@ class PLAYER:
 			self.gameObject.position = gamestate.contents["P"][self.ticket]["A"]["P"]
 			
 			### REPLICATING ORIENTATION ###
-			v = gamestate.contents["P"][self.ticket]["A"]["O"]
-			try:
-				v[2] = 0
-			except:
-				pass
-			
-			y = Vector(v[0], v[1], v[2])
-			z = Vector([0, 0, 1])
-			x = y.cross(z)
-			
-			mat = [
-				[x[0], y[0], z[0]],
-				[x[1], y[1], z[1]],
-				[x[2], y[2], z[2]]
-				]
-				
-			self.gameObject.localOrientation = mat
+			ori = gamestate.contents["P"][self.ticket]["A"]["O"]
+			self.gameObject.orientation = ori
 
 
 
@@ -309,12 +294,12 @@ class PLAYER:
 			posVec = self.gameObject.position[:]
 			
 			# Orientation
-			oriVec = self.gameObject.getAxisVect((0, 1, 0))
+			ori = self.gameObject.orientation
 			
 			# Attribute dictionary
 			A = {}
 			A["P"] = posVec
-			A["O"] = oriVec
+			A["O"] = ori
 
 			# Throw the data
 			#print "THROWING DATA TO ROUTER"
