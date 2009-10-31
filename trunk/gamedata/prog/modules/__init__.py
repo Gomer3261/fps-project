@@ -21,6 +21,8 @@ import interface
 import items
 import networking
 
+import gametools
+
 import profiling
 import timetools
 
