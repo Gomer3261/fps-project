@@ -101,7 +101,7 @@ class PLAYER:
 		self.spawnObj = spawnObj
 		
 		### INTERPOLATION VALUES ###
-		self.positionalInterpolationSpeed = 0.2
+		self.positionalInterpolationValue = 0.2
 		self.targetPosition = [0.0, 0.0, 0.0] # For interpolation...
 		
 		# Spawning the player proxy object
@@ -280,8 +280,26 @@ class PLAYER:
 			self.targetPosition = pos
 			
 			### REPLICATING ORIENTATION ###
-			ori = gamestate.contents["P"][self.ticket]["A"]["O"]
-			self.gameObject.worldOrientation = ori
+			v = gamestate.contents["P"][self.ticket]["A"]["O"]
+			
+			### gameObject Orientation ###
+			# o is for gameObject
+			oY = Vector(v[0], v[1], v[2])
+			oZ = Vector(0.0, 0.0, 1.0)
+			oX = oY.cross(oZ)
+			oY = oZ.cross(oX)
+			oX.normalize()
+			oY.normalize()
+			oZ.normalize()
+			oOri = [ [oX[0], oY[0], oZ[0]], [oX[1], oY[1], oZ[1]], [oX[2], oY[2], oZ[2]] ]
+			self.gameObject.worldOrientation = oOri
+			
+			
+			### trueAim Orientation ###
+			# a is for trueAim.
+			#aY = Vector(v[0], v[1], v[2])
+			#aX = Vector(1.0, 0.0, 0.0)
+			#aZ = 
 	
 	
 	### ========================================================================
@@ -294,7 +312,7 @@ class PLAYER:
 		targetPosition = self.targetPosition
 		startingPosition = self.gameObject.worldPosition
 		
-		newPosition = gametools.interpolatePosition(startingPosition, targetPosition, self.positionalInterpolationSpeed)
+		newPosition = gametools.interpolatePosition(startingPosition, targetPosition, self.positionalInterpolationValue)
 		self.gameObject.worldPosition = newPosition
 
 
@@ -312,7 +330,7 @@ class PLAYER:
 			posVec = self.gameObject.worldPosition
 			
 			# Orientation
-			ori = self.gameObject.worldOrientation
+			ori = self.getAimDirection()
 			
 			# Attribute dictionary
 			A = {}
