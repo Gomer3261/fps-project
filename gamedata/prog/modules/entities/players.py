@@ -294,12 +294,8 @@ class PLAYER:
 			oOri = [ [oX[0], oY[0], oZ[0]], [oX[1], oY[1], oZ[1]], [oX[2], oY[2], oZ[2]] ]
 			self.gameObject.worldOrientation = oOri
 			
-			
 			### trueAim Orientation ###
-			# a is for trueAim.
-			#aY = Vector(v[0], v[1], v[2])
-			#aX = Vector(1.0, 0.0, 0.0)
-			#aZ = 
+			self.trueAim.alignAxisToVect(v, 1)
 	
 	
 	### ========================================================================
