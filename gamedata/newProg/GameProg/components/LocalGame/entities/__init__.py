@@ -1,7 +1,9 @@
 ### Entities Subcomponent ###
 
-class Class:
-	def __init__(self, cont):
-		pass
-	def run(self):
-		pass
+import player
+
+def spawnEntity(type, EID):
+	entity = None
+	if type == 'player':
+		entity = player.Class(EID)
+	return entity
