@@ -2,6 +2,8 @@
 
 class Class:
 	def __init__(self, cont):
-		pass
+		self.mode = "offline"
+		self.ticket = -1
+	
 	def run(self):
 		pass
