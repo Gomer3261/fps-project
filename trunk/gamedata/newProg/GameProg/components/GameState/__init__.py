@@ -56,3 +56,21 @@ class Class:
 		
 		EID = self.getEID()
 		self.contents["E"][EID] = E
+		
+		return EID
+	
+	def directlyAddUser(self, type):
+		E = {}
+		# Type (player, bot, vehicle, dob)
+		E = ["T"] = type
+		# Entity Controlled Attributes
+		E["D"] = {}
+		
+		if type=='player':
+			E['D']['A'] = {} # Player-Controlled Attributes
+			E['D']['S'] = {} # Server-Controlled Attributes
+		
+		EID = self.getEID()
+		self.contents["E"][EID] = E
+		
+		return EID
