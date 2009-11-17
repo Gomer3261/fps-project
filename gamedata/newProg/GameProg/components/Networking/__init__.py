@@ -6,4 +6,4 @@ class Class:
 		self.msnet = msnetModule.Class()
 		
 	def run(self):
-		pass
+		self.msnet.run()
