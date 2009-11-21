@@ -33,7 +33,7 @@ class Class:
 	### Run Method
 	### ================================================
 	
-	def run(self):
+	def run(self, MasterInfo):
 		
 		# Asynchronous Connection
 		if self.ms_session["connection"] == -1:
@@ -90,7 +90,7 @@ class Class:
 		self.startConnection()
 		self.reclaimSession()
 	
-	def reclaimSession(self)
+	def reclaimSession(self):
 		"""
 		Sends a message to the server to tell it that we are reclaiming our session.
 		It should remember who we are.
@@ -103,7 +103,7 @@ class Class:
 	### In/Out Handling
 	### ================================================
 	
-	def recv(self, buf):
+	def recv(self, buf=2048):
 		"""
 		Receiving data from the socket, adding it to the inBuffer.
 		"""

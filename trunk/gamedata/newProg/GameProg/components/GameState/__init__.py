@@ -9,6 +9,9 @@ class Class:
 		self.EID = 1 # Entity ID
 		self.TID = 1 # Trigger ID
 	
+	def run(self, Networking):
+		pass
+	
 	def resetContents(self):
 		### GameState Contents ###
 		self.contents = {}
@@ -46,7 +49,7 @@ class Class:
 	def addEntityDirectly(self, type):
 		E = {}
 		# Type (player, bot, vehicle, dob)
-		E = ["T"] = type
+		E["T"] = type
 		# Entity Controlled Attributes
 		E["D"] = {}
 		
@@ -62,7 +65,7 @@ class Class:
 	def addUserDirectly(self, type):
 		E = {}
 		# Type (player, bot, vehicle, dob)
-		E = ["T"] = type
+		E["T"] = type
 		# Entity Controlled Attributes
 		E["D"] = {}
 		
