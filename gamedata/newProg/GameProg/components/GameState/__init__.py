@@ -7,7 +7,6 @@ class Class:
 		
 		self.mode = "real"
 		self.EID = 1 # Entity ID
-		self.TID = 1 # Trigger ID
 	
 	def run(self, Networking):
 		pass
@@ -19,13 +18,6 @@ class Class:
 		self.contents["U"] = {}
 		# Entities (stored by Entity ID)
 		self.contents["E"] = {}
-		# Triggers (stored by Trigger ID)
-		self.contents["T"] = {}
-		# GameInformation
-		self.contents["G"] = {}
-		self.contents["G"]["S"] = "G" # GameInformation:State (L=Lobby, G=Game, I=Intermission)
-		self.contents["G"]["GT"] = "dm" # GameInformation:GameType
-		self.contents["G"]["L"] = "" # GameInformation:Level
 	
 	def reset(self):
 		self.resetContents()
@@ -39,13 +31,7 @@ class Class:
 		chosen = self.EID
 		self.EID += 1
 		return chosen
-	
-	def getTID(self):
-		chosen = self.TID
-		self.TID += 1
-		return chosen
-	
-	
+
 	def addEntityDirectly(self, type):
 		E = {}
 		# Type (player, bot, vehicle, dob)

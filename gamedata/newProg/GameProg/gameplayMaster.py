@@ -92,7 +92,7 @@ def run(cont):
 		### ================================================
 		
 		Networking.msnet.run(MasterInfo) # Asynchronous operations with the Master Server.
-		Networking.gpsnet.run(MasterInfo) # Asynchronous operations with the  Gameplay Server.
+		Networking.gpsnet.run(MasterInfo) # Asynchronous operations with the Gameplay Server.
 		Networking.gpsnet.incoming() # Receiving data to the in buffer.
 		
 		Interface.run() # Runs the interface (user inputs).
