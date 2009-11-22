@@ -24,11 +24,13 @@ class Class:
 	
 	# Creating Entities
 	def createEntity(self, ID):
-		self.entities[ID] = self.entityBase.newEntity(ID, self)
+		import Entities
+		type = self.GameState.getEntityType(ID)
+		self.entities[ID] = Entities.getEntityClass(type)(ID, self)
 	
 	
 	# Running Entities
-	def runEntities(self, GameData, Networking):
+	def runEntities(self):
 		for ID in self.entities:
 			self.entities[ID].run(self)
 		
