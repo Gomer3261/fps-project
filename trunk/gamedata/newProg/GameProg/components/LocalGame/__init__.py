@@ -2,20 +2,33 @@
 
 class Class:
 	def __init__(self, cont=None):
-		pass
+		self.entities = {}
 	
-	def run(self, Networking):
-		pass
 	
-	class DirectorClass:
-		"""
-		Totally temporary class; should be an entity...
-		"""
-		def __init__(self):
-			a = 0
-		def weOwnGameState(self):
-			return True
+	# Main Loop
+	def run(self, GameState, Networking):
+		self.GameState = GameState
+		self.Networking = Networking
+		
+		self.replicateGameState(self.GameState)
+		self.runEntities()
 	
-	def getDirector(self):
-		return self.DirectorClass() # Making an instance of the director and returning it.
+	
+	# Replication
+	def replicateGameState(self, GameState):
+		GS_entitydict = GameState.getEntityDict()
+		for ID in GS_entitydict:
+			if ID not in self.entities:
+				self.createEntity(ID)
+	
+	
+	# Creating Entities
+	def createEntity(self, ID):
+		self.entities[ID] = self.entityBase.newEntity(ID, self)
+	
+	
+	# Running Entities
+	def runEntities(self, GameData, Networking):
+		for ID in self.entities:
+			self.entities[ID].run(self)
 		
