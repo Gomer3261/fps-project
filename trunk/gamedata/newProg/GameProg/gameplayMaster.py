@@ -5,6 +5,10 @@ The highest level of programming; it's responsible for running the entire game.
 def initiate(cont):
 	import slab
 	if not slab.INIT:
+	
+		### Admin ###
+		from components import Admin
+		if not hasattr(slab, "Admin"): slab.Admin = Admin.Class(cont)
 
 		### GameGoodies ###
 		from components import GameGoodies
@@ -52,44 +56,12 @@ def run(cont):
 		initiate(cont) # Only actually initiates the first time...
 		from slab import *
 		
-		### ================================================
-		### Networking Session Recovery
-		### ================================================
-		
-		# Recovering master server session from 
-		# the main menu via GameLogic.globalDict
-		if MasterInfo.try_mscon:
-			if not Networking.msnet.connected:
-				if "ms_session" in GameLogic.globalDict:
-					print("Reconnecting to MS.")
-					ms_session = GameLogic.globalDict["ms_session"]
-					del GameLogic.globalDict["ms_session"]
-					Networking.msnet.reconnect(ms_session)
-				else:
-					print("No ms_session info found; not reconnecting to MS.")
-			MasterInfo.try_mscon = 1
-		
-		# Connecting to GPS based on inherited information.
-		if MasterInfo.try_gpscon:
-			if not Networking.gpsnet.connected:
-				if "gpscon" in GameLogic.globalDict:
-					print("Connecting to GPS")
-					gpscon = GameLogic.globalDict["gpscon"]
-					del GameLogic.globalDict["gpscon"]
-					Networking.gpsnet.reconnect(gpscon)
-				else:
-					print("No inherited gpscon info; not connecting to GPS.")
-			MasterInfo.try_gpscon = 1
-		
-		
-		
-		
-		
-		
 		
 		### ================================================
 		### The Game Loop
 		### ================================================
+		
+		Admin.run(GameLogic, Networking, GameState) # Setting up the game
 		
 		Networking.msnet.run(MasterInfo) # Asynchronous operations with the Master Server.
 		Networking.gpsnet.run(MasterInfo) # Asynchronous operations with the Gameplay Server.
@@ -97,7 +69,7 @@ def run(cont):
 		
 		Interface.run() # Runs the interface (user inputs).
 		GameState.run(Networking) # Runs the GameState: represents the game world based on changes it finds in the Networking in buffer.
-		LocalGame.run(Networking) # LocalGame: Reflects the scene described by GameData.
+		LocalGame.run(GameState, Networking, Resources) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		
 		Networking.gpsnet.outgoing(LocalGame) # Asynchronously sends out data that has accumulated in the buffers.
