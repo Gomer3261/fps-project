@@ -1,8 +1,8 @@
 ### Base Entity ###
 
 class Class:
-	def __init__(self, ID, LocalGame):
-		self.ID = ID
+	def __init__(self, EID, LocalGame):
+		self.EID = EID
 		
 		self.LocalGame = LocalGame
 		self.GameState = LocalGame.GameState
@@ -10,14 +10,14 @@ class Class:
 		
 	
 	def run(self):
-		ID = self.ID
+		EID = self.EID
 		
 		LocalGame = self.LocalGame
 		GameState = self.GameState
 		Networking = self.Networking
 	
 	
-		entityData = GameState.getEntity(ID)
+		entityData = GameState.getEntity(EID)
 		entityDataOut = {}
 				
 		value = entityData["D"]["V"]
