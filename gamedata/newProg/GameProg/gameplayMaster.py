@@ -14,6 +14,10 @@ def initiate(cont):
 		from components import GameState
 		if not hasattr(slab, "GameState"): slab.GameState = GameState.Class(cont)
 		
+		### LocalGame ###
+		from components import LocalGame
+		if not hasattr(slab, "LocalGame"): slab.LocalGame = LocalGame.Class(cont)
+		
 		### Gui ###
 		from components import Gui
 		if not hasattr(slab, "Gui"): slab.Gui = Gui.Class(cont)
@@ -72,6 +76,7 @@ def run(cont):
 					print("Connecting to GPS")
 					gpscon = GameLogic.globalDict["gpscon"]
 					del GameLogic.globalDict["gpscon"]
+					Networking.gpsnet.reconnect(gpscon)
 				else:
 					print("No inherited gpscon info; not connecting to GPS.")
 			MasterInfo.try_gpscon = 1
@@ -86,16 +91,16 @@ def run(cont):
 		### The Game Loop
 		### ================================================
 		
-		Networking.run(MasterInfo) # Asynchronous operations with the Master Server and Gameplay Server.
-		Networking.gpsnet.handleIn() # Receiving data to the in buffer.
+		Networking.msnet.run(MasterInfo) # Asynchronous operations with the Master Server.
+		Networking.gpsnet.run(MasterInfo) # Asynchronous operations with the  Gameplay Server.
+		Networking.gpsnet.incoming() # Receiving data to the in buffer.
 		
 		Interface.run() # Runs the interface (user inputs).
-		GameState.run(Networking) # Runs the GameState (runs GameData and LocalGame).
-		# GameData: represents the game world based on changes it finds in the Networking in buffer.
-		# LocalGame: Reflects the scene described by GameData.
+		GameState.run(Networking) # Runs the GameState: represents the game world based on changes it finds in the Networking in buffer.
+		LocalGame.run(Networking) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		
-		Networking.gpsnet.handleOut() # Asynchronously sends out data that has accumulated in the out buffer.
+		Networking.gpsnet.outgoing(LocalGame) # Asynchronously sends out data that has accumulated in the buffers.
 	
 	
 	
