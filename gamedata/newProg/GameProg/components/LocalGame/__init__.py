@@ -1,14 +1,15 @@
 ### LocalGame Component ###
 
 class Class:
-	def __init__(self, cont=None):
+	def __init__(self):
 		self.entities = {}
 	
 	
 	# Main Loop
-	def run(self, GameState, Networking):
+	def run(self, GameState, Networking, Resources):
 		self.GameState = GameState
 		self.Networking = Networking
+		self.Resources = Resources
 		
 		self.replicateGameState(self.GameState)
 		self.runEntities()

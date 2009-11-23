@@ -1,7 +1,7 @@
 ### Networking Component ###
 
 class Class:
-	def __init__(self, cont):
+	def __init__(self):
 	
 		import msnet as msnetModule
 		self.msnet = msnetModule.Class()
