@@ -8,35 +8,35 @@ def initiate(cont):
 	
 		### Admin ###
 		from components import Admin
-		if not hasattr(slab, "Admin"): slab.Admin = Admin.Class(cont)
+		if not hasattr(slab, "Admin"): slab.Admin = Admin.Class()
 
 		### GameGoodies ###
 		from components import GameGoodies
-		if not hasattr(slab, "GameGoodies"): slab.GameGoodies = GameGoodies.Class(cont)
+		if not hasattr(slab, "GameGoodies"): slab.GameGoodies = GameGoodies.Class()
 		
 		### GameState ###
 		from components import GameState
-		if not hasattr(slab, "GameState"): slab.GameState = GameState.Class(cont)
+		if not hasattr(slab, "GameState"): slab.GameState = GameState.Class()
 		
 		### LocalGame ###
 		from components import LocalGame
-		if not hasattr(slab, "LocalGame"): slab.LocalGame = LocalGame.Class(cont)
+		if not hasattr(slab, "LocalGame"): slab.LocalGame = LocalGame.Class()
 		
 		### Gui ###
 		from components import Gui
-		if not hasattr(slab, "Gui"): slab.Gui = Gui.Class(cont)
+		if not hasattr(slab, "Gui"): slab.Gui = Gui.Class()
 		
 		### Interface ###
 		from components import Interface
-		if not hasattr(slab, "Interface"): slab.Interface = Interface.Class(cont)
+		if not hasattr(slab, "Interface"): slab.Interface = Interface.Class()
 		
 		### Networking ###
 		from components import Networking
-		if not hasattr(slab, "Networking"): slab.Networking = Networking.Class(cont)
+		if not hasattr(slab, "Networking"): slab.Networking = Networking.Class()
 		
 		### Resources ###
 		from components import Resources
-		if not hasattr(slab, "Resources"): slab.Resources = Resources.Class(cont)
+		if not hasattr(slab, "Resources"): slab.Resources = Resources.Class()
 		
 		###
 		### INIT Completed.

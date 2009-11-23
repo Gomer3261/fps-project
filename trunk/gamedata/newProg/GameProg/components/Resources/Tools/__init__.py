@@ -1,7 +1,7 @@
 ### Tools Component ###
 
 class Class:
-	def __init__(self, cont):
+	def __init__(self):
 		pass
 	def run(self):
 		pass

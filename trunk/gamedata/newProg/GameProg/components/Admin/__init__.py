@@ -1,7 +1,7 @@
 ### Admin Component ###
 
 class Class:
-	def __init__(self, cont):
+	def __init__(self):
 		self.gameInitiated = False
 		
 		### Admin Info ###
