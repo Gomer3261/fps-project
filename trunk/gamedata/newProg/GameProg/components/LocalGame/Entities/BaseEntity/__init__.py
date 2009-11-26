@@ -19,11 +19,6 @@ class Class:
 	
 		entityData = GameState.getEntity(EID)
 		entityDataOut = {}
-				
-		value = entityData["D"]["V"]
-		value += 1
-		
-		entityDataOut["D"]["V"] = value
 		
 		package = entityDataOut
 		Networking.gpsnet.send(package) # TCP
