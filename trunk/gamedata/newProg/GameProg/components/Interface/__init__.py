@@ -3,11 +3,11 @@
 class Class:
 	def __init__(self):
 		
-		import inputs as inputsModule
-		self.inputs = inputsModule.Class()
+		import Inputs as InputsModule
+		self.Inputs = InputsModule.Class()
 		
-		import options as optionsModule
-		self.options = optionsModule.Class(inputs)
+		import Options as OptionsModule
+		self.Options = OptionsModule.Class(Inputs)
 		
 	def run(self):
 		pass
