@@ -2,12 +2,8 @@
 
 class Class:
 	def __init__(self):
-		import Executor
-		self.Executor = Executor.Class(self)
-		
-		import Requester
-		self.Requester = Requester.Class(self)
-	
+		import RequestHandler
+		self.RequestHandler = RequestHandler.Class(self)
 	
 		self.resetContents()
 		self.changes = []
@@ -22,8 +18,7 @@ class Class:
 		When we are the server, we send out full distributions of the gamestate periodically,
 		but we also send out GameState Changes every tick.
 		"""
-		self.Requester.run(GameState, Networking.gpsnet) # not really sure what this might do...
-		self.Executor.run(GameState, Networking.gpsnet) # Interprets requests from Networking...
+		self.RequestHandler.run(GameState, Networking.gpsnet) # Interprets requests from Networking...
 		# Distribution stuff goes here...
 	
 	
@@ -50,16 +45,14 @@ class Class:
 		E = {}
 		# Type (player, bot, vehicle, dob)
 		E["T"] = type
-		# Entity Controlled Attributes
-		E["D"] = {}
+		E["O"] = 0 # OWNER UID
+		E["C"] = 0 # CONTROLLER UID
 		
-		if type=='player':
-			E['D']['A'] = {} # Player-Controlled Attributes
-			E['D']['S'] = {} # Server-Controlled Attributes
+		E["OD"] = {} # Owned Data
+		E["CD"] = {} # Controlled Data
 		
 		EID = self.generateEID()
 		self.contents["E"][EID] = E
-		
 		return EID
 	
 	def addUserDirectly(self, UID):
