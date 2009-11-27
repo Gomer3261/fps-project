@@ -17,8 +17,7 @@ class Class:
 	
 	# Replication
 	def replicateGameState(self, GameState):
-		GS_entitydict = GameState.getEntityDict()
-		for EID in GS_entitydict:
+		for EID in GameState.contents["E"]:
 			if EID not in self.entities:
 				self.createEntity(EID)
 	
@@ -26,7 +25,7 @@ class Class:
 	# Creating Entities
 	def createEntity(self, EID):
 		import Entities
-		type = self.GameState.getEntityType(EID)
+		type = self.GameState.getEntity(EID)['T']
 		self.entities[EID] = Entities.getEntityClass(type)(EID, self)
 	
 	
@@ -34,4 +33,3 @@ class Class:
 	def runEntities(self):
 		for EID in self.entities:
 			self.entities[EID].run(self)
-		

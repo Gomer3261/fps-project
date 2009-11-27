@@ -8,7 +8,6 @@ class Class:
 		self.resetContents()
 		self.changes = []
 		
-		self.mode = "real" # Necessary?
 		self.EID = 1 # Entity ID
 	
 	
@@ -41,7 +40,7 @@ class Class:
 		self.contents = new
 		self.changes = []
 
-	def addEntityDirectly(self, type):
+	def addEntity(self, type, owner, controller):
 		E = {}
 		# Type (player, bot, vehicle, dob)
 		E["T"] = type
@@ -55,13 +54,17 @@ class Class:
 		self.contents["E"][EID] = E
 		return EID
 	
-	def addUserDirectly(self, UID):
+	def addUser(self, UID):
 		U = {}
-		U["name"] = "-NameError-"
-		U["kills"] = 0
-		U["deaths"] = 0
+		U["N"] = "-NameError-"
+		U["K"] = 0
+		U["D"] = 0
 		self.contents["U"][UID] = U
 		return UID
+	
+	
+	def getEntity(self, EID):
+		return self.contents['E'][EID]
 	
 	
 	### ================================================

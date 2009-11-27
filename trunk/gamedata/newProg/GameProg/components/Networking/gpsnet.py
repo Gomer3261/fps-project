@@ -14,7 +14,7 @@ class Class:
 	Lower-level Public Interface:
 		- send(package): sends a package (by placing it in the sendBuffer, where it is later handled by the outgoing loop).
 		- throw(package): sends a package over UDP (by placing it in the throwBuffer, where it is later handled by the outgoing loop).
-		- getInPackages(): gets a list of packages we have received this tick. These packages will be cleared next tick.
+		- getinItems(): gets a list of items we have received this tick. These items will be cleared next tick.
 	
 	"""
 
@@ -26,12 +26,12 @@ class Class:
 		self.gps_session["connection"] = (0, 0) # (UDP_conn, TCP_conn) 0: no connection. 1: connected. -1: currently attempting connection.
 		self.gps_session["address"] = "192.168.1.1:3201/3202" # Standard address protocol for a gps_session
 		
-		self.gps_session["ticket"] = 0
+		self.gps_session["ticket"] = -1
 		self.gps_session["inBuffer"] = ""
 		self.gps_session["outBuffer"] = ""
 		self.gps_session["lastTime"] = 0.0
 		
-		self.inPackages = []
+		self.inItems = []
 		self.sendBuffer = []
 		self.throwBuffer = []
 	
@@ -67,8 +67,8 @@ class Class:
 		"""
 		self.throwBuffer.append(package)
 	
-	def getInPackages(self):
-		return self.inPackages
+	def getInItems(self):
+		return self.inItems
 	
 	
 	
@@ -80,17 +80,17 @@ class Class:
 	
 	def incoming(self):
 		"""
-		Receiving data to the inBuffer, then extracting it from the inBuffer to the inPackages list.
-		inPackages is cleared before the new packages are put in there.
+		Receiving data to the inBuffer, then extracting it from the inBuffer to the inItems list.
+		inItems is cleared before the new items are put in there.
 		"""
 		self.recv()
-		self.inPackages = []
+		self.inItems = []
 		self.extract()
 	
 	def recv(self, buf=2048):
 		"""
 		Receives data from the TCP socket, adds it to the inBuffer
-		Then, it receives UDP packages and immediately plops it into inPackages.
+		Then, it receives UDP items and immediately plops it into inItems.
 		"""
 		# Doing TCP
 		data = ""
@@ -98,16 +98,16 @@ class Class:
 		
 		# Doing UDP
 		data = ""
-		package = [None, None] # unflattenUDP(data)
-		self.inPackages.append(package)
+		item = [None, None] # unflattenUDP(data)
+		self.inItems.append(item)
 	
 	def extract(self):
 		"""
-		Extracts flattened packages from the inBuffer, puts them in the inPackages list.
+		Extracts flattened packages from the inBuffer, puts them in the inItems list.
 		"""
-		packages = self.gps_session["inBuffer"]
-		for package in packages:
-			self.inPackages.append(package)
+		items = self.gps_session["inBuffer"]
+		for item in items:
+			self.inItems.append(item)
 	
 	
 	
@@ -117,28 +117,32 @@ class Class:
 	### Outgoing
 	### ================================================
 	
-	def outgoing(self, LocalGame):
+	def outgoing(self, Admin):
 		"""
 		"""
-		self.sendAndThrowBuffers(LocalGame)
+		self.sendAndThrowBuffers(Admin)
 		self.handleOutBuffer()
 	
-	def sendAndThrowBuffers(self, LocalGame):
+	def sendAndThrowBuffers(self, Admin):
 		"""
 		Sends out data that has accumulated in the buffers.
-		Requires LocalGame to get the Director entity.
+		Requires LocalGame to get the Director entity (not anymore).
 		If we own the GameState, then outgoing data will just
-		be plopped right into inPackages.
+		be plopped right into inItems.
 		"""
-		director = LocalGame.getDirector()
+		#director = LocalGame.getDirector()
 		
-		if director.weOwnGameState():
-			# Feedback loop; placing packages straight into our own inPackages list.
+		ourUID = 1
+		
+		# We own the GameState
+		if True: #Admin.weOwnGameState():
+			# Feedback loop; placing packages straight into our own inItems list.
 			for package in self.sendBuffer:
-				self.inPackages.append(package)
+				self.inItems.append([ourUID, package])
 			for package in self.throwBuffer:
-				self.inPackages.append(package)
+				self.inItems.append([ourUID, package])
 		else:
+			# Hehe, like this will ever happen...
 			# Flattening the packages and sending them off to a remote host.
 			for package in self.sendBuffer:
 				data = [None, None] # flatten(package)
