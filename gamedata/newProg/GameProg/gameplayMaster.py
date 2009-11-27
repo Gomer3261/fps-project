@@ -72,7 +72,7 @@ def run(cont):
 		LocalGame.run(GameState, Networking, Resources) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		
-		Networking.gpsnet.outgoing(LocalGame) # Asynchronously sends out data that has accumulated in the buffers.
+		Networking.gpsnet.outgoing(Admin) # Asynchronously sends out data that has accumulated in the buffers.
 	
 	
 	
