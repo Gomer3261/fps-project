@@ -101,6 +101,11 @@ class Class:
 			EID = GameState.addEntity(type, sender, sender) # Sender is both the owner and the controller!
 			# We'll let this information be distributed in a full GS distro.
 		
+		if flag == "RE": # Remove Entity
+			EID = action[1]
+			GameState.removeEntity(EID)
+			# We'll let this information be distributed in a full GS distro.
+		
 		if flag == 'SP': # Spawn Player
 			EID = GameState.addEntity('player')
 			GameState.contents['E'][EID]['C'] = sender

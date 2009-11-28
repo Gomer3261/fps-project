@@ -15,7 +15,7 @@ class Class:
 		
 		changes = {"T":0}
 		package = ['GS', ['EC', [EID, changes]]]
-		Networking.gpsnet.send(package)
+		self.Networking.gpsnet.send(package)
 		
 		print("Test Entity Created\n\n")
 		
@@ -29,19 +29,25 @@ class Class:
 		Interface = self.Interface
 		
 		entityData = GameState.getEntity(EID)
-	
-		if entityData["CD"]["T"] < 50:
-			tick = entityData["CD"]["T"] + 1
-			
+		
+		try:
+			if entityData["CD"]["T"] < 50:
+				tick = entityData["CD"]["T"] + 1
+				
+				#updating GameState
+				changes = {"T":tick}
+				package = ['GS', ['EC', [EID, changes]]]
+				Networking.gpsnet.send(package)
+				
+			else:
+				#ending the object
+				package = ['GS', ['AR', ['RE', EID]]]
+				Networking.gpsnet.send(package)
+				self.obj.endObject()
+		except:
 			#updating GameState
-			changes = {"T":tick}
+			changes = {"T":0}
 			package = ['GS', ['EC', [EID, changes]]]
 			Networking.gpsnet.send(package)
-			
-		else:
-			#ending the object
-			package = ['GS', ['AR', ['RE', EID]]]
-			Networking.gpsnet.send(package)
-			self.obj.endObject()
 		
 		entityData = GameState.getEntity(EID)

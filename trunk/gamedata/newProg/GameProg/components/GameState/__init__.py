@@ -18,6 +18,7 @@ class Class:
 		but we also send out GameState Changes every tick.
 		"""
 		self.RequestHandler.run(self, Networking.gpsnet) # Interprets requests from Networking...
+		self.changes = [] # XXX Clearing Changes... (We don't need em for now!)
 		# Distribution stuff goes here...
 	
 	
@@ -54,6 +55,10 @@ class Class:
 		EID = self.generateEID()
 		self.contents["E"][EID] = E
 		return EID
+	
+	def removeEntity(self, EID):
+		del self.contents['E'][EID]
+		print("Entity (%s) removed."%(EID))
 	
 	def addUser(self, UID):
 		U = {}
