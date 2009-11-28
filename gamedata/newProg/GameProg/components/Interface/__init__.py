@@ -8,6 +8,6 @@ class Class:
 		
 		import Options as OptionsModule
 		self.Options = OptionsModule.Class(Inputs)
-		
+	
 	def run(self):
 		pass
