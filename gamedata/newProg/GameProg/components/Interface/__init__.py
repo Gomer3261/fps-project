@@ -7,7 +7,7 @@ class Class:
 		self.Inputs = InputsModule.Class()
 		
 		import Options as OptionsModule
-		self.Options = OptionsModule.Class(Inputs)
+		self.Options = OptionsModule.Class(self.Inputs)
 	
 	def run(self):
 		pass

@@ -152,12 +152,12 @@ class Class:
 			print("Options Saved")
 
 			#making changed options effect the game
-			self.inputs.controller.setControls(controls)
+			self.inputs.controller.setControls(self.controls)
 
 			return 1
 		except:
 			self.traceback.print_exc()
-			print("\n\n", settings, "\n\n", controls)
+			print("\n\n", self.settings, "\n\n", self.controls)
 			return 0
 
 
@@ -204,7 +204,7 @@ class Class:
 			
 			print("Options Loaded")
 			
-			self.inputs.controller.setControls(controls)
+			self.inputs.controller.setControls(self.controls)
 			
 			return 1
 		except:
