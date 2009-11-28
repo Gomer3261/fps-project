@@ -163,7 +163,7 @@ class Class:
 
 
 	#loads all information from the options file.
-	def load():
+	def load(self):
 		
 		try:
 			f = open(self.path, "r")
@@ -210,7 +210,7 @@ class Class:
 		except:
 			self.traceback.print_exc()
 			print("Error loading; will attempt to save defaults and use those")
-			result = saveDefaults()
+			result = self.saveDefaults()
 			if result:
 				return 2 # This means the load failed, but the saving of defaults worked.
 			return 0

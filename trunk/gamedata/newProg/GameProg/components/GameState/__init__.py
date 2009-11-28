@@ -3,7 +3,7 @@
 class Class:
 	def __init__(self):
 		import RequestHandler
-		self.RequestHandler = RequestHandler.Class(self)
+		self.RequestHandler = RequestHandler.Class()
 	
 		self.resetContents()
 		self.changes = []
@@ -17,7 +17,7 @@ class Class:
 		When we are the server, we send out full distributions of the gamestate periodically,
 		but we also send out GameState Changes every tick.
 		"""
-		self.RequestHandler.run(GameState, Networking.gpsnet) # Interprets requests from Networking...
+		self.RequestHandler.run(self, Networking.gpsnet) # Interprets requests from Networking...
 		# Distribution stuff goes here...
 	
 	
@@ -32,7 +32,7 @@ class Class:
 		self.resetContents()
 		self.changes = []
 	
-	def applyFullDistro(self, new):
+	def applyNewContents(self, new):
 		"""
 		Totally clears the old GameState, and replaces it with a new edition of the GameState Contents.
 		Clears the changes.

@@ -15,7 +15,7 @@ class Class:
 		
 		#creating the inputs object (for sensors)
 		import GameLogic as gl
-		BaseObject = gl.getCurrentController().getOwner()
+		BaseObject = gl.getCurrentController().owner
 		self.inputsObject = gl.getCurrentScene().addObject("GP_Inputs", BaseObject)
 		con = self.inputsObject.controllers[0]
 		
