@@ -9,6 +9,8 @@ class Class:
 		self.Networking = LocalGame.Networking
 		self.Interface = LocalGame.Interface
 		
+		print("Test Entity Created\n\n")
+		
 	
 	def run(self):
 		EID = self.EID
@@ -22,6 +24,8 @@ class Class:
 		entityData = GameState.getEntity(EID)
 		entityDataOut = {}
 		
-		package = entityDataOut
-		Networking.gpsnet.send(package) # TCP
-		Networking.gpsnet.throw(package) # UDP
+		print("Running Test Entity")
+		
+		#package = entityDataOut
+		#Networking.gpsnet.send(package) # TCP
+		#Networking.gpsnet.throw(package) # UDP
