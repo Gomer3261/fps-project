@@ -20,9 +20,7 @@ class Class:
 	def replicateGameState(self, GameState):
 		for EID in GameState.contents["E"]:
 			if EID not in self.entities:
-				pass
-				# XXX TEMPORARILY DISABLED!!!
-				#self.createEntity(EID)
+				self.createEntity(EID)
 	
 	
 	# Creating Entities
@@ -35,4 +33,4 @@ class Class:
 	# Running Entities
 	def runEntities(self):
 		for EID in self.entities:
-			self.entities[EID].run(self)
+			self.entities[EID].run()
