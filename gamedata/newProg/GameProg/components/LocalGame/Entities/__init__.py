@@ -3,7 +3,7 @@
 entityClasses = {}
 
 # --- importing all entity types, this needs to be changed each time a new entity is added --- #
-import BaseEntity.Class; entityClasses["BaseEntity"] = BaseEntity.Class
+import BaseEntity; entityClasses["BaseEntity"] = BaseEntity.Class
 
 
 

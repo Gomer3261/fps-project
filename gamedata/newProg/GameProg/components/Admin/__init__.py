@@ -32,6 +32,17 @@ class Class:
 	
 		# Initiating the game when we haven't done that already.
 		if not self.gameInitiated:
+			self.gameInitiated = True
+			
+			print("\n=======================================================================================")
+			print("====== Component Initiation Completed; Administrated Game Initiation starts now! ======")
+			print("=======================================================================================\n")
+			
+			### For testing purposes, we're going to initiate the game with a test entity.
+			package = ['GS', ['AR', ['SE', 'test']]]
+			Networking.gpsnet.send(package)
+			print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
+			
 			
 			# GameInfo was found saved to the globalDict
 			if "gameInfo" in GameLogic.globalDict:
@@ -63,4 +74,7 @@ class Class:
 					print("Recovering gps_session...")
 					Networking.gpsnet.recover(gameInfo["gps_session"])
 			
-			self.gameInitiated = True
+			print("\n===========================================================================")
+			print("====== Administrated Game Initiation Complete; Game loop starts now! ======")
+			print("===========================================================================\n")
+			

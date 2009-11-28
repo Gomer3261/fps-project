@@ -72,6 +72,7 @@ def run(cont):
 		LocalGame.run(GameState, Networking, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		
+		Networking.gpsnet.inItems = [] # XXX Temporary!
 		Networking.gpsnet.outgoing(Admin) # Asynchronously sends out data that has accumulated in the buffers.
 	
 	

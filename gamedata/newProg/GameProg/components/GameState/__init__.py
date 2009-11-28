@@ -41,6 +41,7 @@ class Class:
 		self.changes = []
 
 	def addEntity(self, type, owner, controller):
+		print("GameState.addEntity, type=%s"%(type))
 		E = {}
 		# Type (player, bot, vehicle, dob)
 		E["T"] = type

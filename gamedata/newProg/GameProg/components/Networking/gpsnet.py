@@ -84,7 +84,7 @@ class Class:
 		inItems is cleared before the new items are put in there.
 		"""
 		self.recv()
-		self.inItems = []
+		#self.inItems = []
 		self.extract()
 	
 	def recv(self, buf=2048):
@@ -92,22 +92,24 @@ class Class:
 		Receives data from the TCP socket, adds it to the inBuffer
 		Then, it receives UDP items and immediately plops it into inItems.
 		"""
+		pass
 		# Doing TCP
-		data = ""
-		self.gps_session["inBuffer"] += data
+		#data = ""
+		#self.gps_session["inBuffer"] += data
 		
 		# Doing UDP
-		data = ""
-		item = [None, None] # unflattenUDP(data)
-		self.inItems.append(item)
+		#data = ""
+		#item = [None, None] # unflattenUDP(data)
+		#self.inItems.append(item)
 	
 	def extract(self):
 		"""
 		Extracts flattened packages from the inBuffer, puts them in the inItems list.
 		"""
-		items = self.gps_session["inBuffer"]
-		for item in items:
-			self.inItems.append(item)
+		pass
+		#items = self.gps_session["inBuffer"]
+		#for item in items:
+		#	self.inItems.append(item)
 	
 	
 	
@@ -119,6 +121,7 @@ class Class:
 	
 	def outgoing(self, Admin):
 		"""
+		sends stuff in the outgoing buffers.
 		"""
 		self.sendAndThrowBuffers(Admin)
 		self.handleOutBuffer()
