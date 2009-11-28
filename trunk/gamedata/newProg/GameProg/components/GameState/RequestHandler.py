@@ -37,8 +37,11 @@ class Class:
 			sender = item[0]
 			package = item[1]
 			packageFlag = package[0]
+			request = package[1]
 			if packageFlag == 'GS':
-				self.handleRequest(sender, package, GameState, gpsnet)
+				self.handleRequest(sender, request, GameState, gpsnet)
+		if items:
+			print("\nGameState Changed!: %s\n"%(GameState.contents))
 	
 	
 	
@@ -95,7 +98,7 @@ class Class:
 		
 		if flag == "SE": # Spawn Entity...
 			type = action[1]
-			EID = GameState.addEntity(type)
+			EID = GameState.addEntity(type, sender, sender) # Sender is both the owner and the controller!
 			# We'll let this information be distributed in a full GS distro.
 		
 		if flag == 'SP': # Spawn Player
