@@ -6,10 +6,11 @@ class Class:
 	
 	
 	# Main Loop
-	def run(self, GameState, Networking, Resources):
+	def run(self, GameState, Networking, Resources, Interface):
 		self.GameState = GameState
 		self.Networking = Networking
 		self.Resources = Resources
+		self.Interface = Interface
 		
 		self.replicateGameState(self.GameState)
 		self.runEntities()
