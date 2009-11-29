@@ -11,13 +11,19 @@ class Class:
 		
 		import GameLogic as gl
 		own = gl.getCurrentController().owner
-		self.obj = gl.getCurrentScene().addObject("test", own)
+		self.gameObj = gl.getCurrentScene().addObject("test", own)
 		
 		changes = {"T":0}
 		package = ['GS', ['EC', [EID, changes]]]
 		self.Networking.gpsnet.send(package)
 		
 		print("Test Entity Created\n\n")
+	
+	
+	def end(self):
+		print("Entity(%s).end()"%(self.EID))
+		self.gameObj.endObject()
+		self.gameObj = None
 		
 	
 	def run(self):
@@ -43,7 +49,6 @@ class Class:
 				#ending the object
 				package = ['GS', ['AR', ['RE', EID]]]
 				Networking.gpsnet.send(package)
-				self.obj.endObject()
 		except:
 			#updating GameState
 			changes = {"T":0}

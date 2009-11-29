@@ -33,6 +33,7 @@ class Class:
 		handles them with handleRequest().
 		"""
 		items = gpsnet.inItems
+		print("\ninItems: %s\n"%(items))
 		for item in items:
 			sender = item[0]
 			package = item[1]
@@ -50,14 +51,17 @@ class Class:
 		"""
 		Interprets a request to change the GameState.
 		"""
-		flag = request[0]
-		data = request[1]
-		
-		if flag == 'EC':
-			self.handleEntityControlRequest(data, sender, GameState, gpsnet)
-		
-		if flag == 'AR':
-			self.handleActionRequest(data, sender, GameState, gpsnet)
+		try:
+			flag = request[0]
+			data = request[1]
+			
+			if flag == 'EC':
+				self.handleEntityControlRequest(data, sender, GameState, gpsnet)
+			
+			if flag == 'AR':
+				self.handleActionRequest(data, sender, GameState, gpsnet)
+		except:
+			pass
 	
 	
 	
