@@ -2,6 +2,8 @@
 
 class Class:
 	def __init__(self):
-		pass
+		import Tools
+		self.Tools = Tools
+	
 	def run(self):
 		pass
