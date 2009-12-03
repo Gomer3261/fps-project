@@ -13,6 +13,9 @@ class Class:
 		own = gl.getCurrentController().owner
 		self.gameObject = gl.getCurrentScene().addObject("explorer", own)
 		
+		# Getting the Camera
+		self.cam = self.gameObject.controllers[0].actuators["cam"].owner
+		
 		# The gameObject acts as both the XPivot and the YPivot for the explorer.
 		self.XPivot = self.gameObject
 		self.YPivot = self.gameObject
@@ -21,11 +24,15 @@ class Class:
 		print("Explorer Initiated.")
 	
 	def end(self):
+		self.LocalGame.Camera.set()
 		self.gameObject.endObject()
 		self.gameObject = None
 		print("Explorer Entity Ended.")
 	
 	def run(self):
+		# Camera Management
+		self.LocalGame.Camera.set(self.cam)
+		
 		self.doMouseLook()
 		X, Y, Z = self.getDesiredLocalMovement()
 		self.gameObject.applyMovement( (X,Y,0), 1 ) # X and Y applied locally.
