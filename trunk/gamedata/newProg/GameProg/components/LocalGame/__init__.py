@@ -2,6 +2,7 @@
 
 class Class:
 	def __init__(self):
+		import Camera as CameraMod; self.Camera = CameraMod.Class()
 		self.entities = {}
 	
 	
