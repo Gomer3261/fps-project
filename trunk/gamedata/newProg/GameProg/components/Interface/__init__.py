@@ -8,6 +8,9 @@ class Class:
 		
 		import Options as OptionsModule
 		self.Options = OptionsModule.Class(self.Inputs)
+		
+		import Terminal as TerminalModule
+		self.Terminal = TerminalModule.Class()
 	
 	def run(self):
-		pass
+		self.Terminal.handleOpenClose()
