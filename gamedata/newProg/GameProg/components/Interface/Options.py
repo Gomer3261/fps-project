@@ -11,18 +11,18 @@ class Class:
 
 
 	#the init function. Most modules have this.
-	def __init__(self, inputs):
+	def __init__(self, Inputs):
 		"""Init the module."""
 		self.sepchar = "\n=------ Settings Above / Controls Below ------=\n\n" #this can actually be anything, it's just more eye pleasing if you open the file directly.
 		self.path = "FPS_options.txt" #the path for the options file (change it to something more game relative later?)
 		self.settings = {}
 		self.controls = {}
 		
-		self.inputs = inputs
+		self.Inputs = Inputs
 		
 		self.load()
 		
-		self.inputs.controller.setControls(self.controls)
+		self.Inputs.Controller.setControls(self.controls)
 		print("Options Initiated")
 
 
@@ -152,7 +152,7 @@ class Class:
 			print("Options Saved")
 
 			#making changed options effect the game
-			self.inputs.controller.setControls(self.controls)
+			self.Inputs.Controller.setControls(self.controls)
 
 			return 1
 		except:
@@ -204,7 +204,7 @@ class Class:
 			
 			print("Options Loaded")
 			
-			self.inputs.controller.setControls(self.controls)
+			self.Inputs.Controller.setControls(self.controls)
 			
 			return 1
 		except:

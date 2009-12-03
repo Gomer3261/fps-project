@@ -19,10 +19,10 @@ class Class:
 		self.inputsObject = gl.getCurrentScene().addObject("GP_Inputs", BaseObject)
 		con = self.inputsObject.controllers[0]
 		
-		self.controller = None
-		self.controller = self.CONTROLLER(con)
+		self.Controller = None
+		self.Controller = self.CONTROLLER(con)
 		
-		self.mouse = self.MOUSE(con)
+		self.Mouse = self.MOUSE(con)
 		
 		print("Inputs Initiated")
 	
