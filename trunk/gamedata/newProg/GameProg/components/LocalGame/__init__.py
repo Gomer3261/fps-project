@@ -24,6 +24,7 @@ class Class:
 				if EID not in self.entities:
 					self.createEntity(EID)
 		except:
+			import traceback; traceback.print_exc()
 			pass
 		
 		# Deleting entities that are in LocalGame.entities but not in GameState.
@@ -32,6 +33,7 @@ class Class:
 				if EID not in GameState.contents['E']:
 					self.removeEntity(EID)
 		except:
+			import traceback; traceback.print_exc()
 			pass
 	
 	# Creating Entities

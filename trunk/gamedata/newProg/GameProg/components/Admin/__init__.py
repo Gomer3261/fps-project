@@ -39,7 +39,7 @@ class Class:
 			print("=======================================================================================\n")
 			
 			### For testing purposes, we're going to initiate the game with a test entity.
-			package = ['GS', ['AR', ['SE', 'test']]]
+			package = ['GS', ['AR', ['SE', 'explorer']]]
 			Networking.gpsnet.send(package)
 			print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
 			

@@ -33,7 +33,7 @@ class Class:
 		handles them with handleRequest().
 		"""
 		items = gpsnet.inItems
-		print("\ninItems: %s\n"%(items))
+		#print("\ninItems: %s\n"%(items))
 		for item in items:
 			sender = item[0]
 			package = item[1]
@@ -41,8 +41,7 @@ class Class:
 			request = package[1]
 			if packageFlag == 'GS':
 				self.handleRequest(sender, request, GameState, gpsnet)
-		if items:
-			print("\nGameState Changed!: %s\n"%(GameState.contents))
+		#if items: print("\nGameState Changed!: %s\n"%(GameState.contents))
 	
 	
 	
