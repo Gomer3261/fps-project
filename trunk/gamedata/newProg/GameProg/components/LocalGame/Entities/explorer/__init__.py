@@ -34,14 +34,17 @@ class Class:
 		self.LocalGame.Camera.set(self.cam)
 		
 		self.doMouseLook()
-		X, Y, Z = self.getDesiredLocalMovement()
-		self.gameObject.applyMovement( (X,Y,0), 1 ) # X and Y applied locally.
-		self.gameObject.applyMovement( (0,0,Z), 0 ) # Z applied globally.
+		
+		# Movement can only occur when the terminal is not active.
+		if not self.Interface.Terminal.active:
+			X, Y, Z = self.getDesiredLocalMovement()
+			self.gameObject.applyMovement( (X,Y,0), 1 ) # X and Y applied locally.
+			self.gameObject.applyMovement( (0,0,Z), 0 ) # Z applied globally.
 	
 	def getDesiredLocalMovement(self):
 		Controller = self.Interface.Inputs.Controller
 		
-		SPEED = 0.5
+		SPEED = 0.1
 		MOD = 4.0
 		
 		if Controller.isPositive('sprint'): SPEED *= MOD

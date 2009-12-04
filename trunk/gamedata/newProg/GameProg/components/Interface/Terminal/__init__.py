@@ -1,7 +1,6 @@
 ####################################
 ### ------	TERMINAL	  ------ ###
 ####################################
-### Copyright 2009 Chase Moskal!
 # This is the terminal module.
 # It handles terminal input and output.
 
@@ -12,6 +11,7 @@ class Class:
 
 		# The contents of the terminal window (output)
 		self.openingText = """Welcome to the terminal!
+The game's programming is currently undergoing a revolution; many terminal commands will not function as described because we are currently working on their implementation.
 
 Remember:
    Precede all python commands with a slash (/), otherwise it is regarded as a text message.
