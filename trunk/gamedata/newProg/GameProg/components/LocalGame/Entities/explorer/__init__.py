@@ -41,12 +41,13 @@ class Class:
 			self.gameObject.applyMovement( (0,0,Z), 0 ) # Z applied globally.
 	
 	def suicideControlLoop(self):
-		suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
-		if suicideStatus == 1:
-			# Suicide!
-			package = ['GS', ['AR', ['RE', self.EID]]]
-			self.Networking.gpsnet.send(package)
-			print("Remove Entity request sent via Networking.gpsnet.send(request)...")
+		if not self.Interface.Terminal.active:
+			suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
+			if suicideStatus == 1:
+				# Suicide!
+				package = ['GS', ['AR', ['RE', self.EID]]]
+				self.Networking.gpsnet.send(package)
+				print("Remove Entity request sent via Networking.gpsnet.send(request)...")
 	
 	def getDesiredLocalMovement(self):
 		Controller = self.Interface.Inputs.Controller

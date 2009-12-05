@@ -19,12 +19,13 @@ class Class:
 	
 	def userControlLoop(self, Interface, GameState, Networking):
 		
-		spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
-		if (spawnStatus == 1) and (not GameState.getExplorer()):
-			# Spawn the Explorer.
-			package = ['GS', ['AR', ['SE', 'explorer']]]
-			Networking.gpsnet.send(package)
-			print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
+		if not Interface.Terminal.active:
+			spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
+			if (spawnStatus == 1) and (not GameState.getExplorer()):
+				# Spawn the Explorer.
+				package = ['GS', ['AR', ['SE', 'explorer']]]
+				Networking.gpsnet.send(package)
+				print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
 		
 			
 	
