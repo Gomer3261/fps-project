@@ -6,15 +6,15 @@ class Class():
 #	def localPlayer():
 #		localPlayer = gamecontrol.localgame.players.getLocalPlayer()
 #		return localPlayer
-#
-#	def gs():
-#		"""
-#		Outputs the current gamestate information to the terminal.
-#		"""
-#		terminal = modules.interface.terminal
-#		gamestate = modules.gamecontrol.gamestate.gamestate
-#		terminal.output( str(gamestate.contents) )
-#
+
+	def gs(self):
+		"""
+		Outputs the current gamestate information to the terminal.
+		"""
+		terminal = self.slab.Interface.Terminal
+		gamestate = self.slab.GameState
+		terminal.output( str(gamestate.contents) )
+
 #	def users():
 #		"""
 #		Outputs a list of users in the gamestate, to the terminal.
