@@ -32,9 +32,6 @@ class Class:
 			if cam['priority'] > scene.active_camera['priority']:
 				scene.active_camera = cam
 				print("New Camera Set!")
-		
-		if cam['priority'] > scene.active_camera['priority']:
-			scene.active_camera = cam
 	
 	def forceSet(self, cam=None):
 		import GameLogic as gl
