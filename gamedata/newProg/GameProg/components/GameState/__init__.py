@@ -73,6 +73,30 @@ class Class:
 		return self.contents['E'][EID]
 	
 	
+	
+	### ================================================
+	### Public Convenient Methods
+	### ================================================
+	
+	def getEIDsByType(self, desiredType):
+		EIDs = []
+		for EID in self.contents['E']:
+			type = self.contents['E'][EID]['T']
+			if desiredType == type:
+				EIDs.append(EID)
+		return EIDs
+	
+	def getExplorer(self):
+		explorers = self.getEIDsByType("explorer")
+		if explorers:
+			if len(explorers) > 1: print("CreepyError: There is more then one explorer entity in the GameState. Just thought you should know.")
+			explorerEID = explorers[0]
+			return explorerEID
+		else:
+			return None # No explorer :/
+	
+	
+	
 	### ================================================
 	### Private Methods
 	### ================================================

@@ -30,9 +30,12 @@ class Class:
 		
 		# Deleting entities that are in LocalGame.entities but not in GameState.
 		try:
+			toRemove = []
 			for EID in self.entities:
 				if EID not in GameState.contents['E']:
-					self.removeEntity(EID)
+					toRemove.append(EID)
+			for EID in toRemove:
+				self.removeEntity(EID)
 		except:
 			import traceback; traceback.print_exc()
 			pass

@@ -18,4 +18,21 @@ class Class:
 		
 		if cam['priority'] > scene.active_camera['priority']:
 			scene.active_camera = cam
-			print("New Camera Set!")
+	
+	def forceSet(self, cam=None):
+		import GameLogic as gl
+		scene = gl.getCurrentScene()
+		if not cam:
+			cam = self.eCam
+
+		# If cam, we will replace the active_camera, but only if cam has greater priority.
+		if not "priority" in cam:
+			cam["priority"] = 0
+		
+		scene.active_camera = cam
+	
+	def clear(self):
+		import GameLogic as gl
+		scene = gl.getCurrentScene()
+		cam = self.eCam
+		scene.active_camera = cam
