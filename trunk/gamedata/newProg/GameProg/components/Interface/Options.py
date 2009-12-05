@@ -121,7 +121,7 @@ class Class:
 		key = key.lower()
 		
 		self.controls[key] = value
-		r = save()
+		r = self.save()
 		return r
 
 
