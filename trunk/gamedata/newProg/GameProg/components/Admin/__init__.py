@@ -17,8 +17,20 @@ class Class:
 	
 	
 	
+	def userControlLoop(self, Interface, GameState, Networking):
+		
+		spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
+		if (spawnStatus == 1) and (not GameState.getExplorer()):
+			# Spawn the Explorer.
+			package = ['GS', ['AR', ['SE', 'explorer']]]
+			Networking.gpsnet.send(package)
+			print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
+		
+			
 	
-	def run(self, GameLogic, Networking, GameState):
+	
+	
+	def initiationLoop(self, GameLogic, Networking, GameState):
 		"""
 		Gets initiation information from the menus (via GameLogic.globalDict)
 		and sets up the game with it.
@@ -29,7 +41,6 @@ class Class:
 		
 		Secondly, it recovers networking sessions that have been saved.
 		"""
-	
 		# Initiating the game when we haven't done that already.
 		if not self.gameInitiated:
 			self.gameInitiated = True
@@ -37,11 +48,6 @@ class Class:
 			print("\n=======================================================================================")
 			print("====== Component Initiation Completed; Administrated Game Initiation starts now! ======")
 			print("=======================================================================================\n")
-			
-			### For testing purposes, we're going to initiate the game with a test entity.
-			package = ['GS', ['AR', ['SE', 'explorer']]]
-			Networking.gpsnet.send(package)
-			print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
 			
 			
 			# GameInfo was found saved to the globalDict

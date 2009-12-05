@@ -60,7 +60,7 @@ class Class:
 			if flag == 'AR':
 				self.handleActionRequest(data, sender, GameState, gpsnet)
 		except:
-			pass
+			import traceback; traceback.print_exc()
 	
 	
 	

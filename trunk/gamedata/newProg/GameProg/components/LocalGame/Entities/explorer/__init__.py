@@ -20,11 +20,10 @@ class Class:
 		self.XPivot = self.gameObject
 		self.YPivot = self.gameObject
 		
-		
 		print("Explorer Initiated.")
 	
 	def end(self):
-		self.LocalGame.Camera.set()
+		self.LocalGame.Camera.clear()
 		self.gameObject.endObject()
 		self.gameObject = None
 		print("Explorer Entity Ended.")
@@ -32,7 +31,7 @@ class Class:
 	def run(self):
 		# Camera Management
 		self.LocalGame.Camera.set(self.cam)
-		
+		self.suicideControlLoop()
 		self.doMouseLook()
 		
 		# Movement can only occur when the terminal is not active.
@@ -40,6 +39,14 @@ class Class:
 			X, Y, Z = self.getDesiredLocalMovement()
 			self.gameObject.applyMovement( (X,Y,0), 1 ) # X and Y applied locally.
 			self.gameObject.applyMovement( (0,0,Z), 0 ) # Z applied globally.
+	
+	def suicideControlLoop(self):
+		suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
+		if suicideStatus == 1:
+			# Suicide!
+			package = ['GS', ['AR', ['RE', self.EID]]]
+			self.Networking.gpsnet.send(package)
+			print("Remove Entity request sent via Networking.gpsnet.send(request)...")
 	
 	def getDesiredLocalMovement(self):
 		Controller = self.Interface.Inputs.Controller

@@ -4,9 +4,6 @@
 ### Copyright 2009 Chase Moskal
 
 class Class:
-	controller = None
-
-
 
 
 	#initiates the module
@@ -25,10 +22,6 @@ class Class:
 		self.Mouse = self.MOUSE(con)
 		
 		print("Inputs Initiated")
-	
-	
-	
-	
 	
 	
 	
