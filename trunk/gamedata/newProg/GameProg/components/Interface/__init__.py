@@ -11,6 +11,9 @@ class Class:
 		
 		import Terminal as TerminalModule
 		self.Terminal = TerminalModule.Class()
+		
+		import Notes as NotesModule
+		self.Notes = NotesModule.Class()
 	
 	def run(self):
 		self.Terminal.handleOpenClose()
