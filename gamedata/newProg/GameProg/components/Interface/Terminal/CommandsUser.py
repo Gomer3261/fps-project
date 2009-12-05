@@ -127,22 +127,21 @@ Precede your input with "/" to designate it as a text message.
 #	def text(msg="Hi."):
 #		import modules
 #		modules.networking.gncore.text(msg)
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#	# -----------------
-#	# Notification Commands
-#	# -----------------
-#
-#	def notify(text="This is a notice.", time=0.0):
-#		import modules.interface.notes as notes
-#		notes.notify(text, time)
+
+
+
+
+
+
+
+
+
+	# -----------------
+	# Notification Commands
+	# -----------------
+
+	def notify(self, text="This is a notice.", time=0.0):
+		self.slab.Interface.Notes.notify(text, time)
 
 
 
