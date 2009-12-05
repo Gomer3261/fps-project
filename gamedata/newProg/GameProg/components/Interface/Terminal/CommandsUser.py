@@ -52,7 +52,16 @@ Precede your input with "/" to designate it as a text message.
 			# Filter out the python module stuff so we only get our commands
 			if not i.startswith("__") and i != "slab" and i != "helpText":
 				self.output(i)
-
+				
+				
+				
+	def setHistoryLimit(self, I):
+		"""
+		Usage: setHistoryLimit()
+			Changes the number of items stored in the Terminal's history to the value given.
+		"""
+		self.slab.Interface.Terminal.History.max = I
+	
 
 
 

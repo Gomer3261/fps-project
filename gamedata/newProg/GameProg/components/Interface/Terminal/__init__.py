@@ -34,7 +34,7 @@ Important functions:
 
 
 		#History Object
-		self.history = self.History()
+		self.History = self.History()
 
 
 		# For opening and closing the terminal (detects single presses)
@@ -79,13 +79,13 @@ Important functions:
 			self.slot += 1
 			
 			if self.slot == 0:
-				self.saveCurrentInput(self, s)
+				self.saveCurrentInput(s)
 			elif self.slot > self.max:
 				self.slot = 0
 			elif (len(self.history)-1) < self.slot:
 				self.slot = len(self.history) - 1
 				
-
+			
 			return self.history[self.slot]
 
 		# Gets the previous item in the history
@@ -241,14 +241,14 @@ Important functions:
 				inTextObj["Text"] = ""
 				
 				# Add the last input into the history
-				self.history.add(A)
+				self.History.add(A)
 
 				
 				
 			elif upKey.positive:
-				inTextObj["input"] = self.history.getNextItem(A)
+				inTextObj["input"] = self.History.getNextItem(A)
 			elif downKey.positive:
-				inTextObj["input"] = self.history.getPrevItem()
+				inTextObj["input"] = self.History.getPrevItem()
 			
 			if self.oldcontents != self.contents:
 				### OUTPUT HANDLING ###
