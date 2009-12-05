@@ -32,12 +32,9 @@ Important functions:
 		self.contents = self.openingText.split("\n")
 		self.oldcontents = []
 
-		# Variables for handling the history
-		self.history = []
-		self.history_slot = 0
-		self.HISTORY_MAX = 10
-		self.current_input = ""
 
+		#History Object
+		self.history = self.History()
 
 
 		# For opening and closing the terminal (detects single presses)
@@ -53,45 +50,55 @@ Important functions:
 	######################################
 	### ------ TERMINAL HISTORY ------ ###
 	######################################
-
-	# Saves a string to the history
-	def addToHistory(self, s):
-
-		self.history.insert(0, s)
+	
+	class History:
 		
-		self.history_slot = -1
-		
-		if len(self.history) > self.HISTORY_MAX:
-			self.history.remove(self.history[-1])
+		def __init__(self):
+			# Variables for handling the history
+			self.history = []
+			self.slot = 0
+			self.max = 10
+			self.current_input = ""
 
-	# Saves the current input so it can be recovered
-	def saveCurrentInput(self, s):
-		self.current_input = s
+		# Saves a string to the history
+		def add(self, s):
 
-	# Gets the next item in the history
-
-	def getNextHistoryItem(self, s):
-		self.history_slot += 1
-		
-		if self.history_slot == 0:
-			self.saveCurrentInput(self, s)
-		elif self.history_slot > self.HISTORY_MAX:
-			self.history_slot = 0
-		elif (len(self.history)-1) < self.history_slot:
-			self.history_slot = len(self.history) - 1
+			self.history.insert(0, s)
+			self.slot = -1
 			
+			if len(self.history) > self.max:
+				self.history.remove(self.history[-1])
 
-		return self.history[self.history_slot]
+		# Saves the current input so it can be recovered
+		def saveCurrentInput(self, s):
+			self.current_input = s
 
-	# Gets the previous item in the history
-	def getPrevHistoryItem(self):
-		self.history_slot -= 1
+		# Gets the next item in the history
+
+		def getNextItem(self, s):
+			self.slot += 1
+			
+			if self.slot == 0:
+				self.saveCurrentInput(self, s)
+			elif self.slot > self.max:
+				self.slot = 0
+			elif (len(self.history)-1) < self.slot:
+				self.slot = len(self.history) - 1
+				
+
+			return self.history[self.slot]
+
+		# Gets the previous item in the history
+		def getPrevItem(self):
+			self.slot -= 1
+			
+			if self.slot < 0:
+				self.slot = -1
+				return self.current_input
+			
+			return self.history[self.slot]
 		
-		if self.history_slot < 0:
-			self.history_slot = -1
-			return self.current_input
 		
-		return self.history[self.history_slot]
 
 
 
@@ -234,14 +241,14 @@ Important functions:
 				inTextObj["Text"] = ""
 				
 				# Add the last input into the history
-				self.addToHistory(A)
+				self.history.add(A)
 
 				
 				
 			elif upKey.positive:
-				inTextObj["input"] = self.getNextHistoryItem(A)
+				inTextObj["input"] = self.history.getNextItem(A)
 			elif downKey.positive:
-				inTextObj["input"] = self.getPrevHistoryItem()
+				inTextObj["input"] = self.history.getPrevItem()
 			
 			if self.oldcontents != self.contents:
 				### OUTPUT HANDLING ###
