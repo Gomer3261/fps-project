@@ -2,8 +2,10 @@
 
 class Class:
 	def __init__(self, EID, LocalGame):
+		self.type = "test"
 		self.EID = EID
 		self.LocalGame = LocalGame
+		
 		self.GameState = LocalGame.GameState
 		self.Networking = LocalGame.Networking
 		self.Interface = LocalGame.Interface

@@ -1,9 +1,14 @@
-### Explorer Entity ###
+### Player Entity ###
 
 class Class:
 	def __init__(self, EID, LocalGame):
+		"""
+		Initiates the Player Entity.
+		"""
+		self.type = "player"
 		self.EID = EID
 		self.LocalGame = LocalGame
+		
 		self.GameState = LocalGame.GameState
 		self.Networking = LocalGame.Networking
 		self.Interface = LocalGame.Interface
@@ -25,7 +30,12 @@ class Class:
 		
 		print("Player Initiated")
 	
+	
+	
 	def end(self):
+		"""
+		Ends the player entity.
+		"""
 		self.LocalGame.Camera.clear()
 		self.gameObject.endObject()
 		self.gameObject = None
@@ -33,9 +43,27 @@ class Class:
 	
 	
 	
+	
+	
+	### ------------------------------------------------------------------------------------------------
+	### ------------------------------------------------------------------------------------------------
+	### High-level Goodness
+	### ------------------------------------------------------------------------------------------------
+	### ------------------------------------------------------------------------------------------------
+	
 	def run(self):
+		"""
+		Basic run loop.
+		"""
+		locallyControlled = True
+		
+		if locallyControlled:
+			self.runControl()
+	
+	def runControl(self):
 		# Camera Management
 		self.LocalGame.Camera.set(self.cam)
+		
 		self.suicideControlLoop()
 		self.doMouseLook()
 		
@@ -44,7 +72,19 @@ class Class:
 			X, Y, Z = self.getDesiredLocalMovement()
 	
 	
+	
+	
+	
+	### ------------------------------------------------------------------------------------------------
+	### ------------------------------------------------------------------------------------------------
+	### User Control Methods
+	### ------------------------------------------------------------------------------------------------
+	### ------------------------------------------------------------------------------------------------
+	
 	def suicideControlLoop(self):
+		"""
+		Allows the user to kill the player (commit suicide).
+		"""
 		if not self.Interface.Terminal.active:
 			suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
 			if suicideStatus == 1:
@@ -52,9 +92,6 @@ class Class:
 				package = ['GS', ['AR', ['RE', self.EID]]]
 				self.Networking.gpsnet.send(package)
 				print("Remove Player Entity request sent via Networking.gpsnet.send(request)...")
-	
-	
-	
 	
 	def getDesiredLocalMovement(self):
 		Controller = self.Interface.Inputs.Controller
@@ -76,10 +113,6 @@ class Class:
 		if Controller.isPositive('sink'): Z -= SPEED
 		
 		return X, Y, Z
-		
-		
-	
-	
 	
 	def doMouseLook(self):
 		"""
