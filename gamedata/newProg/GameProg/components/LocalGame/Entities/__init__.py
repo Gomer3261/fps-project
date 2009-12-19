@@ -6,6 +6,7 @@ entityClasses = {}
 import BaseEntity; entityClasses["BaseEntity"] = BaseEntity.Class
 import test; entityClasses["test"] = test.Class
 import explorer; entityClasses["explorer"] = explorer.Class
+import player; entityClasses["player"] = player.Class
 
 
 
