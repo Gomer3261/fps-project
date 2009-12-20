@@ -21,7 +21,7 @@ class Class:
 		
 		if not Interface.Terminal.active:
 			spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
-			if (spawnStatus == 1) and (not GameState.getExplorer()):
+			if (spawnStatus == 1) and (not GameState.countPlayers()):
 				# Spawn the Player.
 				package = ['GS', ['AR', ['SE', 'player']]]
 				Networking.gpsnet.send(package)

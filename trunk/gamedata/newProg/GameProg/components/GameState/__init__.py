@@ -95,6 +95,15 @@ class Class:
 		else:
 			return None # No explorer :/
 	
+	def countPlayers(self):
+		"""
+		Counts the number of 'player' entities in the GameState.
+		"""
+		players = self.getEIDsByType("player")
+		if players:
+			return len(players)
+		else:
+			return 0
 	
 	
 	### ================================================
