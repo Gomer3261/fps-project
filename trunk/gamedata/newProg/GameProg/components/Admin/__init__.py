@@ -22,8 +22,8 @@ class Class:
 		if not Interface.Terminal.active:
 			spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
 			if (spawnStatus == 1) and (not GameState.getExplorer()):
-				# Spawn the Explorer.
-				package = ['GS', ['AR', ['SE', 'explorer']]]
+				# Spawn the Player.
+				package = ['GS', ['AR', ['SE', 'player']]]
 				Networking.gpsnet.send(package)
 				print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
 		
