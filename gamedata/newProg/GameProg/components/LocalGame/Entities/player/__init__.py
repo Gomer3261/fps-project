@@ -22,6 +22,7 @@ class Class:
 		# Getting the Camera
 		self.cam = self.cont.actuators["cam"].owner
 		
+		self.armature = self.cont.actuators["armature"].owner
 		# The gameObject acts as both the XPivot and the YPivot for the explorer.
 		self.XPivot = self.gameObject
 		self.YPivot = self.gameObject
@@ -64,9 +65,10 @@ class Class:
 		# Camera Management
 		self.LocalGame.Camera.set(self.cam)
 		
+		
+		### USER CONTROL ###
 		self.suicideControlLoop()
 		self.doMouseLook()
-		
 		# Movement can only occur when the terminal is not active.
 		if not self.Interface.Terminal.active:
 			X, Y, Z = self.getDesiredLocalMovement()
@@ -159,7 +161,7 @@ class Class:
 		
 		# Converting sensitivity to lower terms
 		Xc = mxsens * 0.001
-		Yc = mysens * 0.001
+		Yc = mysens * 0.1
 		
 		# Getting the rotation values.
 		X = -float(Xmovement) * Xc
@@ -181,3 +183,6 @@ class Class:
 		#===   Applying Y Rotation	 ===#
 		#===============================#
 		self.YValue += Y
+		if self.YValue < 0.0: self.YValue = 0.0
+		if self.YValue > 1000.0: self.YValue = 1000.0
+		self.armature["frame"] = self.YValue
