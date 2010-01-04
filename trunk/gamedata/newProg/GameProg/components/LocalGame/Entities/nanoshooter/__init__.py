@@ -39,7 +39,8 @@ class Class:
 		# Camera Management
 		self.LocalGame.Camera.set(self.cam)
 		self.suicideControlLoop()
-		self.aimControl()
+		self.displayAimPoint()
+		self.trackToAimPoint()
 		
 		# Movement can only occur when the terminal is not active.
 		if not self.Interface.Terminal.active:
@@ -56,9 +57,19 @@ class Class:
 				self.Networking.gpsnet.send(package)
 				print("Remove (nanoshooter) Entity request sent via Networking.gpsnet.send(request)...")
 	
-	def aimControl(self):
+	def displayAimPoint(self):
 		pos = self.mouseOver.hitPosition
-		self.aimPoint.position = pos
+		if pos[0] or pos[1] or pos[2]:
+			self.aimPoint.position = pos
+		else:
+			self.aimPoint.position = [0.0, 0.0, -100.0]
+	
+	def trackToAimPoint(self):
+		pos = self.mouseOver.hitPosition
+		
+		if pos[0] or pos[1] or pos[2]:
+			pos[2] = self.gameObject.position[2]
+			self.trackTo(pos)
 	
 	def getDesiredLocalMovement(self):
 		Controller = self.Interface.Inputs.Controller
@@ -80,4 +91,32 @@ class Class:
 		if Controller.isPositive('sink'): Z -= SPEED
 		
 		return X, Y, Z
+	
+	def trackTo(self, point):
+		import Mathutils
+		
+		# Getting the offset (position of point relative to gameObject)
+		oX = point[0] - self.gameObject.position[0]
+		oY = point[1] - self.gameObject.position[1]
+		oZ = point[2] - self.gameObject.position[2]
+		
+		# Getting the Y Vector of our Orientation Matrix
+		Y = Mathutils.Vector([oX, oY, oZ])
+		Y.normalize()
+		
+		# Creating the Z Vector (facing up)
+		Z = Mathutils.Vector([0.0, 0.0, 1.0])
+		
+		# Generating the X Vector (cross product of Y and Z)
+		X = Y.cross(Z)
+		
+		# Creating our Orientation
+		ori1 = [X[0], Y[0], Z[0]]
+		ori2 = [X[1], Y[1], Z[1]]
+		ori3 = [X[2], Y[2], Z[2]]
+		
+		ori = [ori1, ori2, ori3]
+		
+		# Applying the new orientation to the gameObject
+		self.gameObject.orientation = ori
 
