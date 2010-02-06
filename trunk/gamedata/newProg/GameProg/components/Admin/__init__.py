@@ -20,10 +20,11 @@ class Class:
 	def userControlLoop(self, Interface, GameState, Networking):
 		
 		if not Interface.Terminal.active:
+			entityToSpawn = "nanoshooter"
 			spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
-			if (spawnStatus == 1) and (not GameState.entityCount("nanoshooter")):
+			if (spawnStatus == 1) and (not GameState.entityCount(entityToSpawn)):
 				# Spawn the Player.
-				package = ['GS', ['AR', ['SE', 'nanoshooter']]]
+				package = ['GS', ['AR', ['SE', entityToSpawn]]]
 				Networking.gpsnet.send(package)
 				print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
 	
@@ -39,6 +40,9 @@ class Class:
 		First, it sets up the game by determining the host and server values,
 		and using them to decide if it needs to create the Director entity and
 		start running the gameplayServer.
+		
+		We only need to add the director to the game when we are the game host, 
+		because clients will replicate it.
 		
 		Secondly, it recovers networking sessions that have been saved.
 		"""

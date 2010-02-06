@@ -1,4 +1,4 @@
-### Gui Component ###
+### GameGoodies ###
 
 class Class:
 	def __init__(self):
