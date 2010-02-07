@@ -69,7 +69,7 @@ def run(cont):
 		Networking.gpsnet.incoming() # Receiving data to the in buffer.
 		
 		Interface.run() # Runs the interface (user inputs).
-		GameState.run(Networking) # Runs the GameState: represents the game world based on changes it finds in the Networking in buffer.
+		GameState.run(Admin, Networking) # Runs the GameState: represents the game world based on changes it finds in the Networking in buffer.
 		LocalGame.run(GameState, Networking, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		

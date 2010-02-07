@@ -1,8 +1,8 @@
-### Base Entity ###
+### Director Entity ###
 
 class Class:
 	def __init__(self, EID, LocalGame):
-		self.type = "base_entity"
+		self.type = "director"
 		self.EID = EID
 		
 		self.LocalGame = LocalGame
