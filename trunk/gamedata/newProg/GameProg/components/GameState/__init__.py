@@ -12,11 +12,12 @@ class Class:
 	
 	
 	
-	def run(self, Networking):
+	def run(self, Admin, Networking):
 		"""
 		When we are the server, we send out full distributions of the gamestate periodically,
 		but we also send out GameState Changes every tick.
 		"""
+		self.Admin = Admin
 		self.RequestHandler.run(self, Networking.gpsnet) # Interprets requests from Networking...
 		self.changes = [] # XXX Clearing Changes... (We don't need em for now!)
 		# Distribution stuff goes here...
@@ -41,13 +42,13 @@ class Class:
 		self.contents = new
 		self.changes = []
 
-	def addEntity(self, type, owner, controller):
+	def addEntity(self, type, owner=0, controller=0):
 		print("GameState.addEntity, type=%s"%(type))
 		E = {}
 		# Type (player, bot, vehicle, dob)
 		E["T"] = type
-		E["O"] = 0 # OWNER UID
-		E["C"] = 0 # CONTROLLER UID
+		E["O"] = owner # OWNER UID
+		E["C"] = controller # CONTROLLER UID
 		
 		E["OD"] = {} # Owned Data
 		E["CD"] = {} # Controlled Data

@@ -133,9 +133,8 @@ class Class:
 		If we own the GameState, then outgoing data will just
 		be plopped right into inItems.
 		"""
-		#director = LocalGame.getDirector()
 		
-		ourUID = 1
+		ourUID = Admin.getUID()
 		
 		# We own the GameState
 		if True: #Admin.weOwnGameState():

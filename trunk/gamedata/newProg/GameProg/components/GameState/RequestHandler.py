@@ -18,7 +18,7 @@ class Class:
 	Action Request:
 		['AR', action] # 'AR' flag obviously for ActionRequest.
 		action = ['DMG', 52, 23] # this would be a request to apply 23 damage to player entity 52.
-		action = ['SP', 69] # This would spawn a player entity with control given to UID 69.
+		action = ['SP', 69, 12] # This would spawn a player entity with control given to UID 69.
 		
 		An Action Request is fairly broad, and is used to request an action that may require
 		some computation of the GameState.
@@ -101,7 +101,7 @@ class Class:
 		
 		if flag == "SE": # Spawn Entity...
 			type = action[1]
-			EID = GameState.addEntity(type, sender, sender) # Sender is both the owner and the controller!
+			EID = GameState.addEntity(type, GameState.Admin.getUID(), sender) # We are the Owner, sender is the controller.
 			# We'll let this information be distributed in a full GS distro.
 		
 		if flag == "RE": # Remove Entity

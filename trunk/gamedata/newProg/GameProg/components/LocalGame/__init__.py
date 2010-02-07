@@ -41,7 +41,7 @@ class Class:
 			pass
 	
 	# Creating Entities
-	def createEntity(self, EID):
+	def createEntity(self, EID, owner, controller):
 		import Entities
 		type = self.GameState.getEntity(EID)['T']
 		self.entities[EID] = Entities.getEntityClass(type)(EID, self)
