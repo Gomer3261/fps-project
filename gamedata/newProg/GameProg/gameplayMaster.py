@@ -38,10 +38,18 @@ def initiate(cont):
 		from components import Resources
 		if not hasattr(slab, "Resources"): slab.Resources = Resources.Class()
 		
+		# Initiating Game Information #
+		import GameLogic
+		GI = {}
+		GI['host'] = True
+		GI['server'] = None
+		GameLogic.globalDict['gameInfo'] = GI
+		
 		###
 		### INIT Completed.
 		slab.INIT = 1
 		###
+		
 
 
 
@@ -62,7 +70,7 @@ def run(cont):
 		### ================================================
 		
 		Admin.initiationLoop(GameLogic, Networking, GameState) # Setting up the game
-		Admin.userControlLoop(Interface, GameState, Networking)
+		#Admin.userControlLoop(Interface, GameState, Networking) # DEPRECATED
 		
 		Networking.msnet.run(MasterInfo) # Asynchronous operations with the Master Server.
 		Networking.gpsnet.run(MasterInfo) # Asynchronous operations with the Gameplay Server.
@@ -70,7 +78,7 @@ def run(cont):
 		
 		Interface.run() # Runs the interface (user inputs).
 		GameState.run(Admin, Networking) # Runs the GameState: represents the game world based on changes it finds in the Networking in buffer.
-		LocalGame.run(GameState, Networking, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
+		LocalGame.run(Admin, GameState, Networking, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		
 		Networking.gpsnet.inItems = [] # XXX Temporary!

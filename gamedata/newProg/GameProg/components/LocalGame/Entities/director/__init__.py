@@ -29,11 +29,11 @@ class Class:
 	def run(self):
 		UID = self.Admin.getUID()
 		
-		if self.getOwner() == UID: ownerDataSimulate()
-		else: ownerDataReplicate()
+		if self.getOwner() == UID: self.ownerDataSimulate()
+		else: self.ownerDataReplicate()
 		
-		if self.getController() == UID: controllerDataSimulate()
-		else: controllerDataReplicate()
+		if self.getController() == UID: self.controllerDataSimulate()
+		else: self.controllerDataReplicate()
 	
 	
 	################################################

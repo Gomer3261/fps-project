@@ -3,9 +3,9 @@
 class Class:
 	def __init__(self):
 		self.gameInitiated = False
-		
 		self.UID = -1
 		
+		"""
 		### Admin Info ###
 		# Contains all the information for setting up the game.
 		self.AdminInfo = {}
@@ -16,14 +16,17 @@ class Class:
 		self.AdminInfo["director"]["playlist"] = [] # A playlist of game settings.
 		self.AdminInfo["director"]["index"] = 0 # current spot in the playlist.
 		self.AdminInfo["director"]["intermission"] = None # None=In Game, float=intermission (time left).
+		"""
 	
 	
 	def getUID(self):
-		return UID
+		return self.UID
 	
 	
 	def userControlLoop(self, Interface, GameState, Networking):
-		
+		"""
+		DEPRECATED!!!
+		"""
 		if not Interface.Terminal.active:
 			entityToSpawn = "nanoshooter"
 			spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
@@ -68,10 +71,14 @@ class Class:
 				### Setting up the Game
 				### ================================================
 				
-				if gameInfo["host"]:
+				if gameInfo['host']:
 					# If we're the host, then we've got to create
 					# the director entity.
-					GameState.createDirector(gameInfo["directorInfo"])
+					print("We're the host, creating the Director...")
+					#GameState.createDirector(gameInfo["directorInfo"])
+					package = ['GS', ['AR', ['SE', 'director']]]
+					Networking.gpsnet.send(package)
+					print("Spawn director request sent via Networking.gpsnet.send(request)...")
 				
 				if gameInfo["host"] and gameInfo["server"]:
 					# We're a server!
@@ -86,7 +93,7 @@ class Class:
 					print("Recovering ms_session...")
 					Networking.msnet.recover(gameInfo["ms_session"])
 				
-				if "gps_session" in GameInfo and (not gameInfo["host"]):
+				if "gps_session" in gameInfo and (not gameInfo["host"]):
 					print("Recovering gps_session...")
 					Networking.gpsnet.recover(gameInfo["gps_session"])
 			
