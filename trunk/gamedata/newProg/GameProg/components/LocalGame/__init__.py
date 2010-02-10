@@ -7,7 +7,8 @@ class Class:
 	
 	
 	# Main Loop
-	def run(self, GameState, Networking, Resources, Interface):
+	def run(self, Admin, GameState, Networking, Resources, Interface):
+		self.Admin = Admin
 		self.GameState = GameState
 		self.Networking = Networking
 		self.Resources = Resources
@@ -41,7 +42,7 @@ class Class:
 			pass
 	
 	# Creating Entities
-	def createEntity(self, EID, owner, controller):
+	def createEntity(self, EID):
 		import Entities
 		type = self.GameState.getEntity(EID)['T']
 		self.entities[EID] = Entities.getEntityClass(type)(EID, self)
