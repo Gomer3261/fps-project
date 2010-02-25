@@ -1,73 +1,38 @@
 ### Director Entity ###
+import base_entity
 
-class Class:
-	def __init__(self, EID, LocalGame):
-		self.type = "director"
-		self.EID = EID
+class Class(base_entity.Class):
+	type = "director"
+	
+	def initiateGameStateData(self):
+		"""
+		Initiates the GameState OwnerData and ControllerData for this entity.
+		"""
+		import time
 		
-		self.LocalGame = LocalGame
-		self.Admin = LocalGame.Admin
-		self.GameState = LocalGame.GameState
-		self.Networking = LocalGame.Networking
-		self.Interface = LocalGame.Interface
-	
-	def getDescription(self):
-		return self.GameState.getEntity(self.EID)
-	
-	def getOwner(self):
-		return self.getDescription()['O']
-	
-	def getController(self):
-		return self.getDescription()['C']
-	
-	
-	################################################
-	################################################
-	################################################
-	################################################
-	
-	def run(self):
-		UID = self.Admin.getUID()
+		OD = {}
+		OD["gameplay"] = True
 		
-		if self.getOwner() == UID: self.ownerDataSimulate()
-		else: self.ownerDataReplicate()
+		CD = {}
+		CD["gameTimeStart"] = time.time()
+		CD["gameTime"] = 0.0
 		
-		if self.getController() == UID: self.controllerDataSimulate()
-		else: self.controllerDataReplicate()
+		self.setOD(OD)
+		self.setCD(CD)
 	
-	
-	################################################
-	################################################
-	################################################
-	################################################
-	
-	
-	def ownerDataSimulate(self):
-		"""
-		Simulates owner data, and updates the changes to the GameState via Networking.
-		"""
-		pass
-	
-	def ownerDataReplicate(self):
-		"""
-		Replicates the GameState description of this entity's owner data.
-		"""
-		pass
-	
-	################################################
-	################################################
-	################################################
-	################################################
-	
-	
+	def getCurrentGameTime(self):
+		start = self.getCD()['gameTimeStart']
+		import time
+		return time.time()-start
+
 	def controllerDataSimulate(self):
 		"""
 		Simulates controller data, and updates the changes to the GameState via Networking.
 		"""
-		pass
+		gameTime = self.getCurrentGameTime()
+		self.Networking.gpsnet.throw( ['GS', ['EM', [(self.EID, 'CD', 'gameTime', gameTime)]]] )
+		#self.setCDV("gameTime", gameTime)
 	
-	def controllerDataReplicate(self):
-		"""
-		Replicates the GameState description of this entity's controller data to the local self's copy.
-		"""
-		pass
+	def alwaysRun(self):
+		CD = self.getCD()
+		print("Director:CD['gameTime']: %.2f"%(CD['gameTime']))

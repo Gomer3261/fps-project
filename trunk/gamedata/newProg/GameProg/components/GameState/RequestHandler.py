@@ -6,6 +6,7 @@ class Class:
 	GameState Request Protocol:
 	
 	Entity Control Request:
+		* DEPRECATED IN FAVOUR OF ENTITY MOD REQUEST
 		['EC', [58, changes] ] # EC flag for EntityControl. 58 is the EID of the entity we are attempting to contol.
 		changes = { "P":[1.1, 5.6, 1.0] } # changing the position...
 		
@@ -14,6 +15,10 @@ class Class:
 		the owner of the player entity, but they can use EC requests to control certain variables
 		of the entity (like position and such).
 	
+	Entity Control Request:
+		['EM', changes]
+		changes = [EID, type, key, value]
+		changes = [69, 'CD', 'position', [0.0, 0.0, 0.0]]
 	
 	Action Request:
 		['AR', action] # 'AR' flag obviously for ActionRequest.
@@ -55,7 +60,11 @@ class Class:
 			data = request[1]
 			
 			if flag == 'EC':
+				# DEPRECATED, USE EM
 				self.handleEntityControlRequest(data, sender, GameState, gpsnet)
+			
+			if flag == 'EM': # Entity Mod
+				self.handleEntityModRequest(request, sender, GameState, gpsnet)
 			
 			if flag == 'AR':
 				self.handleActionRequest(data, sender, GameState, gpsnet)
@@ -66,9 +75,26 @@ class Class:
 	
 	
 	
+	def handleEntityModRequest(self, request, sender, GameState, gpsnet):
+		"""
+		Handles an EM Request.
+		"""
+		flag = request[0]
+		changes = request[1]
+		for change in changes:
+			EID=change[0]
+			type=change[1]
+			key=change[2]
+			value=change[3]
+			GameState.contents['E'][EID][type][key] = value
+		GameState.changes.append(request)
+	
+	
+	
+	
 	def handleEntityControlRequest(self, data, sender, GameState, gpsnet):
 		"""
-		Handles an EC Request.
+		Handles an EC Request. DEPRECATED, USE ENTITY MOD REQUEST INSTEAD.
 		"""
 		EID = data[0]
 		changes = data[1]
