@@ -17,22 +17,27 @@ class Class(base_entity.Class):
 		CD["gameTimeStart"] = time.time()
 		CD["gameTime"] = 0.0
 		
-		self.setOD(OD)
-		self.setCD(CD)
+		self.sendData('OD', None, OD)
+		self.sendData('CD', None, CD)
 	
 	def getCurrentGameTime(self):
-		start = self.getCD()['gameTimeStart']
-		import time
-		return time.time()-start
+		try:
+			start = self.getCD()['gameTimeStart']
+			import time
+			return time.time()-start
+		except:
+			pass
 
 	def controllerDataSimulate(self):
 		"""
 		Simulates controller data, and updates the changes to the GameState via Networking.
 		"""
 		gameTime = self.getCurrentGameTime()
-		self.Networking.gpsnet.throw( ['GS', ['EM', [(self.EID, 'CD', 'gameTime', gameTime)]]] )
-		#self.setCDV("gameTime", gameTime)
+		self.throwData('CD', 'gameTime', gameTime)
 	
 	def alwaysRun(self):
-		CD = self.getCD()
-		print("Director:CD['gameTime']: %.2f"%(CD['gameTime']))
+		try:
+			CD = self.getCD()
+			print("Director:CD['gameTime']: %.2f"%(CD['gameTime']))
+		except:
+			pass
