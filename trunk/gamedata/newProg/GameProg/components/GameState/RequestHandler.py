@@ -15,10 +15,11 @@ class Class:
 		the owner of the player entity, but they can use EC requests to control certain variables
 		of the entity (like position and such).
 	
-	Entity Control Request:
+	Entity Mod Request:
 		['EM', changes]
-		changes = [EID, type, key, value]
-		changes = [69, 'CD', 'position', [0.0, 0.0, 0.0]]
+		changes = [(change, change2, change3...)]
+		change = (EID, type, key, value)
+		change = (69, 'CD', 'position', [0.0, 0.0, 0.0])
 	
 	Action Request:
 		['AR', action] # 'AR' flag obviously for ActionRequest.
@@ -86,7 +87,10 @@ class Class:
 			type=change[1]
 			key=change[2]
 			value=change[3]
-			GameState.contents['E'][EID][type][key] = value
+			if key:
+				GameState.contents['E'][EID][type][key] = value
+			else:
+				GameState.contents['E'][EID][type] = value
 		GameState.changes.append(request)
 	
 	

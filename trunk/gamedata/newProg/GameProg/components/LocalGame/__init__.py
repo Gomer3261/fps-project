@@ -56,4 +56,10 @@ class Class:
 	# Running Entities
 	def runEntities(self):
 		for EID in self.entities:
-			self.entities[EID].run()
+			try:
+				self.entities[EID].run()
+			except:
+				import traceback
+				print("\nError in entity %s (%s):" % (EID, self.entities[EID].type))
+				traceback.print_exc()
+				print(" ")

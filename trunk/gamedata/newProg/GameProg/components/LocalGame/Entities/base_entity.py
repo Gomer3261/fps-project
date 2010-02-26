@@ -23,10 +23,15 @@ class Class:
 		OD = {}
 		CD = {}
 		
-		self.setOD(OD)
-		self.setCD(CD)
+		self.sendData('OD', None, OD)
+		self.sendData('CD', None, CD)
 	
 	
+	
+	
+	###
+	### Get Data
+	###
 	
 	def getData(self):
 		return self.GameState.getEntity(self.EID)
@@ -37,31 +42,25 @@ class Class:
 	def getController(self):
 		return self.getData()['C']
 	
-	###
-	### Controller Data
-	###
-	
 	def getCD(self): # Controller Data
 		return self.getData()['CD']
-	
-	def setCD(self, data): # Controller Data
-		self.GameState.getEntity(self.EID)['CD'] = data
-	
-	def setCDV(self, name, value):
-		self.GameState.getEntity(self.EID)['CD'][name] = value
-	
-	###
-	### Owner Data
-	###
 	
 	def getOD(self): # Owner Data
 		return self.getData()['OD']
 	
-	def setOD(self, data): # Owner Data
-		self.GameState.getEntity(self.EID)['OD'] = data
 	
-	def setODV(self, name, value):
-		self.GameState.getEntity(self.EID)['OD'][name] = value
+	###
+	### Set Data
+	###
+	
+	def setData(self, type, key, value):
+		self.Networking.gpsnet.send( ['GS', ['EM', [(self.EID, type, key, value)]]] )
+	
+	def sendData(self, type, key, value):
+		self.Networking.gpsnet.send( ['GS', ['EM', [(self.EID, type, key, value)]]] )
+	
+	def throwData(self, type, key, value):
+		self.Networking.gpsnet.throw( ['GS', ['EM', [(self.EID, type, key, value)]]] )
 	
 	
 	################################################
