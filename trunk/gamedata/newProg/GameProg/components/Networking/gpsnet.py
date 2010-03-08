@@ -4,6 +4,9 @@ class Class:
 	"""
 	GameplayServer Networking.
 	
+	The gpsnet is used by any part of the game, usually entities, to access and manipulate the GameState
+	of the host, be it local, or remote over the internet.
+	
 	Master Public Interface:
 		- run(MasterInfo): Performs special high-level operations like connecting, reconnecting, etc.
 		- incoming(): Receives data from a remote host.
@@ -46,8 +49,6 @@ class Class:
 		Performs special high-level operations like connecting, reconnecting, etc.
 		"""
 		pass
-	
-	
 	
 	
 	

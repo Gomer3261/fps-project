@@ -42,7 +42,7 @@ def initiate(cont):
 		import GameLogic
 		GI = {}
 		GI['host'] = True
-		GI['server'] = None
+		GI['server'] = False
 		GameLogic.globalDict['gameInfo'] = GI
 		
 		###
