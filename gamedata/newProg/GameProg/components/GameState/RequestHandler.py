@@ -21,6 +21,10 @@ class Class:
 		change = (EID, type, key, value)
 		change = (69, 'CD', 'position', [0.0, 0.0, 0.0])
 	
+	Value Append Request:
+		['VA', EID, 'CD', 'someKindOfQueue', [valuesToAppend]]
+	
+	
 	Action Request:
 		['AR', action] # 'AR' flag obviously for ActionRequest.
 		action = ['DMG', 52, 23] # this would be a request to apply 23 damage to player entity 52.
@@ -68,6 +72,9 @@ class Class:
 			if flag == 'EM': # Entity Mod
 				self.handleEntityModRequest(request, sender, GameState, gpsnet)
 			
+			if flag == 'VA': # Value Append
+				self.handleValueAppendRequest(request, sender, GameState, gpsnet)
+			
 			if flag == 'AR':
 				self.handleActionRequest(data, sender, GameState, gpsnet)
 		except:
@@ -92,6 +99,24 @@ class Class:
 				GameState.contents['E'][EID][type][key] = value
 			else:
 				GameState.contents['E'][EID][type] = value
+		GameState.changes.append(request)
+	
+	
+	
+	def handleValueAppendRequest(self, request, sender, GameState, gpsnet):
+		"""
+		Handles an VA Request.
+		['VA', EID, 'CD', 'someKindOfQueue', [valuesToAppend]]
+		"""
+		flag = request[0]
+		EID = request[1]
+		type = request[2]
+		key = request[3]
+		valuesToAppend = request[4]
+		
+		for value in valuesToAppend:
+			GameState.contents['E'][EID][type][key].append(value)
+		
 		GameState.changes.append(request)
 	
 	
