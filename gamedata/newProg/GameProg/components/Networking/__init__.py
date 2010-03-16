@@ -9,6 +9,8 @@ class Class:
 		import gpsnet as gpsnetModule
 		self.gpsnet = gpsnetModule.Class()
 		
+		print("Networking's ready.")
+		
 	def run(self, MasterInfo):
 		"""
 		Runs networking operations for the master server

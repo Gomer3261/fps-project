@@ -2,6 +2,7 @@
 class Class():
 	def __init__(self, slab):
 		self.slab = slab
+		print("Terminal admin commands look good.")
 
 #	def localPlayer():
 #		localPlayer = gamecontrol.localgame.players.getLocalPlayer()

@@ -2,9 +2,6 @@
 
 class Class:
 	def __init__(self):
-		self.gameInitiated = False
-		self.UID = -1
-		
 		"""
 		### Admin Info ###
 		# Contains all the information for setting up the game.
@@ -17,6 +14,9 @@ class Class:
 		self.AdminInfo["director"]["index"] = 0 # current spot in the playlist.
 		self.AdminInfo["director"]["intermission"] = None # None=In Game, float=intermission (time left).
 		"""
+		self.gameInitiated = False
+		self.UID = -1
+		print("Admin's good.")
 	
 	
 	def getUID(self):

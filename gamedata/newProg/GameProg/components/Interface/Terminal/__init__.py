@@ -11,20 +11,14 @@ class Class:
 
 		# The contents of the terminal window (output)
 		self.openingText = """Welcome to the terminal!
-The game's programming is currently undergoing a revolution; many terminal commands will not function as described because we are currently working on their implementation.
 
 Remember:
    Precede all python commands with a slash (/), otherwise it is regarded as a text message.
 
 Important functions:
+	/listUserCommands() # Lists the commands you can use.
+	/help(cmd) # Use this to get help on a particular command.
 	/defaultOptions() # Use this whenever things seem to be not working.
-	/listUserCommands()
-	/help(cmd)
-	/connect("YourName", stokes) # 'stokes' is the server, you can also use 'chase' or 'geoff'
-	/disconnect() # disconnects you from the gameplay server.
-	/users() # outputs a list of users in the game.
-	/players() # outputs a list of players currently alive.
-	/info() # gives you game information.
 
 ================================================================"""
 
@@ -42,6 +36,8 @@ Important functions:
 
 		self.wraplen = 100
 		self.maxlines = 60
+		
+		print("Terminal's prepared.")
 		
 		
 
