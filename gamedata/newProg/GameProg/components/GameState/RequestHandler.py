@@ -24,7 +24,8 @@ class Class:
 	Action Request:
 		['AR', action] # 'AR' flag obviously for ActionRequest.
 		action = ['DMG', 52, 23] # this would be a request to apply 23 damage to player entity 52.
-		action = ['SP', 69, 12] # This would spawn a player entity with control given to UID 69.
+		action = ['SP', 69, 12] #DEPRECATED!USE-BELOW! This would spawn a player entity with control given to UID 69.
+		action = ['SE', 'nanoshooter'] # Spawns an entity, the sender of the message gets control, the host gets ownership.
 		
 		An Action Request is fairly broad, and is used to request an action that may require
 		some computation of the GameState.
@@ -140,6 +141,7 @@ class Class:
 			# We'll let this information be distributed in a full GS distro.
 		
 		if flag == 'SP': # Spawn Player
+			# DEPRECATED!!! #
 			EID = GameState.addEntity('player')
 			GameState.contents['E'][EID]['C'] = sender
 			# We'll let this information be distributed in a full GS distro.

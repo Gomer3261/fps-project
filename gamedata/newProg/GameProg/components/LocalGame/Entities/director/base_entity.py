@@ -3,6 +3,17 @@
 class Class:
 	type = "base_entity"
 	
+	def weAreOwner(self):
+		if self.Admin.UID == self.getOwner():
+			return True
+		else:
+			return False
+	
+	################################################
+	################################################
+	################################################
+	################################################
+	
 	def __init__(self, EID, LocalGame):
 		self.EID = EID
 		
@@ -11,22 +22,39 @@ class Class:
 		self.GameState = LocalGame.GameState
 		self.Networking = LocalGame.Networking
 		self.Interface = LocalGame.Interface
+		self.Resources = LocalGame.Resources
 		
-		if self.Admin.UID == self.getOwner():
+		if self.weAreOwner():
 			# We only initiate the GameState Data when we are the Owner during initiation.
 			# I think that's how it should go down I guess. Not sure. :P
 			self.initiateGameStateData()
-	
-	
+		
+		self.initiate()
 	
 	def initiateGameStateData(self):
 		OD = {}
 		CD = {}
 		
-		self.sendData('OD', None, OD)
+		self.sendData('OD', None, OD) # None, because we're not setting a particular key in OD dictionary, we're setting OD as a whole.
 		self.sendData('CD', None, CD)
 	
+	def initiate(self):
+		"""
+		This is your chance to spawn in the game object, and stuff like that.
+		"""
+		pass
 	
+	def end(self):
+		"""
+		This is where the game objects associated with this entity must be removed.
+		"""
+		pass
+	
+	
+	################################################
+	################################################
+	################################################
+	################################################
 	
 	
 	###

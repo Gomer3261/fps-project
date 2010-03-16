@@ -57,8 +57,10 @@ class GPS_SERVER:
 	
 	def run(self):
 		# Accept new TCP clients
-		newTcpClientHandler = TCP_CLIENT_HANDLER( self.tcpServer.acceptNewConnection() )
-		# Make it into a new session?
+		newConnection = self.tcpServer.acceptNewConnection()
+		if newConnection:
+			newTcpClientHandler = TCP_CLIENT_HANDLER( newConnection )
+			# Make it into a new session?
 		
 
 

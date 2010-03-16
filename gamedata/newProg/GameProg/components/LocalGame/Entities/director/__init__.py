@@ -20,6 +20,8 @@ class Class(base_entity.Class):
 		self.sendData('OD', None, OD)
 		self.sendData('CD', None, CD)
 	
+	
+	
 	def getCurrentGameTime(self):
 		try:
 			start = self.getCD()['gameTimeStart']
@@ -27,6 +29,18 @@ class Class(base_entity.Class):
 			return time.time()-start
 		except:
 			pass
+	
+	
+	
+	def spawnControl(self):
+		"""
+		Allows anybody connected to this director (as a client, or owner) to send spawn requests.
+		"""
+		if not self.Interface.Terminal.active:
+			s = self.Interface.Inputs.Controller.getStatus('spawn')
+			if s==3:
+				self.Networking.gpsnet.send(['GS', ['AR', ['SE', 'nanoshooter']]])
+	
 
 	def controllerDataSimulate(self):
 		"""
@@ -35,9 +49,13 @@ class Class(base_entity.Class):
 		gameTime = self.getCurrentGameTime()
 		self.throwData('CD', 'gameTime', gameTime)
 	
+	
+	
+	
 	def alwaysRun(self):
 		try:
-			CD = self.getCD()
-			print("Director:CD['gameTime']: %.2f"%(CD['gameTime']))
+			self.spawnControl()
+			#CD = self.getCD()
+			#print("Director:CD['gameTime']: %.2f"%(CD['gameTime']))
 		except:
 			pass
