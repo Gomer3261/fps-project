@@ -1,29 +1,16 @@
-### Nanoshooter ###
-import base_entity
+### Nanoshooter Entity ###
 
-class Class(base_entity.Class):
-	type = "nanoshooter"
-	
-	def initiateGameStateData(self):
-		"""
-		Initiates the GameState OwnerData and ControllerData for this entity.
-		"""
-		import time
+class Class:
+	def __init__(self, EID, LocalGame):
+		self.type = "nanoshooter"
+		self.EID = EID
 		
-		OD = {}
-		OD['HP'] = 100
+		self.LocalGame = LocalGame
+		self.Admin = LocalGame.Admin
+		self.GameState = LocalGame.GameState
+		self.Networking = LocalGame.Networking
+		self.Interface = LocalGame.Interface
 		
-		CD = {}
-		CD['P'] = [0.0, 0.0, 0.0] # Position
-		CD['O'] = None # Orientation
-		CD['S'] = False # Shooting Status
-		
-		self.sendData('OD', None, OD)
-		self.sendData('CD', None, CD)
-	
-	
-	
-	def initiate(self):
 		# Initiating the gameObject
 		import GameLogic as gl
 		own = gl.getCurrentController().owner
@@ -40,16 +27,30 @@ class Class(base_entity.Class):
 		
 		print("Nanoshooter Initiated.")
 	
-	def end(self):
-		self.LocalGame.Camera.clear()
-		self.aimPoint.endObject()
-		self.aimPoint = None
-		self.gameObject.endObject()
-		self.gameObject = None
-		print("Nanoshooter Entity Ended.")
+	
+	def getDescription(self):
+		return self.GameState.getEntity(self.EID)
+	
+	def getOwner(self):
+		return self.getDescription()['O']
+	
+	def getController(self):
+		return self.getDescription()['C']
+	
+	################################################
+	################################################
+	################################################
+	################################################
+	
+	def run(self):
+		UID = self.Admin.getUID()
 		
+		if self.getOwner() == UID: self.ownerDataSimulate()
+		else: self.ownerDataReplicate()
 		
-		
+		if self.getController() == UID: self.controllerDataSimulate()
+		else: self.controllerDataReplicate()
+	
 	################################################
 	################################################
 	################################################
@@ -60,14 +61,12 @@ class Class(base_entity.Class):
 		"""
 		Simulates owner data, and updates the changes to the GameState via Networking.
 		"""
-		#print("ownerDataSimulate")
 		pass
 	
 	def ownerDataReplicate(self):
 		"""
 		Replicates the GameState description of this entity's owner data.
 		"""
-		#print("ownerDataReplicate")
 		pass
 	
 	################################################
@@ -96,15 +95,21 @@ class Class(base_entity.Class):
 		"""
 		Replicates the GameState description of this entity's controller data to the local self's copy.
 		"""
-		#print("controllerDataReplicate")
 		pass
-
-
+	
+	
 	################################################
 	################################################
 	################################################
 	################################################
-
+	
+	def end(self):
+		self.LocalGame.Camera.clear()
+		self.aimPoint.endObject()
+		self.aimPoint = None
+		self.gameObject.endObject()
+		self.gameObject = None
+		print("Nanoshooter Entity Ended.")
 	
 	def suicideControlLoop(self):
 		if not self.Interface.Terminal.active:

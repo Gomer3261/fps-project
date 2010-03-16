@@ -69,7 +69,7 @@ def run(cont):
 		### The Game Loop
 		### ================================================
 		
-		Admin.initiationLoop(GameLogic, Networking, GameState) # Setting up the game
+		Admin.initiationLoop(GameLogic, Networking, GameState, Interface) # Setting up the game
 		#Admin.userControlLoop(Interface, GameState, Networking) # DEPRECATED
 		
 		Networking.msnet.run(MasterInfo) # Asynchronous operations with the Master Server.

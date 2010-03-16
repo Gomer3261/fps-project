@@ -40,7 +40,7 @@ class Class:
 	
 	
 	
-	def initiationLoop(self, GameLogic, Networking, GameState):
+	def initiationLoop(self, GameLogic, Networking, GameState, Interface):
 		"""
 		Gets initiation information from the menus (via GameLogic.globalDict)
 		and sets up the game with it.
@@ -100,4 +100,11 @@ class Class:
 			print("\n===========================================================================")
 			print("====== Administrated Game Initiation Complete; Game loop starts now! ======")
 			print("===========================================================================\n")
+			Interface.Notes.notify("Initiation complete. Welcome.")
+			Interface.Notes.notify("Press ~ (tilde) to pop open the in-game terminal.")
+			Interface.Notes.notify("Press the spacebar to spawn a testing entity.")
+			Interface.Notes.notify("Use WASD keys and mouse movement to control the nanoshooter testing entity.")
+			Interface.Notes.notify("Press the delete key to kill the testing entity.")
+			Interface.Notes.notify("If those controls don't work, you should enter /defaultOptions() into the terminal. The terminal can also be used to customize any of your controls.")
+			Interface.Notes.notify("Enjoy yourself.")
 			

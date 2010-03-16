@@ -67,7 +67,8 @@ class Class:
 				
 				# Set the display time
 				if not note[1]:
-					self.displayTime = (float(len(note[0])) * 0.05) + 0.5 # Dynamic Display Time (0.05 seconds per character)
+					#FAST-READER# self.displayTime = (float(len(note[0])) * 0.05) + 0.5 # Dynamic Display Time (0.05 seconds per character)
+					self.displayTime = (float(len(note[0])) * 0.08) + 0.5 # Dynamic Display Time (0.05 seconds per character)
 				else:
 					self.displayTime = note[1]
 				
