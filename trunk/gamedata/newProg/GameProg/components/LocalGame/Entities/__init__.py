@@ -15,3 +15,6 @@ import nanoshooter; entityClasses["nanoshooter"] = nanoshooter.Class
 # --- giving clean access to entity classes --- #
 def getEntityClass(type):
 	return entityClasses[type]
+
+
+print("LocalGame Entites seem happy and ready.")

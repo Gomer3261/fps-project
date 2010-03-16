@@ -21,9 +21,7 @@ class Class:
 		self.Inputs = Inputs
 		
 		self.load()
-		
-		self.Inputs.Controller.setControls(self.controls)
-		print("Options Initiated")
+		print("  Interface/Options' smiling.")
 
 
 
@@ -55,7 +53,7 @@ class Class:
 			settings["invertx"] = 0
 			settings["filter-hdr"] = 0
 			settings["lens"] = 15.0
-			settings["crouch"] = "Hold" # should be changed to lowercase
+			settings["crouch"] = "hold"
 			
 			# CONTROLS
 			controls["spawn"] = "space-key"
@@ -149,9 +147,9 @@ class Class:
 			f.write(newfile)
 			f.close()
 
-			print("Options Saved")
+			print("Interface/Options: Save operation completed.")
 
-			#making changed options effect the game
+			# Making changed options effect the game
 			self.Inputs.Controller.setControls(self.controls)
 
 			return 1
@@ -202,14 +200,12 @@ class Class:
 					statements[name] = eval(value)
 			self.controls = statements
 			
-			print("Options Loaded")
-			
 			self.Inputs.Controller.setControls(self.controls)
 			
 			return 1
 		except:
 			self.traceback.print_exc()
-			print("Error loading; will attempt to save defaults and use those")
+			print("Interface/Options: Error loading; will attempt to save defaults and use those.")
 			result = self.saveDefaults()
 			if result:
 				return 2 # This means the load failed, but the saving of defaults worked.

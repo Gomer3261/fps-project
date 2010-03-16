@@ -34,6 +34,8 @@ class Class:
 		self.displayTime = 0.0
 		self.startTime = 0.0
 		self.currentTime = 0.0
+		
+		print("  Interface/Notes are good to go.")
 
 
 

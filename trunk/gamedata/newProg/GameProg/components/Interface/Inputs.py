@@ -21,7 +21,7 @@ class Class:
 		
 		self.Mouse = self.MOUSE(con)
 		
-		print("Inputs Initiated")
+		print("  Interface/Input's happy.")
 	
 	
 	
@@ -261,12 +261,12 @@ class Class:
 		
 		#changes the values of controls, and creates events to detect them.
 		def setControls(self, controls):
-			# controls is usually from options.py
+			# controls are usually from options.py
 			self.controls = {}
 			self.events = {}
 			
 			self.controls = controls
-			print "Controls set."
+			print "Interface/Inputs/Controller: Controls Set."
 
 			for control in self.controls:
 				value = self.controls[control]

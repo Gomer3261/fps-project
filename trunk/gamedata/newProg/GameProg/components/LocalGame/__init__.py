@@ -4,6 +4,7 @@ class Class:
 	def __init__(self):
 		import Camera as CameraMod; self.Camera = CameraMod.Class()
 		self.entities = {}
+		print("LocalGame's good to go.")
 	
 	
 	# Main Loop

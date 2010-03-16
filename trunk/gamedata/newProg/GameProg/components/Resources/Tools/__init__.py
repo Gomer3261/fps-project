@@ -4,3 +4,4 @@ class Class:
 	def __init__(self):
 		import Damper
 		self.Damper = Damper.Class()
+		print("  Damper's cool.")

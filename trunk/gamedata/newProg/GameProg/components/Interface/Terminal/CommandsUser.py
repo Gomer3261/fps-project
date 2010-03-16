@@ -11,6 +11,7 @@ Precede your input with "/" to designate it as a text message.
 
 	def __init__(self, slab):
 		self.slab = slab
+		print("Terminal user commands are good.")
 
 	# ----------------------------
 	# Terminal Specific Commands

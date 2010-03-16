@@ -14,6 +14,8 @@ class Class:
 		
 		import Notes as NotesModule
 		self.Notes = NotesModule.Class()
+		
+		print("Interface -- check.")
 	
 	def run(self):
 		self.Terminal.handleOpenClose()

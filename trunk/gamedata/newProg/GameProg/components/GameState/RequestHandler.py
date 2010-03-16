@@ -36,6 +36,7 @@ class Class:
 	"""
 	
 	def __init__(self):
+		print("  GameState's Request Handler ready.")
 		pass
 	
 	def run(self, GameState, gpsnet):

@@ -9,6 +9,8 @@ class Class:
 		self.changes = []
 		
 		self.EID = 1 # Entity ID
+		
+		print("GameState is ready.")
 	
 	
 	
