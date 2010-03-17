@@ -82,13 +82,13 @@ class Class:
 	###
 	
 	def setData(self, type, key, value):
-		self.Networking.gpsnet.send( ['GS', ['EM', [(self.EID, type, key, value)]]] )
+		self.Networking.gpsnet.send( ('GS', ('EM', [(self.EID, type, key, value)])) )
 	
 	def sendData(self, type, key, value):
-		self.Networking.gpsnet.send( ['GS', ['EM', [(self.EID, type, key, value)]]] )
+		self.Networking.gpsnet.send( ('GS', ('EM', [(self.EID, type, key, value)])) )
 	
 	def throwData(self, type, key, value):
-		self.Networking.gpsnet.throw( ['GS', ['EM', [(self.EID, type, key, value)]]] )
+		self.Networking.gpsnet.throw( ('GS', ('EM', [(self.EID, type, key, value)])) )
 	
 	
 	################################################

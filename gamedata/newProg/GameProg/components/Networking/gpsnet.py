@@ -141,9 +141,9 @@ class Class:
 		if True: #Admin.weOwnGameState():
 			# Feedback loop; placing packages straight into our own inItems list.
 			for package in self.sendBuffer:
-				self.inItems.append([ourUID, package])
+				self.inItems.append( (ourUID, package) )
 			for package in self.throwBuffer:
-				self.inItems.append([ourUID, package])
+				self.inItems.append( (ourUID, package) )
 		else:
 			# Hehe, like this will ever happen...
 			# Flattening the packages and sending them off to a remote host.
