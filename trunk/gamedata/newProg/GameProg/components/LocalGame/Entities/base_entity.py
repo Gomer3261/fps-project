@@ -16,6 +16,7 @@ class Class:
 	
 	def __init__(self, EID, LocalGame):
 		self.EID = EID
+		self.memos = []
 		
 		self.LocalGame = LocalGame
 		self.Admin = LocalGame.Admin
@@ -90,6 +91,19 @@ class Class:
 	def throwData(self, type, key, value):
 		self.Networking.gpsnet.throw( ('GS', ('EM', [(self.EID, type, key, value)])) )
 	
+	###
+	### Memo System
+	###
+	
+	def sendMemo(self, EID, memoData):
+		self.Networking.gpsnet.send( ('LG', ('MEMO', (EID, memoData))) )
+	
+	def throwMemo(self, EID, memoData):
+		self.Networking.gpsnet.throw( ('LG', ('MEMO', (EID, memoData))) )
+	
+	def handleMemos(self):
+		self.memos = []
+	
 	
 	################################################
 	################################################
@@ -104,6 +118,8 @@ class Class:
 		
 		if self.getController() == UID: self.controllerDataSimulate()
 		else: self.controllerDataReplicate()
+		
+		self.handleMemos()
 		
 		self.alwaysRun()
 	

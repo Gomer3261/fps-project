@@ -3,6 +3,8 @@
 class Class:
 	def __init__(self):
 		import Camera as CameraMod; self.Camera = CameraMod.Class()
+		import RequestHandler as RequestHandlerMod; self.RequestHandler = RequestHandlerMod.Class()
+		
 		self.entities = {}
 		print("LocalGame's good to go.")
 	
@@ -17,6 +19,17 @@ class Class:
 		
 		self.replicateGameState(self.GameState)
 		self.runEntities()
+	
+	
+	def giveMemo(self, EID, memoData):
+		try:
+			if EID:
+				if not EID in self.entities: raise Exception, "Memo Error: EID not in LocalGame.entities?"
+				entity = self.entities[EID]
+				entity.memos.append(memoData)
+			else:
+				raise Exception, "Memo Error: no EID given."
+		except: import traceback; traceback.print_exc()
 	
 	
 	# Replication
