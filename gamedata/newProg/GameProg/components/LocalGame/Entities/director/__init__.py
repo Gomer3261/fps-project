@@ -16,7 +16,6 @@ class Class(base_entity.Class):
 		CD = {}
 		CD["gameTimeStart"] = time.time()
 		CD["gameTime"] = 0.0
-		CD["spawnRequestQueue"] = []
 		
 		self.sendData('OD', None, OD)
 		self.sendData('CD', None, CD)
@@ -34,18 +33,20 @@ class Class(base_entity.Class):
 		except:
 			pass
 	
-	def requestSpawn(self, entityType="nanoshooter"):
-		self.Networking.gpsnet.send( ('GS', ('VA', (self.EID, 'CD', 'spawnRequestQueue', [entityType]))) )
+	def requestSpawn(self, entityType="nanoshooter", args=[]):
+		IDs = (self.Admin.UID, self.Admin.UID) # First UID needs to be the host, second UID needs to be the controller.
+		memoData = ('SE', (entityType,IDs,args))
+		self.sendMemo(self.EID, memoData)
+		#self.Networking.gpsnet.send( ('LG', ('MEMO', (self.EID, ('SE', (entityType,IDs,args)) ) )) )
 	
-	def handleSpawnRequests(self):
-		if 'spawnRequestQueue' in self.getCD():
-			spawnRequestQueue = self.getCD()['spawnRequestQueue']
-			if spawnRequestQueue:
-				for entityType in spawnRequestQueue:
-					self.Networking.gpsnet.send( ('GS', ('AR', ('SE', (entityType, (self.Admin.UID, self.Admin.UID), [])))) )
-												#   ('EM', [(EID,      type,       key,        value)])
-				self.Networking.gpsnet.send( ('GS', ('EM', [(self.EID, 'CD', 'spawnRequestQueue', [])])) ) # Clearing the Queue -- XXX -- Might turn into a problem, because
-				# there may be a delay in clearing the queue, which may making single items in the queue handled multiple times.... yikes.
+	def handleMemos(self):
+		if self.Admin.getUID() == self.getOwner(): # Only be handling memos when we are the owner (even though the owner should be the only one who recieves memos?)
+			for memo in self.memos:
+				memoFlag, memoData = memo
+				if memoFlag == 'SE':
+					entityType, IDs, args = memoData
+					self.Networking.gpsnet.send( ('GS', ('AR', ('SE', (entityType, IDs, args)))) )
+			self.memos = []
 	
 	def userSpawnRequestControl(self):
 		"""
@@ -65,7 +66,6 @@ class Class(base_entity.Class):
 		"""
 		Simulates controller data, and updates the changes to the GameState via Networking.
 		"""
-		self.handleSpawnRequests()
 		
 		### Only updates the clock every second ###
 		CD = self.getCD()
@@ -84,5 +84,4 @@ class Class(base_entity.Class):
 	def alwaysRun(self):
 		try:
 			self.userSpawnRequestControl()
-		except:
-			pass
+		except: import traceback; traceback.print_exc()

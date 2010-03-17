@@ -78,6 +78,7 @@ def run(cont):
 		
 		Interface.run() # Runs the interface (user inputs).
 		GameState.run(Admin, Networking) # Runs the GameState: represents the game world based on changes it finds in the Networking in buffer.
+		LocalGame.RequestHandler.run(LocalGame, Networking.gpsnet)
 		LocalGame.run(Admin, GameState, Networking, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		
