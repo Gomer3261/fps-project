@@ -111,7 +111,7 @@ class Class(base_entity.Class):
 			suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
 			if suicideStatus == 1:
 				# Suicide!
-				package = ['GS', ['AR', ['RE', self.EID]]]
+				package = ('GS', ('AR', ('RE', self.EID)))
 				self.Networking.gpsnet.send(package)
 				print("Remove (nanoshooter) Entity request sent via Networking.gpsnet.send(request)...")
 	

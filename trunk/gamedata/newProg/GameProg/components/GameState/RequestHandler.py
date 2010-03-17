@@ -5,6 +5,28 @@ class Class:
 	Interprets requests to make changes to the GameState.
 	GameState Request Protocol:
 	
+	Entity Mod Request:
+		('EM', changes)
+		changes = [change, change2, change3...]
+		change = (EID, type, key, value)
+		change = (69, 'CD', 'position', [0.0, 0.0, 0.0])
+		('EM', [(EID, type, key, value)])
+	
+	Value Append Request:
+		('VA', EID, 'CD', 'someKindOfQueue', [valuesToAppend])
+	
+	
+	Action Request:
+		('AR', action) # 'AR' flag obviously for ActionRequest.
+		action = ('DMG', 52, 23) # this would be a request to apply 23 damage to player entity 52.
+		action = ('SP', 69, 12) #DEPRECATED!USE-BELOW! This would spawn a player entity with control given to UID 69.
+		action = ('SE', (entityType, (ownerID, controllerID), [arg_position, arg_rotation, arg_somethingElse...]))
+		
+		An Action Request is fairly broad, and is used to request an action that may require
+		some computation of the GameState.
+	
+	
+	
 	Entity Control Request:
 		* DEPRECATED IN FAVOUR OF ENTITY MOD REQUEST
 		['EC', [58, changes] ] # EC flag for EntityControl. 58 is the EID of the entity we are attempting to contol.
@@ -14,25 +36,6 @@ class Class:
 		A good example if this would be a user controlling their player entity; they are not 
 		the owner of the player entity, but they can use EC requests to control certain variables
 		of the entity (like position and such).
-	
-	Entity Mod Request:
-		['EM', changes]
-		changes = [(change, change2, change3...)]
-		change = (EID, type, key, value)
-		change = (69, 'CD', 'position', [0.0, 0.0, 0.0])
-	
-	Value Append Request:
-		['VA', EID, 'CD', 'someKindOfQueue', [valuesToAppend]]
-	
-	
-	Action Request:
-		['AR', action] # 'AR' flag obviously for ActionRequest.
-		action = ['DMG', 52, 23] # this would be a request to apply 23 damage to player entity 52.
-		action = ['SP', 69, 12] #DEPRECATED!USE-BELOW! This would spawn a player entity with control given to UID 69.
-		action = ['SE', 'nanoshooter'] # Spawns an entity, the sender of the message gets control, the host gets ownership.
-		
-		An Action Request is fairly broad, and is used to request an action that may require
-		some computation of the GameState.
 	"""
 	
 	def __init__(self):
@@ -47,10 +50,8 @@ class Class:
 		items = gpsnet.inItems
 		#print("\ninItems: %s\n"%(items))
 		for item in items:
-			sender = item[0]
-			package = item[1]
-			packageFlag = package[0]
-			request = package[1]
+			sender, package = item
+			packageFlag, request = package
 			if packageFlag == 'GS':
 				self.handleRequest(sender, request, GameState, gpsnet)
 		#if items: print("\nGameState Changed!: %s\n"%(GameState.contents))
@@ -63,8 +64,7 @@ class Class:
 		Interprets a request to change the GameState.
 		"""
 		try:
-			flag = request[0]
-			data = request[1]
+			flag, data = request
 			
 			if flag == 'EC':
 				# DEPRECATED, USE EM
@@ -76,8 +76,8 @@ class Class:
 			if flag == 'VA': # Value Append
 				self.handleValueAppendRequest(request, sender, GameState, gpsnet)
 			
-			if flag == 'AR':
-				self.handleActionRequest(data, sender, GameState, gpsnet)
+			if flag == 'AR': # Action Request
+				self.handleActionRequest(request, sender, GameState, gpsnet)
 		except:
 			import traceback; traceback.print_exc()
 	
@@ -89,13 +89,9 @@ class Class:
 		"""
 		Handles an EM Request.
 		"""
-		flag = request[0]
-		changes = request[1]
+		flag, changes = request
 		for change in changes:
-			EID=change[0]
-			type=change[1]
-			key=change[2]
-			value=change[3]
+			EID, type, key, value = change
 			if key:
 				GameState.contents['E'][EID][type][key] = value
 			else:
@@ -107,13 +103,10 @@ class Class:
 	def handleValueAppendRequest(self, request, sender, GameState, gpsnet):
 		"""
 		Handles an VA Request.
-		['VA', EID, 'CD', 'someKindOfQueue', [valuesToAppend]]
+		('VA', (1, 'CD', 'spawnRequestQueue', ['nanoshooter']))
 		"""
-		flag = request[0]
-		EID = request[1]
-		type = request[2]
-		key = request[3]
-		valuesToAppend = request[4]
+		flag, data = request
+		EID, type, key, valuesToAppend = data
 		
 		for value in valuesToAppend:
 			GameState.contents['E'][EID][type][key].append(value)
@@ -150,30 +143,33 @@ class Class:
 	
 	
 	
-	def handleActionRequest(self, action, sender, GameState, gpsnet):
+	def handleActionRequest(self, request, sender, GameState, gpsnet):
 		"""
 		Handles an Action Request.
 		"""
-		flag = action[0]
+		flag, data = request
+		actionFlag, actionData = data
 		
-		if flag == "SE": # Spawn Entity...
-			type = action[1]
-			EID = GameState.addEntity(type, GameState.Admin.getUID(), sender) # We are the Owner, sender is the controller.
+		if actionFlag == "SE": # Spawn Entity...
+			# ( entityType, (ownerID, controllerID), [arg_position, arg_rotation, arg_somethingElse...] )
+			type, IDs, args = actionData
+			ownerID, controllerID = IDs
+			EID = GameState.addEntity(type, ownerID, controllerID, args)
 			# We'll let this information be distributed in a full GS distro.
 		
-		if flag == "RE": # Remove Entity
-			EID = action[1]
+		if actionFlag == "RE": # Remove Entity
+			EID = actionData
 			GameState.removeEntity(EID)
 			# We'll let this information be distributed in a full GS distro.
 		
-		if flag == 'SP': # Spawn Player
+		if actionFlag == 'SP': # Spawn Player
 			# DEPRECATED!!! #
 			EID = GameState.addEntity('player')
 			GameState.contents['E'][EID]['C'] = sender
 			# We'll let this information be distributed in a full GS distro.
 		
-		if flag == 'AU': # Add User
-			name = action[1]
+		if actionFlag == 'AU': # Add User
+			name = actionData
 			EID = GameState.addUser(sender)
 			GameState.contents['U'][sender]['N'] = name
 			# We'll let this information be distributed in a full GS distro.

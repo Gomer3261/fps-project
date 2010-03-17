@@ -76,7 +76,7 @@ class Class:
 					# the director entity.
 					print("We're the host, creating the Director...")
 					#GameState.createDirector(gameInfo["directorInfo"])
-					package = ['GS', ['AR', ['SE', 'director']]]
+					package = ('GS', ('AR', ('SE', ('director', (self.UID, self.UID), [])) ))
 					Networking.gpsnet.send(package)
 					print("Spawn director request sent via Networking.gpsnet.send(request)...")
 				

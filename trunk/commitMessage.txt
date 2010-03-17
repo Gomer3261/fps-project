@@ -1,0 +1,3 @@
+Networking/GameState protocol/syntax has been generally improved (syntax is now tuple-based). 
+Protocol for spawning entities has been totally restructured; entities can now be spawned with any number of optional arguments (located in entity['OD']['ARGS']). Entities can use their optional arguments in any way they want during their initiations. The director's spawnRequestQueue system still needs a complete rewrite.
+    /Chase.

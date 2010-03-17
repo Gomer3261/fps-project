@@ -35,15 +35,16 @@ class Class(base_entity.Class):
 			pass
 	
 	def requestSpawn(self, entityType="nanoshooter"):
-		self.Networking.gpsnet.send( ['GS', ['VA', self.EID, 'CD', 'spawnRequestQueue', [entityType]]] )
+		self.Networking.gpsnet.send( ('GS', ('VA', (self.EID, 'CD', 'spawnRequestQueue', [entityType]))) )
 	
 	def handleSpawnRequests(self):
 		if 'spawnRequestQueue' in self.getCD():
 			spawnRequestQueue = self.getCD()['spawnRequestQueue']
 			if spawnRequestQueue:
 				for entityType in spawnRequestQueue:
-					self.Networking.gpsnet.send(['GS', ['AR', ['SE', entityType]]])
-				self.Networking.gpsnet.send(['GS', ['EM', [ [self.EID, 'CD', 'spawnRequestQueue', []] ]]]) # Clearing the Queue -- XXX -- Might turn into a problem, because
+					self.Networking.gpsnet.send( ('GS', ('AR', ('SE', (entityType, (self.Admin.UID, self.Admin.UID), [])))) )
+												#   ('EM', [(EID,      type,       key,        value)])
+				self.Networking.gpsnet.send( ('GS', ('EM', [(self.EID, 'CD', 'spawnRequestQueue', [])])) ) # Clearing the Queue -- XXX -- Might turn into a problem, because
 				# there may be a delay in clearing the queue, which may making single items in the queue handled multiple times.... yikes.
 	
 	def userSpawnRequestControl(self):
@@ -64,9 +65,16 @@ class Class(base_entity.Class):
 		"""
 		Simulates controller data, and updates the changes to the GameState via Networking.
 		"""
-		gameTime = self.getCurrentGameTime()
-		self.throwData('CD', 'gameTime', gameTime)
 		self.handleSpawnRequests()
+		
+		### Only updates the clock every second ###
+		CD = self.getCD()
+		if 'gameTime' in CD:
+			oldGameTime = CD['gameTime']
+			currentGameTime = self.getCurrentGameTime()
+			difference = currentGameTime - oldGameTime
+			if difference > 1.0:
+				self.throwData('CD', 'gameTime', currentGameTime)
 	
 	
 	
