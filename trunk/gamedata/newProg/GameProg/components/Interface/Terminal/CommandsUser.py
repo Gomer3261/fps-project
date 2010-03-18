@@ -5,7 +5,7 @@ class Class():
 Welcome to the FPS Project's in-game terminal.
 All commands are executed as Python scripts.
 Use listUserCommands() for a good time.
-Precede your input with "/" to designate it as a text message.
+Precede your input with "/" to designate it as a python command or it will be sent as a text message.
 """
 
 

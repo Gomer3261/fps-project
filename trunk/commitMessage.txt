@@ -1,2 +1,2 @@
-Got started on Networking. Various other tweaks. r268 was cooler.
-    /Chase.
+Fixed a couple minor errors to do with the terminal.
+    /Gomer.

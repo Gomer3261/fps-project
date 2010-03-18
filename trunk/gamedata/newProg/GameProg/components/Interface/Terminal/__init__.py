@@ -154,8 +154,9 @@ Important functions:
 			self.output(">> "+s)
 			s = s[1:]
 			
-			import CommandsUser as CommandsModuleUser; self.CommandsUser = CommandsModuleUser.Class(slab)
-			import CommandsAdmin as CommandsModuleAdmin; self.CommandsAdmin = CommandsModuleAdmin.Class(slab)
+			if not hasattr(self, "CommandsUser"):
+				import CommandsUser as CommandsModuleUser; self.CommandsUser = CommandsModuleUser.Class(slab)
+				import CommandsAdmin as CommandsModuleAdmin; self.CommandsAdmin = CommandsModuleAdmin.Class(slab)
 			modules = [self.CommandsUser, self.CommandsAdmin]
 
 			namespace = {}
