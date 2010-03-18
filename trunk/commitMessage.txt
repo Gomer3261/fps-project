@@ -1,9 +1,2 @@
-The GameState is no longer the only component that can receive requests -- now the LocalGame can too! Issue 7 has been resolved through the new entity "Memo" system. Entities can now _directly_ message each other (and themselves) through the use of memos. These memos completely bypass the GameState stuff, as they have nothing to do with the GameState at all. All entities have a convenient public interface for sending and receiving memos:
-
-entity.sendMemo(EID, memoData) # Reliably (TCP) sends the memo data to the entity specified by EID.
-entity.throwMemo(EID, memoData) # Unreliably (UDP) throws the memo data to the entity specified by EID.
-entity.handleMemos() # By default only clears the memos so they don't pile up; this is meant to be overwritten.
-
-The director entity uses memos to spawn entities. If there were say, nine clients connected to the game, there would be ten directors -- but only one director, the hosts, would have "Owner" status. Everybody's local director sends out a memo to spawn a player entity when they hit spacebar. The owner director gets these memos, handles them, and may or may not decide to spawn a player entity under their control for them. This is why memos are great -- it's completely unrelated to the GameState, which is why using GameState requests to handle this was silly.
-Memos are sent to the owner's copy of the entity -- so they only affect the version of the entity that is on the host machine.
+Got started on Networking. Various other tweaks. r268 was cooler.
     /Chase.
