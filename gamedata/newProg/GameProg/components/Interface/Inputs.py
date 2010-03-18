@@ -32,6 +32,9 @@ class Class:
 	# For getting Mouse movement information.
 
 	class MOUSE:
+		"""
+		The Mouse class contains a set of functions that make working with the mouse easier.
+		"""
 		import math
 		import Rasterizer
 
@@ -47,16 +50,28 @@ class Class:
 
 
 		def reset(self):
+			"""
+			sets the mouse position to the center of the screen.
+			"""
 			self.Rasterizer.setMousePosition(self.centerX, self.centerY)
 
 
 		def show(self, vis=1):
+			"""
+			makes the mouse visible.
+			"""
 			self.Rasterizer.showMouse(vis)
 
 		def hide(self, vis=0):
+			"""
+			hides the mouse from view.
+			"""
 			self.Rasterizer.showMouse(vis)
 
 		def getPosition(self):
+			"""
+			returns the position of the mouse. X, Y
+			"""
 			position = self.mousemove.position
 
 			X = position[0]
@@ -66,6 +81,9 @@ class Class:
 
 
 		def isAtCenter(self):
+			"""
+			True if the mouse is in the center of the viewport.
+			"""
 			X, Y = self.getPosition()
 			center = 1
 
@@ -79,6 +97,9 @@ class Class:
 
 
 		def getPositionFromCenter(self):
+			"""
+			Returns the difference between the mouse position and the center of the screen. X, Y
+			"""
 			X, Y = self.getPosition()
 
 			X = (X-self.centerX)
@@ -87,12 +108,19 @@ class Class:
 			return X, Y
 
 		def isPositive(self):
+			"""
+			True if mouse has moved.
+			"""
 			if self.mousemove.positive:
 				return 1
 			else:
 				return 0
 
 		def getMovement(self):
+			"""
+			Returns distance from the center of the screen. X, Y
+			Resets mouse to center of the screen.
+			"""
 			if self.isPositive():
 				X, Y = self.getPositionFromCenter()
 			else:
@@ -115,9 +143,11 @@ class Class:
 	################################
 	### ------ CONTROLLER ------ ###
 	################################
-	#This object is used to check the values of players custom controls.
 
 	class CONTROLLER:
+		"""
+		The Controller class is used to check the values of custom controls.
+		"""
 		events = {}
 
 		keyboard = None
@@ -161,8 +191,10 @@ class Class:
 
 			
 
-		#Used to detect hit keys, and other control events. (1 control/event)
 		class EVENT:
+			"""
+			The Event class is used to detect hit keys and other control related information. (1 control/event)
+			"""
 			def __init__(self, controller, control, value=None):
 				self.controller = controller
 
@@ -174,8 +206,10 @@ class Class:
 
 				
 
-			#converts the options value to a GameKeys value.
 			def getValue(self, value=None):
+				"""
+				converts the options value to a GameKeys value.
+				"""
 				if not value:
 					if control not in self.controller.controls:
 						return None
@@ -190,8 +224,10 @@ class Class:
 
 			
 
-			#figures out the status of the event. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
 			def getStatus(self):
+				"""
+				figures out the status of the event. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
+				"""
 				if self.value in self.controller.other:
 					self.kind = "other"
 					positive = self.controller.other[self.value].positive
@@ -220,8 +256,10 @@ class Class:
 
 				
 
-			#checks if the event is positive or not.
 			def isPositive(self):
+				"""
+				checks if the event is positive or not.
+				"""
 				status = self.getStatus()
 				if (status == 1) or (status == 2):
 					return 1
@@ -229,8 +267,10 @@ class Class:
 
 
 
-		#checks for the event in self.events
 		def getEvent(self, control):
+			"""
+			checks for the event in self.events
+			"""
 			if control in self.events:
 				event = self.events[control]
 				return event
@@ -239,8 +279,10 @@ class Class:
 
 			
 
-		#returns the status of the control. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
 		def getStatus(self, control):
+			"""
+			returns the status of the control. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
+			"""
 			event = self.getEvent(control)
 			if not event:
 				return None
@@ -249,8 +291,10 @@ class Class:
 
 		
 
-		#returns 1 if the control is positive.
 		def isPositive(self, control):
+			"""
+			returns 1 if the control is positive.
+			"""
 			event = self.getEvent(control)
 			if not event:
 				return None
@@ -259,8 +303,10 @@ class Class:
 
 		
 		
-		#changes the values of controls, and creates events to detect them.
 		def setControls(self, controls):
+			"""
+			changes the values of controls, and creates events to detect them.
+			"""
 			# controls are usually from options.py
 			self.controls = {}
 			self.events = {}

@@ -5,6 +5,13 @@
 ##############################################
 
 class Class:
+	"""
+	The Notification class manages all notifications.
+	This involves making sure all notifications are displayed to the user,
+	and insuring animations are given time to complete.
+	
+	Please note that notifications are not displayed the second they are requested.
+	"""
 	# The times it takes for the notifier to play
 	# it's hiding and showing animations...
 	noteShowTime = 0.25
@@ -44,13 +51,14 @@ class Class:
 
 
 	def notify(self, text, time=0.0):
+		"""
+		Adds a notification to the display que.
+		"""
 		self.notes.append((text, time))
 
 	def run(self):
 		"""
 		Runs the notification object on the notes scene.
-		This function is in serious need of optimization; the same sort
-		of optimizations that Geoff did on the terminal system.
 		"""
 		import time
 		import GameLogic as gl

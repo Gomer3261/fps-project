@@ -18,6 +18,9 @@ class Class:
 		print("Interface -- check.")
 	
 	def run(self):
+		"""
+		handles controlling the terminal scene.
+		"""
 		self.Terminal.handleOpenClose()
 	
 	def terminalOutputWithNotification(self, string, time=None):

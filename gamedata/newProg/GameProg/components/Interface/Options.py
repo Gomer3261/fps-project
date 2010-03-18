@@ -5,6 +5,10 @@
 # This object handles the saving/loading of options.
 
 class Class:
+	"""
+	The Options class collects, changes, and saves all user controlled settings & controls.
+	It allows the user to change many aspects of the game to suit their personal preferences.
+	"""
 
 	import traceback
 
@@ -39,8 +43,10 @@ class Class:
 
 
 
-	#Sets all controls and settings to default, then saves them all to the options file.
 	def saveDefaults(self):
+		"""
+		Sets all controls and settings to default, then saves them all to the options file.
+		"""
 		
 		try:
 			settings = {}
@@ -94,8 +100,10 @@ class Class:
 
 
 
-	#sets the given setting to the given value, then saves the setting.
 	def setSetting(self, key, value):
+		"""
+		sets the given setting to the given value, then saves the setting.
+		"""
 		key = key.lower()
 		
 		if key == "lens":
@@ -113,8 +121,10 @@ class Class:
 
 
 
-	#sets the given control to the given value, then saves the control.
 	def setControl(self, key, value):
+		"""
+		sets the given control to the given value, then saves the control.
+		"""
 		
 		key = key.lower()
 		
@@ -124,8 +134,10 @@ class Class:
 
 
 
-	#saves current controls to the options file.
 	def save(self):
+		"""
+		saves current controls and settings to the options file.
+		"""
 		
 		import os
 		
@@ -160,8 +172,10 @@ class Class:
 
 
 
-	#loads all information from the options file.
 	def load(self):
+		"""
+		loads all information from the options file.
+		"""
 		
 		try:
 			f = open(self.path, "r")
