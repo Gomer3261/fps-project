@@ -1,2 +1,2 @@
-Some documentation of the Interface component.
-    /Gomer.
+Lots of work on the core networking stuff.
+    /Chase.

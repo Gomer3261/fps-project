@@ -12,7 +12,7 @@ c = "\x14" # DC4
 ##########
 
 def pack(data):
-    package = pickle.dumps(data) + packsep
+	package = pickle.dumps(data) + packsep
 	return package
 
 def unpack(package):
@@ -20,21 +20,21 @@ def unpack(package):
     return data
 
 def packUDP(ticket, data):
-	udpData = (ticket, data)
+    udpData = (ticket, data)
     udpPackage = pickle.dumps(udpData)
-	return udpPackage
+    return udpPackage
 
 def unpackUDP(package):
-	ticket, data = pickle.loads(package)
-	return ticket, data
+    ticket, data = pickle.loads(package)
+    return ticket, data
 
 def unpackList(packages):
-	"""
-	Only for TCP Packages
-	"""
+    """
+    Only for TCP Packages
+    """
     items = []
     for package in packages:
-		data = unpack(package)
+        data = unpack(package)
         items.append( data )
     return items
 
@@ -42,25 +42,40 @@ def unpackList(packages):
 
 
 
+
+class TIMER:
+    def __init__(self):
+        import time
+        self.time = time
+        self.lastTime = self.time.time()
+    def get(self):
+        return self.time.time() - self.lastTime
+    def reset(self):
+        self.lastTime = self.time.time()
+
+
+
+
 class STREAM:
-	"""
-	A kind of buffer.
-	"""
-    content = ""
+    """
+    A kind of buffer.
+    """
+    def __init__(self):
+        self.content = ""
 
     def add(self, data):
         self.content += data
 
     def push(self, data):
-		"""
-		Synonymous with add(data).
-		"""
+        """
+        Synonymous with add(data).
+        """
         self.content += data
 
     def extract(self):
-		"""
-		Extracts whole valid packages from the buffer.
-		"""
+        """
+        Extracts whole valid packages from the buffer.
+        """
         packs = []
         
         chunks = self.content.split(packsep)

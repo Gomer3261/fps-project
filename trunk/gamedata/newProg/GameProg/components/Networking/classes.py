@@ -1,6 +1,211 @@
 ### Networking Classes ###
 
 
+###### ### ##################### ### ######
+###### ### ### BASIC CLASSES ### ### ######
+###### ### ##################### ### ######
+
+class TCP_SERVER:
+	def __init__(self, address):
+		import sessions
+		self.sessionStorage = sessions.SESSIONSTORAGE()
+		try:
+			import socket
+			self.socket = socket
+			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			self.sock.bind(address)
+			self.sock.settimeout(0.0); self.sock.setblocking(0) # Set non-blocking
+			print("Server bound.")
+		except: import traceback; traceback.print_exc()
+	
+	def getSession(self, ticket):
+		if ticket in self.sessionStorage.sessions:
+			return self.sessionStorage.sessions[ticket]
+		else:
+			return None
+	
+	########################################################################
+	class CLIENTSOCK:
+		def __init__(self, connection, timeout=10.0):
+			self.timeout = timeout
+			self.connection = connection
+			self.sock, self.address = connection
+			self.IP = self.address[0]
+			import comms
+			self.comms = comms
+			self.instream = comms.STREAM()
+			self.items = []
+			self.outbuffer = ""
+			self.timeoutClock = comms.TIMER()
+		def run(self):
+			# Handles stream/buffer IO, puts items (unpacked inbound packages) in items list.
+			self.IO()
+			items = self.items
+			self.items = []
+			return items, self.hasGoneStale()
+		def IO(self):
+			# RECEIVING (IN)
+			try:
+				data = self.sock.recv(1024)
+				if data:
+					self.instream.add(data)
+					packages = self.instream.extract()
+					items = self.comms.unpackList(packages)
+					for item in items: self.items.append(item)
+					self.timeoutClock.reset()
+			except: pass
+			# SENDING (OUT)
+			try:
+				if self.outbuffer:
+					sent = self.sock.send(self.outbuffer)
+					self.outbuffer = self.outbuffer[sent:]
+			except: pass
+		def send(self, data):
+			try:
+				self.outbuffer += self.comms.pack(data)
+				if self.outbuffer:
+					sent = self.sock.send(self.outbuffer)
+					self.outbuffer = self.outbuffer[sent:]
+			except: pass
+		def hasGoneStale(self): # In other words, "hasTimedOut()".
+			if self.timeoutClock.get() > self.timeout: return True
+			else: return False
+		def terminate(self):
+			self.sock.close()
+	########################################################################
+	
+	def run(self):
+		bundles = []
+		
+		newConnection = self.acceptNewConnection()
+		if newConnection:
+			clientSock = self.CLIENTSOCK(newConnection)
+			ticket, session = self.sessionStorage.newSession(clientSock)
+			print("New connection from (%s), ticket=%s."%(clientSock.IP, ticket))
+			clientSock.send( ('MSG', "Howdy!") )
+		
+		staleSessions = []
+		for sessionTicket in self.sessionStorage.sessions:
+			session = self.sessionStorage.sessions[sessionTicket]
+			if session.clientSock:
+				items, hasGoneStale = session.clientSock.run()
+				for item in items:
+					bundle = (sessionTicket, item)
+					bundles.append(bundle)
+				if hasGoneStale:
+					#session.clientSock.terminate()
+					session.terminateClientSock()
+					print("Client (%s) has gone stale."%(session.clientSock.IP))
+					#session.clientSock = None
+					#session.sessionTimeoutClock.reset()
+			else:
+				if session.hasGoneStale(): staleSessions.append(sessionTicket)
+		
+		for staleSession in staleSessions:
+			self.sessionStorage.deleteSession(staleSession)
+			print("Session number %s went stale."%(staleSession))
+		
+		return bundles
+	
+	def acceptNewConnection(self):
+		try:
+			self.sock.listen(1)
+			client, address = self.sock.accept()
+			client.settimeout(0.0); client.setblocking(0) # Set non-blocking
+			return (client, address)
+		except: pass
+
+
+
+
+class TCP_CLIENT:
+
+	def __init__(self, address, timeout=10.0):
+		import comms
+		self.comms = comms
+		self.instream = comms.STREAM()
+		self.outbuffer = ""
+		self.items = []
+		self.timeoutClock = comms.TIMER()
+		self.timeout = timeout
+		try:
+			import socket
+			self.socket = socket
+			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			self.sock.settimeout(0.0); self.sock.setblocking(0)
+			self.CONNECTED = False
+			try: self.sock.connect(address)
+			except: pass
+			self.timeoutClock.reset()
+			print("Connection Operation In Progress...")
+		except: import traceback; traceback.print_exc()
+	
+	def run(self):
+		if self.CONNECTED:
+			self.IO()
+		else:
+			try:
+				peer = self.sock.getpeername()
+				if peer:
+					self.CONNECTED = True
+					self.timeoutClock.reset()
+					print("We are now connected to (%s:%s)"%peer)
+			except: pass
+		items = self.items; self.items = []
+		return items, self.hasGoneStale()
+	
+	def IO(self):
+		# RECEIVING (IN)
+		try:
+			data = self.sock.recv(1024)
+			if data:
+				self.instream.add(data)
+				packages = self.instream.extract()
+				items = self.comms.unpackList(packages)
+				for item in items: self.items.append(item)
+				self.timeoutClock.reset()
+		except: pass
+		# SENDING (OUT)
+		try:
+			if self.outbuffer:
+				sent = self.sock.send(self.outbuffer)
+				self.outbuffer = self.outbuffer[sent:]
+		except: pass
+	
+	def send(self, data):
+		try:
+			self.outbuffer += self.comms.pack(data)
+			if self.outbuffer:
+				sent = self.sock.send(self.outbuffer)
+				self.outbuffer = self.outbuffer[sent:]
+		except: pass
+	def hasGoneStale(self): # In other words, "hasTimedOut()".
+		if self.timeoutClock.get() > self.timeout: return True
+		else: return False
+	def terminate(self):
+		self.sock.close()
+
+
+
+
+
+
+class UDP_SERVER:
+	def __init__(self, address):
+		import socket
+		self.socket = socket
+		self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self.serverSock.bind(address)
+
+
+
+class UDP_CLIENT:
+	pass
+
+
+
+
+
 ###### ### #################### ### ######
 ###### ### ### HIGH CLASSES ### ### ######
 ###### ### #################### ### ######
@@ -12,19 +217,7 @@ class MS_SERVER:
 
 class GPS_SERVER:
 	"""
-	The GamePlay Server Object.
-	Maintains a TCP_SERVER object, and a UDP_SERVER object simultaneously, while
-	serving as a full communications processing center with a simple public interface
-	for communicating with client, and for and server functions. Includes awesome 
-	features like temporarily saving client sessions to allow for client session 
-	recoveries.
-	It's primarily a TCP server, but it has a UDP server as a supplement; all of the
-	important things are done through TCP, the UDP is an added bonus that requires 
-	the TCP in order to work.
-	
-	TODO:
-		Implement some form of the old 'Theater' system for maintaining sessions.
-	
+	WIP?
 	"""
 	def __init__(self, address="192.168.1.1:3201/3202", TCP_SERVER=None, UDP_SERVER=None):
 	
@@ -83,72 +276,6 @@ class GPS_CLIENT:
 
 
 
-###### ### ##################### ### ######
-###### ### ### BASIC CLASSES ### ### ######
-###### ### ##################### ### ######
-
-class TCP_SERVER:
-	def __init__(self, address):
-		try:
-			import socket
-			self.socket = socket
-			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.sock.bind(address)
-			self.sock.settimeout(0.0); self.sock.setblocking(0) # Set non-blocking
-			print("Server bound.")
-		except: import traceback; traceback.print_exc()
-	
-	def acceptNewConnection(self):
-		try:
-			self.sock.listen(1)
-			client, address = self.sock.accept()
-			client.settimeout(0.0); client.setblocking(0) # Set non-blocking
-			print("New Connection from %s"%(address[0]))
-			return (client, address)
-		except: pass
-
-
-
-
-class TCP_CLIENT:
-
-	def __init__(self, address):
-		try:
-			import socket
-			self.socket = socket
-			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.sock.settimeout(0.0); self.sock.setblocking(0)
-			self.CONNECTED = False
-			try: self.sock.connect(address)
-			except: print("Connection Operation In Progress...")
-		except: import traceback; traceback.print_exc()
-	
-	def run(self):
-		try:
-			if not self.CONNECTED:
-				peer = self.sock.getpeername()
-				print(peer)
-				if peer:
-					self.CONNECTED = True
-					print("Connection succeeded to:"); print(peer)
-		except: pass
-
-
-
-
-
-
-class UDP_SERVER:
-	def __init__(self, address):
-		import socket
-		self.socket = socket
-		self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self.serverSock.bind(address)
-
-
-
-class UDP_CLIENT:
-	pass
 
 
 
