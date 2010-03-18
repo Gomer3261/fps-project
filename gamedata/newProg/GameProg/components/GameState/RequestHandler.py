@@ -13,10 +13,14 @@ class Class:
 		('EM', [(EID, type, key, value)])
 	
 	Value Append Request:
+		*** DEPRECATED I THINK ***
 		('VA', EID, 'CD', 'someKindOfQueue', [valuesToAppend])
 	
 	
 	Action Request:
+		***
+		Damaging players might be done with memos, we'll see...
+		***
 		('AR', action) # 'AR' flag obviously for ActionRequest.
 		action = ('DMG', 52, 23) # this would be a request to apply 23 damage to player entity 52.
 		action = ('SP', 69, 12) #DEPRECATED!USE-BELOW! This would spawn a player entity with control given to UID 69.
@@ -28,7 +32,7 @@ class Class:
 	
 	
 	Entity Control Request:
-		* DEPRECATED IN FAVOUR OF ENTITY MOD REQUEST
+		*** DEPRECATED IN FAVOUR OF ENTITY MOD REQUEST ***
 		['EC', [58, changes] ] # EC flag for EntityControl. 58 is the EID of the entity we are attempting to contol.
 		changes = { "P":[1.1, 5.6, 1.0] } # changing the position...
 		

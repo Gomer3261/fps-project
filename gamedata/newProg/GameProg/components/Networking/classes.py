@@ -26,7 +26,7 @@ class GPS_SERVER:
 		Implement some form of the old 'Theater' system for maintaining sessions.
 	
 	"""
-	def __init__(self, address="192.168.1.1:3201/3202", TCP_SERVER, UDP_SERVER):
+	def __init__(self, address="192.168.1.1:3201/3202", TCP_SERVER=None, UDP_SERVER=None):
 	
 		### Deciphering Addrs ###
 		try:
@@ -89,15 +89,51 @@ class GPS_CLIENT:
 
 class TCP_SERVER:
 	def __init__(self, address):
-		import socket
-		self.socket = socket
-		self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.serverSock.bind(address)
+		try:
+			import socket
+			self.socket = socket
+			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			self.sock.bind(address)
+			self.sock.settimeout(0.0); self.sock.setblocking(0) # Set non-blocking
+			print("Server bound.")
+		except: import traceback; traceback.print_exc()
 	
 	def acceptNewConnection(self):
-		self.serverSock.listen(1)
-		connection = self.serverSock.accept()
-		return connection
+		try:
+			self.sock.listen(1)
+			client, address = self.sock.accept()
+			client.settimeout(0.0); client.setblocking(0) # Set non-blocking
+			print("New Connection from %s"%(address[0]))
+			return (client, address)
+		except: pass
+
+
+
+
+class TCP_CLIENT:
+
+	def __init__(self, address):
+		try:
+			import socket
+			self.socket = socket
+			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			self.sock.settimeout(0.0); self.sock.setblocking(0)
+			self.CONNECTED = False
+			try: self.sock.connect(address)
+			except: print("Connection Operation In Progress...")
+		except: import traceback; traceback.print_exc()
+	
+	def run(self):
+		try:
+			if not self.CONNECTED:
+				peer = self.sock.getpeername()
+				print(peer)
+				if peer:
+					self.CONNECTED = True
+					print("Connection succeeded to:"); print(peer)
+		except: pass
+
+
 
 
 
@@ -108,12 +144,6 @@ class UDP_SERVER:
 		self.socket = socket
 		self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.serverSock.bind(address)
-
-
-
-
-class TCP_CLIENT:
-	pass
 
 
 

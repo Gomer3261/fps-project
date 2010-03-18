@@ -19,3 +19,10 @@ class Class:
 	
 	def run(self):
 		self.Terminal.handleOpenClose()
+	
+	def terminalOutputWithNotification(self, string, time=None):
+		"""
+		Outputs a string to the terminal AND makes a notification of the string.
+		"""
+		self.Terminal.output(string)
+		self.Notes.notify(string, time)
