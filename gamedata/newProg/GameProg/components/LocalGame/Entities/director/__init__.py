@@ -62,7 +62,7 @@ class Class(base_entity.Class):
 	################################################################################################
 	################################################################################################
 
-	def controllerDataSimulate(self):
+	def controllerDataSimulate(self): # Maybe game time stuff should be owner data? Probably doesn't matter.. I don't know...
 		"""
 		Simulates controller data, and updates the changes to the GameState via Networking.
 		"""
