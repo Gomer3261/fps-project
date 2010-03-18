@@ -1,2 +1,2 @@
-Fixed a couple minor errors to do with the terminal.
+Some documentation of the Interface component.
     /Gomer.

@@ -5,6 +5,9 @@
 # It handles terminal input and output.
 
 class Class:
+	"""
+	The Terminal class represents the programming side of the in game terminal.
+	"""
 	def __init__(self):
 		# Terminal access activitiy.
 		self.active = 0
@@ -48,6 +51,11 @@ Important functions:
 	######################################
 	
 	class History:
+		"""
+		Used to save and browse a list of strings without losing current data.
+		The list is limited a certain number of strings, which can be changed.
+		Primary use is for saving command history for the terminal.
+		"""
 		
 		def __init__(self):
 			# Variables for handling the history
@@ -56,8 +64,12 @@ Important functions:
 			self.max = 10
 			self.current_input = ""
 
-		# Saves a string to the history
 		def add(self, s):
+			"""
+			Adds a string to the list of saved history.
+			
+			If there is too many strings stored in history, the oldest string is removed.
+			"""
 
 			self.history.insert(0, s)
 			self.slot = -1
@@ -65,13 +77,17 @@ Important functions:
 			if len(self.history) > self.max:
 				self.history.remove(self.history[-1])
 
-		# Saves the current input so it can be recovered
 		def saveCurrentInput(self, s):
+			"""
+			Saves the current string so it can be recovered.
+			"""
 			self.current_input = s
-
-		# Gets the next item in the history
+		
 
 		def getNextItem(self, s):
+			"""
+			Gets the next item in the history.
+			"""
 			self.slot += 1
 			
 			if self.slot == 0:
@@ -84,8 +100,10 @@ Important functions:
 			
 			return self.history[self.slot]
 
-		# Gets the previous item in the history
 		def getPrevItem(self):
+			"""
+			Gets the previous item in the history
+			"""
 			self.slot -= 1
 			
 			if self.slot < 0:
@@ -110,14 +128,18 @@ Important functions:
 	### ------ TERMINAL FORMATTING ------ ###
 	#########################################
 
-	# Trims a list from the beginning until it reaches the desired length.
 	def limit(self, x, l=10):
+		"""
+		Trims a list from the beginning until it reaches the desired length.
+		"""
 		while len(x) > l:
 			x = x[1:]
 		return x
 
-	# Formats lines (wraps them, trims them)
 	def formatLines(self, lines):
+		"""
+		Formats lines (wraps them, trims them)
+		"""
 		import textwrap
 		newlines = []
 
@@ -143,8 +165,10 @@ Important functions:
 	### ------ TERMINAL FUNCTIONS ------ ###
 	########################################
 
-	# runs input commands (maybe rename to run, or command?)
 	def input(self, s, slab=None):
+		"""
+		runs input commands (maybe rename to run, or command?)
+		"""
 		isCommand = 0
 		if s[0] == "/":
 			isCommand = 1
@@ -177,8 +201,10 @@ Important functions:
 		else:
 			self.output(s)
 
-	# Outputs something to the terminal.
 	def output(self, s):
+		"""
+		Outputs something to the terminal.
+		"""
 		
 		s = s.replace("\r", "")
 		lines = s.split("\n")
@@ -186,8 +212,10 @@ Important functions:
 		for line in lines:
 			self.contents.append(line)
 
-	# Clears terminal's contents.
 	def clear(self):
+		"""
+		Clears terminal's contents.
+		"""
 		self.contents = []
 
 
@@ -204,6 +232,10 @@ Important functions:
 	######################################
 
 	def runHandler(self, slab):
+		"""
+		This function handles all actions to do with the terminal while it's open.
+		Its called externally by a script running in the terminal scene.
+		"""
 		
 		if self.active:
 			import GameLogic as gl
@@ -260,6 +292,10 @@ Important functions:
 
 
 	def handleOpenClose(self):
+		"""
+		This function handles opening and closing the terminal.
+		Its called externally by a script running in the terminal scene.
+		"""
 		
 		import GameLogic as gl
 		con = gl.getCurrentController()
