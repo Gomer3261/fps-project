@@ -7,16 +7,24 @@
 
 class TCP_SERVER:
 	def __init__(self, address):
+		self.address = address
 		import sessions
 		self.sessionStorage = sessions.SESSIONSTORAGE()
 		try:
 			import socket
 			self.socket = socket
 			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.sock.bind(address)
 			self.sock.settimeout(0.0); self.sock.setblocking(0) # Set non-blocking
-			print("Server bound.")
 		except: import traceback; traceback.print_exc()
+	
+	def bind(self):
+		bound = False
+		try:
+			self.sock.bind( ("", self.address[1]) )
+			bound = True
+		except:
+			import traceback; traceback.print_exc()
+		return bound
 	
 	def getSession(self, ticket):
 		if ticket in self.sessionStorage.sessions:
@@ -76,13 +84,16 @@ class TCP_SERVER:
 	
 	def run(self):
 		bundles = []
+		newConnections = []
+		staleClients = []
+		staleSessions = []
 		
 		newConnection = self.acceptNewConnection()
 		if newConnection:
 			clientSock = self.CLIENTSOCK(newConnection)
 			ticket, session = self.sessionStorage.newSession(clientSock)
-			print("New connection from (%s), ticket=%s."%(clientSock.IP, ticket))
-			clientSock.send( ('MSG', "Howdy!") )
+			#print("New connection from (%s), ticket=%s."%(clientSock.IP, ticket))
+			newConnections.append( (clientSock.IP, ticket) )
 		
 		staleSessions = []
 		for sessionTicket in self.sessionStorage.sessions:
@@ -94,8 +105,9 @@ class TCP_SERVER:
 					bundles.append(bundle)
 				if hasGoneStale:
 					#session.clientSock.terminate()
+					#print("Client (%s) has gone stale."%(session.clientSock.IP))
+					staleClients.append( (session.clientSock.IP, sessionTicket) )
 					session.terminateClientSock()
-					print("Client (%s) has gone stale."%(session.clientSock.IP))
 					#session.clientSock = None
 					#session.sessionTimeoutClock.reset()
 			else:
@@ -103,9 +115,10 @@ class TCP_SERVER:
 		
 		for staleSession in staleSessions:
 			self.sessionStorage.deleteSession(staleSession)
-			print("Session number %s went stale."%(staleSession))
+			#print("Session number %s went stale."%(staleSession))
+			staleSessions.append( staleSession )
 		
-		return bundles
+		return bundles, newConnections, staleClients, staleSessions
 	
 	def acceptNewConnection(self):
 		try:
@@ -114,6 +127,9 @@ class TCP_SERVER:
 			client.settimeout(0.0); client.setblocking(0) # Set non-blocking
 			return (client, address)
 		except: pass
+	
+	def terminate(self):
+		self.sock.close()
 
 
 
@@ -121,6 +137,7 @@ class TCP_SERVER:
 class TCP_CLIENT:
 
 	def __init__(self, address, timeout=10.0):
+		self.address = address
 		import comms
 		self.comms = comms
 		self.instream = comms.STREAM()
@@ -128,31 +145,58 @@ class TCP_CLIENT:
 		self.items = []
 		self.timeoutClock = comms.TIMER()
 		self.timeout = timeout
+		import socket
+		self.socket = socket
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.sock.settimeout(0.0); self.sock.setblocking(0)
+		self.CONNECTED = False
+		self.CONNECTING = False
+	
+	def handleConnection(self):
+		justConnected = False
+		if not self.CONNECTED:
+			if not self.CONNECTING:
+				# We'll leave it to the higher level to initiate the connection when they want...
+				#self.initiateConnection()
+				pass
+			else: # connection is in progress...
+				connected, hasGoneStale = self.refreshConnectionStatus()
+				if connected: justConnected = True
+				if hasGoneStale: self.terminate()
+		return justConnected
+	
+	def initiateConnection(self):
 		try:
-			import socket
-			self.socket = socket
-			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.sock.settimeout(0.0); self.sock.setblocking(0)
-			self.CONNECTED = False
-			try: self.sock.connect(address)
-			except: pass
-			self.timeoutClock.reset()
-			print("Connection Operation In Progress...")
-		except: import traceback; traceback.print_exc()
+			self.sock.connect(self.address)
+		except:
+			pass
+		self.timeoutClock.reset()
+		self.CONNECTING = True
+	
+	def refreshConnectionStatus(self):
+		hasGoneStale = False
+		connected = False
+		try:
+			peer = self.sock.getpeername()
+			if peer:
+				connected = True
+				self.CONNECTING = False
+				self.CONNECTED = True
+				self.timeoutClock.reset()
+			else:
+				hasGoneStale = self.hasGoneStale()
+		except:
+			pass
+		return connected, hasGoneStale
+			
 	
 	def run(self):
+		justConnected = self.handleConnection()
+				
 		if self.CONNECTED:
 			self.IO()
-		else:
-			try:
-				peer = self.sock.getpeername()
-				if peer:
-					self.CONNECTED = True
-					self.timeoutClock.reset()
-					print("We are now connected to (%s:%s)"%peer)
-			except: pass
 		items = self.items; self.items = []
-		return items, self.hasGoneStale()
+		return items, self.hasGoneStale(), justConnected
 	
 	def IO(self):
 		# RECEIVING (IN)
@@ -171,7 +215,6 @@ class TCP_CLIENT:
 				sent = self.sock.send(self.outbuffer)
 				self.outbuffer = self.outbuffer[sent:]
 		except: pass
-	
 	def send(self, data):
 		try:
 			self.outbuffer += self.comms.pack(data)
@@ -179,10 +222,14 @@ class TCP_CLIENT:
 				sent = self.sock.send(self.outbuffer)
 				self.outbuffer = self.outbuffer[sent:]
 		except: pass
+	
 	def hasGoneStale(self): # In other words, "hasTimedOut()".
 		if self.timeoutClock.get() > self.timeout: return True
 		else: return False
 	def terminate(self):
+		self.CONNECTING = False
+		self.CONNECTION = False
+		self.timeoutClock.reset()
 		self.sock.close()
 
 
@@ -219,7 +266,7 @@ class GPS_SERVER:
 	"""
 	WIP?
 	"""
-	def __init__(self, address="192.168.1.1:3201/3202", TCP_SERVER=None, UDP_SERVER=None):
+	def __init__(self, address="chasemoskal.dyndns.org:3201/3202", TCP_SERVER=None, UDP_SERVER=None):
 	
 		### Deciphering Addrs ###
 		try:

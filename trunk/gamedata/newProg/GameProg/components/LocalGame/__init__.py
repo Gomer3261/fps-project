@@ -1,7 +1,7 @@
 ### LocalGame Component ###
 
 class Class:
-	def __init__(self):
+	def __init__(self, slab):
 		import Camera as CameraMod; self.Camera = CameraMod.Class()
 		import RequestHandler as RequestHandlerMod; self.RequestHandler = RequestHandlerMod.Class()
 		

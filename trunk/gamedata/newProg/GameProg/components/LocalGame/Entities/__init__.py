@@ -17,4 +17,4 @@ def getEntityClass(type):
 	return entityClasses[type]
 
 
-print("LocalGame Entites seem happy and ready.")
+print("LocalGame Entities seem happy and ready.")

@@ -1,2 +1,2 @@
-Spring Cleaning!!!
+I've already implemented the core server-side and client-side tech, and I'm currently experimenting on it and testing it thoroughly to make sure it's battle hardened. For the first day out, it seems pretty good so far. I'm going to implement a complex text chat system (under the guise of a simple chat system :D) that we can use to field test our core technology under the shittiest networking conditions.
     /Chase.

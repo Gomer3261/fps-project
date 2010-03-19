@@ -40,6 +40,28 @@ def unpackList(packages):
 
 
 
+def makeAddressTuple(address="IPADDR:TCPPORT/UDPPORT"):
+	#print("mAT(a):",address)
+	IP, ballsack, ports = address.partition(":")
+	if "/" in ports:
+		ports = ports.split("/")
+		tcpPort, udpPort = ports
+		tcpPort = eval(tcpPort)
+		udpPort = eval(udpPort)
+		#print("mAT(b):",IP,tcpPort,udpPort)
+		return IP, tcpPort, udpPort
+	else:
+		port = eval(ports)
+		#print("mAT(b):",IP,port)
+		return IP, port
+
+def makeAddressString(address=('IPADDR', 1001, 1001)):
+	items = []
+	for i in address: items.append(str(i))
+	IP = items.pop(0)
+	ports = "/".join(items)
+	return IP + ":" + ports
+
 
 
 

@@ -1,7 +1,7 @@
 ### Admin Component ###
 
 class Class:
-	def __init__(self):
+	def __init__(self, slab):
 		"""
 		### Admin Info ###
 		# Contains all the information for setting up the game.
@@ -82,20 +82,24 @@ class Class:
 				
 				if gameInfo["host"] and gameInfo["server"]:
 					# We're a server!
-					Networking.gpsnet.startServer(gameInfo["serverInfo"])
+					#Networking.gpsnet.startServer(gameInfo["serverInfo"])
+					address = gameInfo['address']
+					print("STARTING SERVER/CLIENT TO:", address)
+					Networking.gpsnet.startServer(address)
+					Networking.gpsnet.startClient(address)
 				
 				
 				### ================================================
 				### Networking Session Recovery
 				### ================================================
 				
-				if "ms_session" in gameInfo:
-					print("Recovering ms_session...")
-					Networking.msnet.recover(gameInfo["ms_session"])
+				#if "ms_session" in gameInfo:
+				#	print("Recovering ms_session...")
+				#	Networking.msnet.recover(gameInfo["ms_session"])
 				
-				if "gps_session" in gameInfo and (not gameInfo["host"]):
-					print("Recovering gps_session...")
-					Networking.gpsnet.recover(gameInfo["gps_session"])
+				#if "gps_session" in gameInfo and (not gameInfo["host"]):
+				#	print("Recovering gps_session...")
+				#	Networking.gpsnet.recover(gameInfo["gps_session"])
 			
 			print("\n===========================================================================")
 			print("====== Administrated Game Initiation Complete; Game loop starts now! ======")

@@ -1,7 +1,7 @@
 ### Interface Component ###
 
 class Class:
-	def __init__(self):
+	def __init__(self, slab):
 		
 		import Inputs as InputsModule
 		self.Inputs = InputsModule.Class()
