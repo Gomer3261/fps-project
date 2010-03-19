@@ -115,6 +115,11 @@ class Class:
 		self.gps_session['client'].checkTimer = comms.TIMER()
 		self.gps_session['client'].checkNum = 0
 	
+	def endClient(self):
+		self.gps_session['client'].terminate()
+		self.gps_session['client'] = None
+		self.slab.Interface.out("Connection as client terminated.", note=False)
+	
 	def startServer(self, address=":3205"):
 		import classes
 		import comms

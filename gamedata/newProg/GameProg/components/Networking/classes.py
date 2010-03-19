@@ -80,7 +80,10 @@ class TCP_SERVER:
 			else: return False
 		def terminate(self):
 			import socket
-			self.sock.shutdown(socket.SHUT_RDWR)
+			try:
+				self.sock.shutdown(socket.SHUT_RDWR)
+			except:
+				pass
 			self.sock.close()
 	########################################################################
 	
@@ -247,6 +250,11 @@ class TCP_CLIENT:
 		self.CONNECTING = False
 		self.CONNECTION = False
 		self.timeoutClock.reset()
+		try:
+			import socket
+			self.sock.shutdown(socket.SHUT_RDWR)
+		except:
+			pass
 		self.sock.close()
 
 
