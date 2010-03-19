@@ -21,13 +21,15 @@ class Class:
 	
 	"""
 
-	def __init__(self):
+	def __init__(self, slab):
+		self.slab = slab
 	
 		self.gps_session = {}
 		
-		self.gps_session["sock"] = None # When connected, this is a pair (UDP, TCP).
+		self.gps_session["server"] = None # Server Object
+		self.gps_session["client"] = None # Client Object
 		self.gps_session["connection"] = (0, 0) # (UDP_conn, TCP_conn) 0: no connection. 1: connected. -1: currently attempting connection.
-		self.gps_session["address"] = "192.168.1.1:3201/3202" # Standard address protocol for a gps_session
+		self.gps_session["address"] = "chasemoskal.dyndns.org:3201/3202" # Standard address protocol for a gps_session
 		
 		self.gps_session["ticket"] = -1
 		self.gps_session["inBuffer"] = ""
@@ -44,12 +46,71 @@ class Class:
 	### Run Method
 	### ================================================
 	
-	def run(self, MasterInfo):
+	def run(self, Admin, Interface):
 		"""
 		Performs special high-level operations like connecting, reconnecting, etc.
 		"""
-		pass
+		self.runServer(Admin, Interface)
+		self.runClient(Admin, Interface)
 	
+	def runServer(self, Admin, Interface):
+		server = self.gps_session['server']
+		if server:
+			bundles, newConnections, staleClients, staleSessions = server.run()
+			for bundle in bundles:
+				ticket, item = bundle
+				flag, data = item
+				if flag == 'MSG':
+					Interface.terminalOutputWithNotification("SVR: MSG(%s): %s"%(ticket, data))
+			for newConnection in newConnections: Interface.Terminal.output("SVR: (%s) Connected (ticket=%s)."%newConnection)
+			for staleClient in staleClients: Interface.Terminal.output("SVR: Client (%s) from session %s went stale."%staleClient)
+			for staleSession in staleSessions: Interface.Terminal.output("SVR: Session %s went stale."%staleSession)
+	
+	def runClient(self, Admin, Interface):
+		client = self.gps_session['client']
+		if client:
+			items, hasGoneStale, justConnected = client.run()
+			if justConnected:
+				import comms; addressString = comms.makeAddressString(client.address)
+				Interface.terminalOutputWithNotification("CL: Connected to (%s)!"%addressString)
+			for item in items:
+				flag, data = item
+				if flag == "MSG":
+					sender, message = data
+					Interface.terminalOutputWithNotification("(%s): %s"%(sender, message))
+			if hasGoneStale:
+				import comms; addressString = comms.makeAddressString(client.address)
+				Interface.terminalOutputWithNotification("CL: Connection to (%s) failed/went stale."%(addressString))
+				client.terminate()
+				self.gps_session['client'] = None
+	
+	def startClient(self, address="chasemoskal.dyndns.org:3205"):
+		import classes
+		import comms
+		addressTuple = comms.makeAddressTuple(address)
+		print("Starting connection to", addressTuple)
+		self.gps_session['client'] = classes.TCP_CLIENT(addressTuple)
+		self.gps_session['client'].initiateConnection()
+	
+	def startServer(self, address=":3205"):
+		import classes
+		import comms
+		addressTuple = comms.makeAddressTuple(address)
+		self.gps_session['server'] = classes.TCP_SERVER(addressTuple)
+		#print(self.gps_session['server'])
+		bound = self.gps_session['server'].bind()
+		#print(self.gps_session['server'])
+		if bound:
+			self.slab.Interface.Terminal.output("Server is bound and running...")
+		else: 
+			self.slab.Interface.Terminal.output("Error: Server failed to bind.")
+			self.gps_session['server'] = None
+		#print(self.gps_session['server'])
+	
+	def endServer(self):
+		self.gps_session['server'].terminate()
+		self.gps_session['server'] = None
+		self.slab.Interface.Terminal.output("Server terminated.")
 	
 	
 	### ================================================

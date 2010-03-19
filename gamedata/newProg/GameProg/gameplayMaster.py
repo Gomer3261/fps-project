@@ -8,41 +8,42 @@ def initiate(cont):
 	
 		### Admin ###
 		from components import Admin
-		if not hasattr(slab, "Admin"): slab.Admin = Admin.Class()
+		if not hasattr(slab, "Admin"): slab.Admin = Admin.Class(slab)
 
 		### GameGoodies ###
 		from components import GameGoodies
-		if not hasattr(slab, "GameGoodies"): slab.GameGoodies = GameGoodies.Class()
+		if not hasattr(slab, "GameGoodies"): slab.GameGoodies = GameGoodies.Class(slab)
 		
 		### GameState ###
 		from components import GameState
-		if not hasattr(slab, "GameState"): slab.GameState = GameState.Class()
+		if not hasattr(slab, "GameState"): slab.GameState = GameState.Class(slab)
 		
 		### LocalGame ###
 		from components import LocalGame
-		if not hasattr(slab, "LocalGame"): slab.LocalGame = LocalGame.Class()
+		if not hasattr(slab, "LocalGame"): slab.LocalGame = LocalGame.Class(slab)
 		
 		### Gui ###
 		from components import Gui
-		if not hasattr(slab, "Gui"): slab.Gui = Gui.Class()
+		if not hasattr(slab, "Gui"): slab.Gui = Gui.Class(slab)
 		
 		### Interface ###
 		from components import Interface
-		if not hasattr(slab, "Interface"): slab.Interface = Interface.Class()
+		if not hasattr(slab, "Interface"): slab.Interface = Interface.Class(slab)
 		
 		### Networking ###
 		from components import Networking
-		if not hasattr(slab, "Networking"): slab.Networking = Networking.Class()
+		if not hasattr(slab, "Networking"): slab.Networking = Networking.Class(slab)
 		
 		### Resources ###
 		from components import Resources
-		if not hasattr(slab, "Resources"): slab.Resources = Resources.Class()
+		if not hasattr(slab, "Resources"): slab.Resources = Resources.Class(slab)
 		
 		# Initiating Game Information #
 		import GameLogic
 		GI = {}
 		GI['host'] = True
-		GI['server'] = False
+		GI['server'] = True
+		GI['address'] = "chasemoskal.dyndns.org:3205"
 		GameLogic.globalDict['gameInfo'] = GI
 		
 		###
@@ -72,8 +73,8 @@ def run(cont):
 		Admin.initiationLoop(GameLogic, Networking, GameState, Interface) # Setting up the game
 		#Admin.userControlLoop(Interface, GameState, Networking) # DEPRECATED
 		
-		Networking.msnet.run(MasterInfo) # Asynchronous operations with the Master Server.
-		Networking.gpsnet.run(MasterInfo) # Asynchronous operations with the Gameplay Server.
+		Networking.msnet.run(Admin, Interface) # Asynchronous operations with the Master Server.
+		Networking.gpsnet.run(Admin, Interface) # Asynchronous operations with the Gameplay Server.
 		Networking.gpsnet.incoming() # Receiving data to the in buffer.
 		
 		Interface.run() # Runs the interface (user inputs).
@@ -82,7 +83,7 @@ def run(cont):
 		LocalGame.run(Admin, GameState, Networking, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		GameGoodies.run() # Runs GameGoodies
 		
-		Networking.gpsnet.inItems = [] # XXX Temporary!
+		Networking.gpsnet.inItems = [] # XXX Temporary! -- what's temporary about this ?
 		Networking.gpsnet.outgoing(Admin) # Asynchronously sends out data that has accumulated in the buffers.
 	
 	

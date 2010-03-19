@@ -15,6 +15,14 @@ class Class():
 		terminal = self.slab.Interface.Terminal
 		gamestate = self.slab.GameState
 		terminal.output( str(gamestate.contents) )
+	
+	def startServer(self, port=3205):
+		gpsnet = self.slab.Networking.gpsnet
+		gpsnet.startServer(port)
+	
+	def endServer(self):
+		gpsnet = self.slab.Networking.gpsnet
+		gpsnet.endServer()
 
 #	def users():
 #		"""

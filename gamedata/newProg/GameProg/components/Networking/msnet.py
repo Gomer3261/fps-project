@@ -33,7 +33,7 @@ class Class:
 	### Run Method
 	### ================================================
 	
-	def run(self, MasterInfo):
+	def run(self, Admin, Interface):
 		
 		# Asynchronous Connection
 		if self.ms_session["connection"] == -1:

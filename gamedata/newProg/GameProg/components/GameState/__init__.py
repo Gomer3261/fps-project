@@ -1,7 +1,7 @@
 ### GameState Component ###
 
 class Class:
-	def __init__(self):
+	def __init__(self, slab):
 		import RequestHandler
 		self.RequestHandler = RequestHandler.Class()
 	

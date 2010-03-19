@@ -2,12 +2,15 @@ import classes
 
 address = ("96.54.129.113", 3205)
 client = classes.TCP_CLIENT(address)
-client.send( ('MSG', 'Hi!') )
-client.send( ('COM', 'TERMINATE') )
+client.initiateConnection(); print("Connection operation initiated.")
+
+client.send( ('MSG', 'Hello!') )
+client.send( ('MSG', 'World!!!') )
 
 run = True
 while run:
-	items, hasGoneStale = client.run()
+	items, hasGoneStale, justConnected = client.run()
+	if justConnected: print("Just Connected!")
 	for item in items:
 		flag, data = item
 		if flag == 'MSG':
@@ -17,7 +20,7 @@ while run:
 			client.terminate()
 			run = False
 	if hasGoneStale:
-		print("Connection went stale.")
+		print("STALE!")
 		client.terminate()
 		run = False
 
