@@ -23,6 +23,10 @@ class Class():
 	def endServer(self):
 		gpsnet = self.slab.Networking.gpsnet
 		gpsnet.endServer()
+	
+	def sendMsg(self, msg):
+		gpsnet = self.slab.Networking.gpsnet
+		gpsnet.sendMsg(msg)
 
 #	def users():
 #		"""

@@ -43,7 +43,7 @@ def initiate(cont):
 		GI = {}
 		GI['host'] = True
 		GI['server'] = True
-		GI['address'] = "chasemoskal.dyndns.org:3205"
+		GI['address'] = "chasemoskal.dyndns.org:3204"
 		GameLogic.globalDict['gameInfo'] = GI
 		
 		###
