@@ -79,6 +79,8 @@ class TCP_SERVER:
 			if self.timeoutClock.get() > self.timeout: return True
 			else: return False
 		def terminate(self):
+			import socket
+			self.sock.shutdown(socket.SHUT_RDWR)
 			self.sock.close()
 	########################################################################
 	
@@ -128,7 +130,22 @@ class TCP_SERVER:
 			return (client, address)
 		except: pass
 	
+	def sendToAll(self, data):
+		for sessionTicket in self.sessionStorage.sessions:
+			session = self.sessionStorage.sessions[sessionTicket]
+			if session.clientSock:
+				session.clientSock.send(data)
+	
+	def sendTo(self, ticket, data):
+		session = self.sessionStorage.sessions[ticket]
+		session.clientSock.send(data)
+	
 	def terminate(self):
+		# Terminate all sockets.
+		for sessionTicket in self.sessionStorage.sessions:
+			session = self.sessionStorage.sessions[sessionTicket]
+			session.terminateClientSock()
+		import socket
 		self.sock.close()
 
 

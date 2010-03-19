@@ -84,9 +84,9 @@ class Class:
 					# We're a server!
 					#Networking.gpsnet.startServer(gameInfo["serverInfo"])
 					address = gameInfo['address']
-					print("STARTING SERVER/CLIENT TO:", address)
 					Networking.gpsnet.startServer(address)
 					Networking.gpsnet.startClient(address)
+					Interface.out(" ", note=False)
 				
 				
 				### ================================================
@@ -104,11 +104,12 @@ class Class:
 			print("\n===========================================================================")
 			print("====== Administrated Game Initiation Complete; Game loop starts now! ======")
 			print("===========================================================================\n")
-			Interface.terminalOutputWithNotification("Welcome!")
-			Interface.terminalOutputWithNotification("You can press ~ (tilde) to toggle the in-game terminal.")
-			Interface.terminalOutputWithNotification("You can press spacebar to spawn a testing entity (yes you can spawn multiple, that's not a glitch).")
-			Interface.terminalOutputWithNotification("Use WASD keys and mouse movement to control the nanoshooter testing entity.")
-			Interface.terminalOutputWithNotification("Press the delete key to kill the testing entity.")
-			Interface.terminalOutputWithNotification("If those controls don't work, you should enter /defaultOptions() into the terminal. The terminal can also be used to customize any of your controls.")
-			Interface.terminalOutputWithNotification("That's all for now folks.")
+			Interface.out("Welcome!")
+			Interface.out("You can press ~ (tilde) to toggle the in-game terminal.")
+			Interface.out("You can press spacebar to spawn a testing entity (yes you can spawn multiple, that's not a glitch).")
+			Interface.out("Use WASD keys and mouse movement to control the nanoshooter testing entity.")
+			Interface.out("Press the delete key to kill the testing entity.")
+			Interface.out("If those controls don't work, you should enter /defaultOptions() into the terminal. The terminal can also be used to customize any of your controls.")
+			Interface.out("That's all for now folks.")
+			Interface.out(" ", note=False)
 			

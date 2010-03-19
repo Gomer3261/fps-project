@@ -2,6 +2,7 @@
 
 class Class:
 	def __init__(self, slab):
+		self.slab = slab
 		
 		import Inputs as InputsModule
 		self.Inputs = InputsModule.Class()
@@ -10,7 +11,7 @@ class Class:
 		self.Options = OptionsModule.Class(self.Inputs)
 		
 		import Terminal as TerminalModule
-		self.Terminal = TerminalModule.Class()
+		self.Terminal = TerminalModule.Class(slab)
 		
 		import Notes as NotesModule
 		self.Notes = NotesModule.Class()
@@ -25,7 +26,17 @@ class Class:
 	
 	def terminalOutputWithNotification(self, string, time=None):
 		"""
-		Outputs a string to the terminal AND makes a notification of the string.
+		DEPRECATED
+		Use Interface.out() instead.
 		"""
 		self.Terminal.output(string)
 		self.Notes.notify(string, time)
+	
+	def out(self, text, terminal=True, note=True):
+		"""
+		Basic output method. Outputs to the terminal, and to notifications by default.
+		"""
+		if terminal:
+			self.Terminal.output(text)
+		if note:
+			self.Notes.notify(text)

@@ -8,7 +8,8 @@ class Class:
 	"""
 	The Terminal class represents the programming side of the in game terminal.
 	"""
-	def __init__(self):
+	def __init__(self, slab):
+		self.slab = slab
 		# Terminal access activitiy.
 		self.active = 0
 
@@ -197,9 +198,22 @@ Important functions:
 				error = traceback.format_exception_only(sys.exc_type, sys.exc_value)
 				error = error[len(error)-1]
 				self.output(error)
+				traceback.print_exc()
 		
 		else:
-			self.output(s)
+			#self.output(s)
+			# Now we assume this is a text message....
+			import sys
+			import traceback
+			try:
+				gpsnet = self.slab.Networking.gpsnet
+				gpsnet.sendMsg(s)
+			except:
+				error = traceback.format_exception_only(sys.exc_type, sys.exc_value)
+				error = error[len(error)-1]
+				self.output(error)
+				traceback.print_exc()
+			
 
 	def output(self, s):
 		"""
