@@ -16,9 +16,10 @@ class SESSIONSTORAGE:
 			else:
 				return False
 		def terminateClientSock(self):
-			self.clientSock.terminate()
-			self.clientSock = None
-			self.sessionTimeoutClock.reset()
+			if self.clientSock:
+				self.clientSock.terminate()
+				self.clientSock = None
+				self.sessionTimeoutClock.reset()
 	################################################
 	
 	def __init__(self):

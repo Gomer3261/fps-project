@@ -1,2 +1,2 @@
-Simple chat system implemented; the game automatically starts up a server and attempts to connect to my computer.
-	/Chase.
+Chat system improved. Things seem pretty good so far.
+    /Chase.
