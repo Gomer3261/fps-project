@@ -10,10 +10,10 @@ class Class:
 	
 	
 	# Main Loop
-	def run(self, Admin, GameState, Networking, Resources, Interface):
+	def run(self, Admin, GameState, Network, Resources, Interface):
 		self.Admin = Admin
 		self.GameState = GameState
-		self.Networking = Networking
+		self.Network = Network
 		self.Resources = Resources
 		self.Interface = Interface
 		

@@ -1,2 +1,2 @@
-Chat system improved. Things seem pretty good so far.
+Radically restructured a lot of things; I actually now have a plan to make this whole monster of a system working. Lots of big changes: radically restructured the Networking component and renamed it to "Network"; completely removed "GameGoodies" component, it was gay; half of everything doesn't work because Network is in shambles; chat system has been obliterated, and the core networking needs some restructuring to better suit the new GPS (GamePlay Server) and GPC (GamePlay Client) classes that are soon to be made.
     /Chase.

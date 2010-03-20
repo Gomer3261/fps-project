@@ -15,18 +15,14 @@ def pack(data):
 	package = pickle.dumps(data) + packsep
 	return package
 
+def packUDP(data):
+	# Same as pack, but no packseparator for buffers
+    udpPackage = pickle.dumps(data)
+    return udpPackage
+
 def unpack(package):
     data = pickle.loads(package)
     return data
-
-def packUDP(ticket, data):
-    udpData = (ticket, data)
-    udpPackage = pickle.dumps(udpData)
-    return udpPackage
-
-def unpackUDP(package):
-    ticket, data = pickle.loads(package)
-    return ticket, data
 
 def unpackList(packages):
     """

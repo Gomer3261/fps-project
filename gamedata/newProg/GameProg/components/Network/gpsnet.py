@@ -50,99 +50,14 @@ class Class:
 		"""
 		Performs special high-level operations like connecting, reconnecting, etc.
 		"""
-		self.runServer(Admin, Interface)
-		self.runClient(Admin, Interface)
-	
-	def runServer(self, Admin, Interface):
-		server = self.gps_session['server']
-		if server:
-			bundles, newConnections, staleClients, staleSessions = server.run()
-			for bundle in bundles:
-				ticket, item = bundle
-				flag, data = item
-				if flag == 'MSG':
-					server.sendToAll( ('MSG', (ticket, data)) )
-					#Interface.out("SVR: Fwd'd.", note=False)
-				if flag == "CHECK":
-					server.sendTo(ticket, item) # echo it back
-					#Interface.Terminal.output("SVR: Echoed back a CHECK (%s)"%data)
-			for newConnection in newConnections: Interface.Terminal.output("SVR: New Connection: (%s), ticket=%s."%newConnection)
-			for staleClient in staleClients: Interface.Terminal.output("SVR: Client (%s) from session %s went stale."%staleClient)
-			for staleSession in staleSessions: Interface.Terminal.output("SVR: Session %s went stale."%staleSession)
-	
-	def runClient(self, Admin, Interface):
-		client = self.gps_session['client']
-		if client:
-			items, hasGoneStale, justConnected = client.run()
-			if justConnected:
-				import comms; addressString = comms.makeAddressString(client.address)
-				Interface.out("CL: Connected to (%s)!"%addressString)
-			for item in items:
-				flag, data = item
-				if flag == "MSG":
-					sender, message = data
-					Interface.out("(%s): %s"%(sender, message))
-				
-				if flag == "CHECK":
-					#Interface.Terminal.output("CL: Got back CHECK (%s)"%data)
-					if data != client.checkNum: print("data (%s) != checkNum (%s)?"%(num, client.checkNum))
-					else: client.checkNum += 1; client.checkTimer.reset()
-			# CHECK LOOP
-			if client.checkTimer.get() > 2.0:
-				#Interface.Terminal.output("CL: Sent CHECK (%s)"%client.checkNum)
-				client.send( ("CHECK", client.checkNum) )
-				client.checkTimer.reset(-10.0) # Reset the timer to -10.0...
-			
-			if hasGoneStale:
-				import comms; addressString = comms.makeAddressString(client.address)
-				Interface.out("CL: Connection to (%s) failed/went stale."%(addressString))
-				client.terminate()
-				self.gps_session['client'] = None
-	
-	def sendMsg(self, msg):
-		client = self.gps_session['client']
-		if client:
-			client.send( ('MSG', msg) )
-	
-	def startClient(self, address="chasemoskal.dyndns.org:3205"):
-		import classes
-		import comms
-		addressTuple = comms.makeAddressTuple(address)
-		#print("Starting connection to", addressTuple)
-		self.gps_session['client'] = classes.TCP_CLIENT(addressTuple)
-		self.gps_session['client'].initiateConnection()
-		# Special Use Attributes
-		self.gps_session['client'].checkTimer = comms.TIMER()
-		self.gps_session['client'].checkNum = 0
-	
-	def endClient(self):
-		self.gps_session['client'].terminate()
-		self.gps_session['client'] = None
-		self.slab.Interface.out("Connection as client terminated.", note=False)
-	
-	def startServer(self, address=":3205"):
-		import classes
-		import comms
-		addressTuple = comms.makeAddressTuple(address)
-		self.gps_session['server'] = classes.TCP_SERVER(addressTuple)
-		#print(self.gps_session['server'])
-		bound = self.gps_session['server'].bind()
-		#print(self.gps_session['server'])
-		if bound:
-			self.slab.Interface.Terminal.output("Server is bound and running...")
-		else: 
-			self.slab.Interface.Terminal.output("Error: Server failed to bind to '%s'"%address)
-			self.gps_session['server'] = None
-	
-	def endServer(self):
-		self.gps_session['server'].terminate()
-		self.gps_session['server'] = None
-		self.slab.Interface.Terminal.output("Server terminated.")
+		pass
+		
 	
 	
 	### ================================================
 	### IO Interface
 	### ================================================
+	# For communicating with the real GameState.
 	
 	def send(self, package):
 		"""
