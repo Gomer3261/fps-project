@@ -9,18 +9,20 @@ class Class:
 		self.changes = []
 		
 		self.EID = 1 # Entity ID
+		self.UID = 1 # User ID
+		
 		
 		print("GameState is ready.")
 	
 	
 	
-	def run(self, Admin, Networking):
+	def run(self, Admin, Network):
 		"""
 		When we are the server, we send out full distributions of the gamestate periodically,
 		but we also send out GameState Changes every tick.
 		"""
 		self.Admin = Admin
-		self.RequestHandler.run(self, Networking.gpsnet) # Interprets requests from Networking...
+		self.RequestHandler.run(self, Network) # Interprets requests from Network...
 		self.changes = [] # XXX Clearing Changes... (We don't need em for now!)
 		# Distribution stuff goes here...
 	
@@ -28,6 +30,11 @@ class Class:
 	### ================================================
 	### Public Methods?
 	### ================================================
+	
+	def declareHost(self, UID):
+		self.contents['owner'] = UID
+		self.contents['controller'] = UID
+		print("GS: %s has been declared the host of this game."%UID)
 	
 	def reset(self):
 		"""
@@ -55,17 +62,20 @@ class Class:
 		E["OD"] = {'ARGS':args} # Owned Data (Initially includes ARGS)
 		E["CD"] = {} # Controlled Data
 		
-		EID = self.generateEID()
+		EID = self.grabEID()
 		self.contents["E"][EID] = E
 		return EID
 	
 	def removeEntity(self, EID):
 		del self.contents['E'][EID]
-		print("Entity (%s) removed."%(EID))
+		print("GS: Entity (%s) removed."%(EID))
 	
-	def addUser(self, UID):
+	def addUser(self, ticket, name="-NameError-"):
+		UID = self.grabUID()
+		print("GS: New User: %s, for ticket %s. Name=%s"%(UID, ticket, name))
 		U = {}
-		U["N"] = "-NameError-"
+		U["T"] = ticket # Network Ticket
+		U["N"] = name
 		U["K"] = 0
 		U["D"] = 0
 		self.contents["U"][UID] = U
@@ -129,16 +139,34 @@ class Class:
 		"""
 		### GameState Contents ###
 		self.contents = {}
-		# Users (stored by Networking ticket)
+		
+		# Owner and controller: not sure what the controller does, but the host
+		# should be both of these.
+		self.contents['owner'] = 0
+		self.contents['controller'] = 0
+		
+		# ID Numbers...
+		self.contents['IDN'] = {}
+		self.contents['IDN']['EID'] = 1
+		self.contents['IDN']['UID'] = 1
+		
+		# Users, stored by UID.
 		self.contents["U"] = {}
 		# Entities (stored by Entity ID)
 		self.contents["E"] = {}
 	
-	def generateEID(self):
+	def grabEID(self):
 		"""
-		Generates a new unique Entity ID and returns it.
+		Grabs the next EID
 		"""
-		chosen = self.EID
-		self.EID += 1
+		chosen = self.contents['IDN']['EID']
+		self.contents['IDN']['EID'] += 1
 		return chosen
-
+	
+	def grabUID(self):
+		"""
+		Grabs the next UID
+		"""
+		chosen = self.contents['IDN']['UID']
+		self.contents['IDN']['UID'] += 1
+		return chosen

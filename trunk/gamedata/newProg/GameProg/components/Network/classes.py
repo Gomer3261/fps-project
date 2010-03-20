@@ -1,9 +1,9 @@
-### Networking Classes ###
+### Low-level Networking Classes ###
 
 
-###### ### ##################### ### ######
-###### ### ### BASIC CLASSES ### ### ######
-###### ### ##################### ### ######
+###### ### ################################ ### ######
+###### ### ### ------ TCP SERVER ------ ### ### ######
+###### ### ################################ ### ######
 
 class TCP_SERVER:
 	def __init__(self, address):
@@ -152,7 +152,9 @@ class TCP_SERVER:
 		self.sock.close()
 
 
-
+###### ### ################################ ### ######
+###### ### ### ------ TCP CLIENT ------ ### ### ######
+###### ### ################################ ### ######
 
 class TCP_CLIENT:
 
@@ -260,99 +262,73 @@ class TCP_CLIENT:
 
 
 
-
+###### ### ################################ ### ######
+###### ### ### ------ UDP SERVER ------ ### ### ######
+###### ### ################################ ### ######
 
 class UDP_SERVER:
 	def __init__(self, address):
+		self.address = address
 		import socket
 		self.socket = socket
-		self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self.serverSock.bind(address)
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	
+	def bind(self):
+		bound = False
+		try: self.sock.bind(address); bound = True
+		except: return bound
+	
+	def run(self, catchBuf=6):
+		baskets = []
+		
+		for i in range(catchBuf):
+			basket = self.catch()
+			if basket:
+				baskets.append(basket)
+			else: break
+		
+		return baskets
+	
+	def catch(self):
+		try:
+			package, addr = self.sock.recvfrom(4096)
+			import comms;	item = comms.unpack(package)
+			return item, addr
+		except:
+			return None
+	
+	def throw(self, item, addr):
+		import comms
+		package = comms.packUDP(item)
+		self.sock.sendto(package, addr)
+	
+	def terminate(self):
+		self.sock.close()
 
-
+###### ### ################################ ### ######
+###### ### ### ------ UDP CLIENT ------ ### ### ######
+###### ### ################################ ### ######
 
 class UDP_CLIENT:
-	pass
-
-
-
-
-
-###### ### #################### ### ######
-###### ### ### HIGH CLASSES ### ### ######
-###### ### #################### ### ######
-
-class MS_SERVER:
-	pass
-
-
-
-class GPS_SERVER:
-	"""
-	WIP?
-	"""
-	def __init__(self, address="chasemoskal.dyndns.org:3201/3202", TCP_SERVER=None, UDP_SERVER=None):
+	def __init__(self, address):
+		self.address = address
+		import socket
+		self.socket = socket
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	
-		### Deciphering Addrs ###
+	def catch(self):
 		try:
-			if not ':' in address:
-				address = ':' + address
-			host, ports = address.split(':')
-			tcpPort, udpPort = ports.split('/')
-			tcpAddr = host, tcpPort
-			udpAddr = host, udpPort
-			self.host = host
-			self.tcpPort = tcpPort
-			self.udpPort = udpPort
+			package, addr = self.sock.recvfrom(4096)
+			import comms
+			data = comms.unpack(package)
+			return package, addr
 		except:
-			print("\nThere was an error deciphering addrs (Networking/classes.GPS_SERVER.__init__).")
-			import traceback
-			traceback.print_exc()
-		
-		# Initiating Server
-		try:
-			self.tcpServer = TCP_SERVER(tcpAddr)
-			self.udpServer = UDP_SERVER(udpAddr)
-			print("Server is Initiated")
-		except:
-			print("\nThere was an error initiating the server (Networking/classes.GPS_SERVER.__init__).")
-			import traceback
-			traceback.print_exc()
+			return None, None
 	
+	def throw(self, data, addr):
+		import comms
+		package = comms.packUDP(data)
+		self.sock.sendto(package, addr)
 	
-	def run(self):
-		# Accept new TCP clients
-		newConnection = self.tcpServer.acceptNewConnection()
-		if newConnection:
-			newTcpClientHandler = TCP_CLIENT_HANDLER( newConnection )
-			# Make it into a new session?
-		
-
-
-
-
-
-
-
-class MS_CLIENT:
-	pass
-
-
-
-
-class GPS_CLIENT:
-	pass
-
-
-
-
-
-
-
-
-
-
-
-###### ### ################### ### ######
-###### ### ### SUB CLASSES ### ### ######
-###### ### ################### ### ######
+	def terminate(self):
+		self.sock.close()

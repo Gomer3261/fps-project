@@ -46,14 +46,14 @@ class Class:
 		print("  GameState's Request Handler ready.")
 		pass
 	
-	def run(self, GameState, gpsnet):
+	def run(self, GameState, Network):
 		"""
 		Grabs inbound packages from the gpsnet,
 		handles them with handleRequest().
 		"""
-		items = gpsnet.inItems
+		bundles = Network.inBundles
 		#print("\ninItems: %s\n"%(items))
-		for item in items:
+		for bundle in bundles:
 			sender, package = item
 			packageFlag, request = package
 			if packageFlag == 'GS':

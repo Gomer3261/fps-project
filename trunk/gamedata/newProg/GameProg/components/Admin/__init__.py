@@ -15,7 +15,7 @@ class Class:
 		self.AdminInfo["director"]["intermission"] = None # None=In Game, float=intermission (time left).
 		"""
 		self.gameInitiated = False
-		self.UID = -1
+		self.UID = 0 # We don't have a UID!
 		print("Admin's good.")
 	
 	
@@ -23,24 +23,10 @@ class Class:
 		return self.UID
 	
 	
-	def userControlLoop(self, Interface, GameState, Networking):
-		"""
-		DEPRECATED!!!
-		"""
-		if not Interface.Terminal.active:
-			entityToSpawn = "nanoshooter"
-			spawnStatus = Interface.Inputs.Controller.getStatus("spawn")
-			if (spawnStatus == 1) and (not GameState.entityCount(entityToSpawn)):
-				# Spawn the Player.
-				package = ['GS', ['AR', ['SE', entityToSpawn]]]
-				Networking.gpsnet.send(package)
-				print("Spawn Entity request sent via Networking.gpsnet.send(request)...")
 	
 	
 	
-	
-	
-	def initiationLoop(self, GameLogic, Networking, GameState, Interface):
+	def initiationLoop(self, GameLogic, Network, GameState, Interface):
 		"""
 		Gets initiation information from the menus (via GameLogic.globalDict)
 		and sets up the game with it.
@@ -72,34 +58,43 @@ class Class:
 				### ================================================
 				
 				if gameInfo['host']:
+					# First, we must obtain a UID, then declare that UID the owner and
+					# controller of the GameState.
+					UID = GameState.addUser(None) # Adding a user with no ticket signifies that the user is local.
+					GameState.declareHost(UID)
+					self.UID = UID
+					
 					# If we're the host, then we've got to create
 					# the director entity.
 					print("We're the host, creating the Director...")
 					#GameState.createDirector(gameInfo["directorInfo"])
 					package = ('GS', ('AR', ('SE', ('director', (self.UID, self.UID), [])) ))
-					Networking.gpsnet.send(package)
-					print("Spawn director request sent via Networking.gpsnet.send(request)...")
+					Network.send(package)
+					print("Spawn director request sent via Network.gpsnet.send(request)...")
 				
-				if gameInfo["host"] and gameInfo["server"]:
-					# We're a server!
-					#Networking.gpsnet.startServer(gameInfo["serverInfo"])
+					if gameInfo["server"]:
+						# We're a server!
+						#Network.gpsnet.startServer(gameInfo["serverInfo"])
+						address = gameInfo['address']
+						Network.startServer(address)
+						Interface.out(" ", note=False)
+				
+				else: # We are not the host
 					address = gameInfo['address']
-					Networking.gpsnet.startServer(address)
-					Networking.gpsnet.startClient(address)
-					Interface.out(" ", note=False)
+					Network.startClient(address)
 				
 				
 				### ================================================
-				### Networking Session Recovery
+				### Network Session Recovery
 				### ================================================
 				
 				#if "ms_session" in gameInfo:
 				#	print("Recovering ms_session...")
-				#	Networking.msnet.recover(gameInfo["ms_session"])
+				#	Network.msnet.recover(gameInfo["ms_session"])
 				
 				#if "gps_session" in gameInfo and (not gameInfo["host"]):
 				#	print("Recovering gps_session...")
-				#	Networking.gpsnet.recover(gameInfo["gps_session"])
+				#	Network.gpsnet.recover(gameInfo["gps_session"])
 			
 			print("\n===========================================================================")
 			print("====== Administrated Game Initiation Complete; Game loop starts now! ======")
