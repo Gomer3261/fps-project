@@ -33,7 +33,7 @@ Precede your input with "/" to designate it as a python command or it will be se
 			prints the given value in the terminal window.
 		"""
 		s = str(s)
-		self.slab.Interface.Terminal.output(s)
+		self.slab.Interface.out(s, 1, 0)
 
 	def clear(self):
 		"""
