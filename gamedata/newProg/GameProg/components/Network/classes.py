@@ -7,8 +7,8 @@
 
 class TCP_SERVER:
 	def __init__(self, address):
-		self.SHUTDOWN = False
-		self.TERMINATED = False
+		self.shutdown = False
+		self.active = False
 		
 		self.address = address
 		import sessions
@@ -26,6 +26,7 @@ class TCP_SERVER:
 		try:
 			self.sock.bind( ("", self.address[1]) )
 			bound = True
+			self.active = True
 		except:
 			import traceback; traceback.print_exc()
 		return bound
@@ -37,6 +38,8 @@ class TCP_SERVER:
 	########################################################################
 	class CLIENTSOCK:
 		def __init__(self, connection, timeout=10.0):
+			self.active = True
+			
 			self.timeout = timeout
 			self.connection = connection
 			self.sock, self.address = connection
@@ -82,6 +85,7 @@ class TCP_SERVER:
 			else: return False
 		def terminate(self):
 			self.sock.close()
+			self.active = False
 	########################################################################
 	
 	def run(self):
@@ -90,7 +94,7 @@ class TCP_SERVER:
 		staleClients = []
 		staleSessions = []
 		
-		if not self.SHUTDOWN:
+		if not self.shutdown:
 			newConnection = self.acceptNewConnection()
 			if newConnection:
 				clientSock = self.CLIENTSOCK(newConnection)
@@ -99,8 +103,8 @@ class TCP_SERVER:
 				newConnections.append( (clientSock.IP, ticket) )
 		
 		staleSessions = []
-		for sessionTicket in self.sessionStorage.sessions:
-			session = self.sessionStorage.sessions[sessionTicket]
+		for ticket in self.sessionStorage.sessions:
+			session = self.sessionStorage.sessions[ticket]
 			if session.clientSock:
 				items, hasGoneStale = session.clientSock.run()
 				for item in items:
@@ -109,25 +113,21 @@ class TCP_SERVER:
 					parcels.append(parcel)
 					if flag == 'BYE': session.terminateClientSock()
 				if hasGoneStale:
-					#session.clientSock.terminate()
-					#print("Client (%s) has gone stale."%(session.clientSock.IP))
-					staleClients.append( (session.clientSock.IP, sessionTicket) )
 					session.terminateClientSock()
-					#session.clientSock = None
-					#session.sessionTimeoutClock.reset()
+					staleClients.append( (session.clientSock.IP, ticket) )
 			else:
-				if session.hasGoneStale(): staleSessions.append(sessionTicket)
+				if session.hasGoneStale(): staleSessions.append(ticket)
 		
 		for staleSession in staleSessions:
 			self.sessionStorage.deleteSession(staleSession)
 			staleSessions.append( staleSession )
 		
-		if self.SHUTDOWN:
+		if self.shutdown:
 			clientSocks = self.countClientSocks()
 			if clientSocks == 0:
-				self.TERMINATED = True
+				self.active = False
 		
-		return parcels, newConnections, staleClients, staleSessions, self.TERMINATED
+		return parcels, newConnections, staleClients, staleSessions
 	
 	def countClientSocks(self):
 		num = 0
@@ -155,10 +155,17 @@ class TCP_SERVER:
 		session = self.sessionStorage.sessions[ticket]
 		session.clientSock.send(item)
 	
-	def shutdown(self):
+	def startShutdown(self):
+		"""
+		Shutdown is how the tcpServer terminates.
+		The shutdown process asks all clients to leave,
+		and when they're all gone, the server terminates
+		itself. active is False when the server should be
+		deleted.
+		"""
 		self.sendToAll( ('BYE', 'BYE') )
 		self.sock.close()
-		self.SHUTDOWN = True # Start the shutdown.
+		self.shutdown = True # Start the shutdown.
 
 
 ###### ### ################################ ### ######
@@ -272,6 +279,7 @@ class TCP_CLIENT:
 
 class UDP_SERVER:
 	def __init__(self, address):
+		self.active = False
 		self.address = address
 		import socket
 		self.socket = socket
@@ -283,6 +291,7 @@ class UDP_SERVER:
 		try: 
 			self.sock.bind( ('', self.address[2]) )
 			bound = True
+			self.active = True
 		except: 
 			import traceback; traceback.print_exc()
 		return bound
@@ -291,16 +300,22 @@ class UDP_SERVER:
 		basket = self.catch()
 		return basket
 	
-	def catch(self):
-		# Returns a basket
-		try:
-			package, addr = self.sock.recvfrom(4096)
-			import comms
-			parcel = comms.unpack(package)
-			basket = (parcel, addr)
-			return basket # This is a basket
-		except:
-			return None
+	def catch(self, max=10):
+		# Returns a number of baskets
+		baskets = []
+		for i in range(max):
+			try:
+				package, addr = self.sock.recvfrom(4096)
+				if package:
+					import comms
+					parcel = comms.unpack(package)
+					basket = (parcel, addr)
+					baskets.append(basket)
+				else:
+					break
+			except:
+				break
+		return baskets
 	
 	def throw(self, item, addr):
 		import comms
@@ -308,7 +323,12 @@ class UDP_SERVER:
 		self.sock.sendto(package, addr)
 	
 	def terminate(self):
+		"""
+		UDP Servers do not need to shutdown, they
+		can just immediately terminate.
+		"""
 		self.sock.close()
+		self.active = False
 
 ###### ### ################################ ### ######
 ###### ### ### ------ UDP CLIENT ------ ### ### ######

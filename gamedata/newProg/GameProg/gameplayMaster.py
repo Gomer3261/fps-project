@@ -33,8 +33,8 @@ def initiate(cont):
 		GI = {}
 		GI['host'] = True
 		GI['server'] = True
-		GI['address'] = "chasemoskal.dyndns.org:3200/3201"
-		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, 3200, 3201) )
+		GI['address'] = "chasemoskal.dyndns.org:3202/3203"
+		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, 3202, 3203) )
 		GameLogic.globalDict['gameInfo'] = GI
 		
 		###
