@@ -37,7 +37,7 @@ class Class(base_entity.Class):
 		IDs = (self.Admin.UID, self.Admin.UID) # First UID needs to be the host, second UID needs to be the controller.
 		memoData = ('SE', (entityType,IDs,args))
 		self.sendMemo(self.EID, memoData)
-		#self.Networking.gpsnet.send( ('LG', ('MEMO', (self.EID, ('SE', (entityType,IDs,args)) ) )) )
+		#self.Network.gpsnet.send( ('LG', ('MEMO', (self.EID, ('SE', (entityType,IDs,args)) ) )) )
 	
 	def handleMemos(self):
 		if self.Admin.getUID() == self.getOwner(): # Only be handling memos when we are the owner (even though the owner should be the only one who recieves memos?)
@@ -45,7 +45,7 @@ class Class(base_entity.Class):
 				memoFlag, memoData = memo
 				if memoFlag == 'SE':
 					entityType, IDs, args = memoData
-					self.Networking.gpsnet.send( ('GS', ('AR', ('SE', (entityType, IDs, args)))) )
+					self.Network.send( ('GS', ('AR', ('SE', (entityType, IDs, args)))) )
 			self.memos = []
 	
 	def userSpawnRequestControl(self):
@@ -64,7 +64,7 @@ class Class(base_entity.Class):
 
 	def controllerDataSimulate(self): # Maybe game time stuff should be owner data? Probably doesn't matter.. I don't know...
 		"""
-		Simulates controller data, and updates the changes to the GameState via Networking.
+		Simulates controller data, and updates the changes to the GameState via Network.
 		"""
 		
 		### Only updates the clock every second ###

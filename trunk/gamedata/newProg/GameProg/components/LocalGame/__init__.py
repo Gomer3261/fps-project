@@ -17,6 +17,7 @@ class Class:
 		self.Resources = Resources
 		self.Interface = Interface
 		
+		self.RequestHandler.run(self, self.Network)
 		self.replicateGameState(self.GameState)
 		self.runEntities()
 	

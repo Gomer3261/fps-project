@@ -21,7 +21,7 @@ class Class:
 		self.LocalGame = LocalGame
 		self.Admin = LocalGame.Admin
 		self.GameState = LocalGame.GameState
-		self.Networking = LocalGame.Networking
+		self.Network = LocalGame.Network
 		self.Interface = LocalGame.Interface
 		self.Resources = LocalGame.Resources
 		
@@ -83,23 +83,23 @@ class Class:
 	###
 	
 	def setData(self, type, key, value):
-		self.Networking.gpsnet.send( ('GS', ('EM', [(self.EID, type, key, value)])) )
+		self.Network.send( ('GS', ('EM', [(self.EID, type, key, value)])) )
 	
 	def sendData(self, type, key, value):
-		self.Networking.gpsnet.send( ('GS', ('EM', [(self.EID, type, key, value)])) )
+		self.Network.send( ('GS', ('EM', [(self.EID, type, key, value)])) )
 	
 	def throwData(self, type, key, value):
-		self.Networking.gpsnet.throw( ('GS', ('EM', [(self.EID, type, key, value)])) )
+		self.Network.throw( ('GS', ('EM', [(self.EID, type, key, value)])) )
 	
 	###
 	### Memo System
 	###
 	
 	def sendMemo(self, EID, memoData):
-		self.Networking.gpsnet.send( ('LG', ('MEMO', (EID, memoData))) )
+		self.Network.send( ('LG', ('MEMO', (EID, memoData))) )
 	
 	def throwMemo(self, EID, memoData):
-		self.Networking.gpsnet.throw( ('LG', ('MEMO', (EID, memoData))) )
+		self.Network.throw( ('LG', ('MEMO', (EID, memoData))) )
 	
 	def handleMemos(self):
 		self.memos = []
@@ -111,7 +111,7 @@ class Class:
 	################################################
 	
 	def run(self):
-		UID = self.Admin.getUID()
+		UID = self.Admin.UID
 		
 		if self.getOwner() == UID: self.ownerDataSimulate()
 		else: self.ownerDataReplicate()
@@ -135,7 +135,7 @@ class Class:
 	
 	def ownerDataSimulate(self):
 		"""
-		Simulates owner data, and updates the changes to the GameState via Networking.
+		Simulates owner data, and updates the changes to the GameState via Network.
 		"""
 		pass
 	
@@ -153,7 +153,7 @@ class Class:
 	
 	def controllerDataSimulate(self):
 		"""
-		Simulates controller data, and updates the changes to the GameState via Networking.
+		Simulates controller data, and updates the changes to the GameState via Network.
 		"""
 		pass
 	

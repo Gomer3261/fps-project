@@ -1,2 +1,2 @@
-Including my old test rig in svn, I forgot to commit it back when I made it.
-    /Gomer.
+Offline gameplay now works as it did before, but under the hood, things have been restructured to make way for the introduction and implementation of online gameplay.
+    /Chase.

@@ -75,11 +75,10 @@ def run(cont):
 		
 		Interface.run() # Runs the interface (user inputs).
 		GameState.run(Admin, Network) # Runs the GameState: represents the game world based on changes it finds in the Network in buffer.
-		LocalGame.RequestHandler.run(LocalGame, Network.gpsnet)
 		LocalGame.run(Admin, GameState, Network, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		
 		Network.inBundles = [] # Clearing the inBundles buffer
-		Network.outgoing() # Asynchronously sends out data that has accumulated in the buffers.
+		Network.outgoing(Admin, GameState) # Asynchronously sends out data that has accumulated in the buffers.
 	
 	
 	

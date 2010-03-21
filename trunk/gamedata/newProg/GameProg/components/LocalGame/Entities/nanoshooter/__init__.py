@@ -58,7 +58,7 @@ class Class(base_entity.Class):
 	
 	def ownerDataSimulate(self):
 		"""
-		Simulates owner data, and updates the changes to the GameState via Networking.
+		Simulates owner data, and updates the changes to the GameState via Network.
 		"""
 		#print("ownerDataSimulate")
 		pass
@@ -78,7 +78,7 @@ class Class(base_entity.Class):
 	
 	def controllerDataSimulate(self):
 		"""
-		Simulates controller data, and updates the changes to the GameState via Networking.
+		Simulates controller data, and updates the changes to the GameState via Network.
 		"""
 		# Camera Management
 		self.LocalGame.Camera.set(self.cam)
@@ -111,9 +111,9 @@ class Class(base_entity.Class):
 			suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
 			if suicideStatus == 1:
 				# Suicide!
-				package = ('GS', ('AR', ('RE', self.EID)))
-				self.Networking.gpsnet.send(package)
-				print("Remove (nanoshooter) Entity request sent via Networking.gpsnet.send(request)...")
+				item = ('GS', ('AR', ('RE', self.EID)))
+				self.Network.send(item)
+				print("Remove (nanoshooter) Entity request sent via Network.send(item)...")
 	
 	def displayAimPoint(self):
 		pos = self.mouseOver.hitPosition
