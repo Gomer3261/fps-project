@@ -28,7 +28,7 @@ class Class:
 	
 	
 	### ================================================
-	### Public Methods?
+	### Public Methods
 	### ================================================
 	
 	def declareHost(self, UID):

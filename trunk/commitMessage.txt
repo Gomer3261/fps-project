@@ -1,2 +1,2 @@
-Just adjusting some things to the new Interface.out() function.
-    /Geoff.
+Implemented server-side networking, other various tweaks.
+    /Chase.
