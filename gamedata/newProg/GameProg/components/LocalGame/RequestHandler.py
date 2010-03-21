@@ -9,32 +9,31 @@ class Class:
 		print("  LocalGame RequestHandler is ready.")
 		pass
 	
-	def run(self, LocalGame, gpsnet):
+	def run(self, LocalGame, Network):
 		"""
 		Grabs inbound packages from the gpsnet,
 		handles them with handleRequest().
 		"""
-		items = gpsnet.inItems
-		#print("\ninItems: %s\n"%(items))
-		for item in items:
-			sender, package = item
-			packageFlag, request = package
-			if packageFlag == 'LG':
-				self.handleRequest(sender, request, LocalGame, gpsnet)
+		for bundle in Network.inBundles:
+			senderUID,item=bundle; flag,data=item
+			request=data; requestFlag,requestData=request
+			if flag == 'LG':
+				self.handleRequest(bundle, LocalGame, Network)
 		#if items: print("\nGameState Changed!: %s\n"%(GameState.contents))
 	
 	
 	
 	
-	def handleRequest(self, sender, request, LocalGame, gpsnet):
+	def handleRequest(self, bundle, LocalGame, Network):
 		"""
 		Interprets a request made to the LocalGame
 		"""
 		try:
-			flag, data = request
+			senderUID,item=bundle; flag,data=item
+			request=data; requestFlag,requestData=request
 			
-			if flag == 'MEMO':
-				self.handleEntityMemoRequest(request, sender, LocalGame, gpsnet)
+			if requestFlag == 'MEMO':
+				self.handleEntityMemoRequest(bundle, LocalGame, Network)
 		except:
 			import traceback; traceback.print_exc()
 	
@@ -42,11 +41,13 @@ class Class:
 	
 	
 	
-	def handleEntityMemoRequest(self, request, sender, LocalGame, gpsnet):
+	def handleEntityMemoRequest(self, bundle, LocalGame, Network):
 		"""
 		Handles a MEMO Request.
 		('LG', ('MEMO', (EID, memoData)))
 		"""
-		flag, memo = request
-		EID, memoData = memo
+		senderUID,item=bundle; flag,data=item
+		request=data; requestFlag,requestData=request
+		
+		EID, memoData = requestData
 		LocalGame.giveMemo(EID, memoData)

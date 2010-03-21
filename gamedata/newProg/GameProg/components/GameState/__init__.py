@@ -51,13 +51,13 @@ class Class:
 		self.contents = new
 		self.changes = []
 
-	def addEntity(self, type, owner=0, controller=0, args=[]):
+	def addEntity(self, type, ownerUID=0, controllerUID=0, args=[]):
 		print("GameState.addEntity, type=%s"%(type))
 		E = {}
 		# Type (player, bot, vehicle, dob)
 		E["T"] = type
-		E["O"] = owner # OWNER UID
-		E["C"] = controller # CONTROLLER UID
+		E["O"] = ownerUID # OWNER UID
+		E["C"] = controllerUID # CONTROLLER UID
 		
 		E["OD"] = {'ARGS':args} # Owned Data (Initially includes ARGS)
 		E["CD"] = {} # Controlled Data
@@ -90,6 +90,10 @@ class Class:
 	### ================================================
 	### Public Convenient Methods
 	### ================================================
+	
+	def getHost(self):
+		host = self.contents['owner']
+		return host
 	
 	def getEIDsByType(self, desiredType):
 		EIDs = []
