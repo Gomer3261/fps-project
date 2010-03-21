@@ -15,6 +15,7 @@ class TCP_SERVER:
 			self.socket = socket
 			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.sock.settimeout(0.0); self.sock.setblocking(0) # Set non-blocking
+			self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		except: import traceback; traceback.print_exc()
 	
 	def bind(self):
@@ -27,10 +28,8 @@ class TCP_SERVER:
 		return bound
 	
 	def getSession(self, ticket):
-		if ticket in self.sessionStorage.sessions:
-			return self.sessionStorage.sessions[ticket]
-		else:
-			return None
+		if ticket in self.sessionStorage.sessions: return self.sessionStorage.sessions[ticket]
+		else: return None
 	
 	########################################################################
 	class CLIENTSOCK:
@@ -79,16 +78,11 @@ class TCP_SERVER:
 			if self.timeoutClock.get() > self.timeout: return True
 			else: return False
 		def terminate(self):
-			import socket
-			try:
-				self.sock.shutdown(socket.SHUT_RDWR)
-			except:
-				pass
 			self.sock.close()
 	########################################################################
 	
 	def run(self):
-		bundles = []
+		parcels = []
 		newConnections = []
 		staleClients = []
 		staleSessions = []
@@ -106,8 +100,8 @@ class TCP_SERVER:
 			if session.clientSock:
 				items, hasGoneStale = session.clientSock.run()
 				for item in items:
-					bundle = (sessionTicket, item)
-					bundles.append(bundle)
+					parcel = (sessionTicket, item)
+					parcels.append(parcel)
 				if hasGoneStale:
 					#session.clientSock.terminate()
 					#print("Client (%s) has gone stale."%(session.clientSock.IP))
@@ -123,7 +117,7 @@ class TCP_SERVER:
 			#print("Session number %s went stale."%(staleSession))
 			staleSessions.append( staleSession )
 		
-		return bundles, newConnections, staleClients, staleSessions
+		return parcels, newConnections, staleClients, staleSessions
 	
 	def acceptNewConnection(self):
 		try:
@@ -252,11 +246,6 @@ class TCP_CLIENT:
 		self.CONNECTING = False
 		self.CONNECTION = False
 		self.timeoutClock.reset()
-		try:
-			import socket
-			self.sock.shutdown(socket.SHUT_RDWR)
-		except:
-			pass
 		self.sock.close()
 
 
@@ -272,30 +261,29 @@ class UDP_SERVER:
 		import socket
 		self.socket = socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self.sock.settimeout(0.0); self.sock.setblocking(0)
 	
 	def bind(self):
 		bound = False
-		try: self.sock.bind(address); bound = True
-		except: return bound
+		try: 
+			self.sock.bind( ('', self.address[2]) )
+			bound = True
+		except: 
+			import traceback; traceback.print_exc()
+		return bound
 	
-	def run(self, catchBuf=6):
-		baskets = []
-		
-		for i in range(catchBuf):
-			basket = self.catch()
-			if basket:
-				baskets.append(basket)
-			else: break
-		
-		return baskets
+	def run(self):
+		basket = self.catch()
+		return basket
 	
 	def catch(self):
 		try:
 			package, addr = self.sock.recvfrom(4096)
-			import comms;	item = comms.unpack(package)
-			return item, addr
+			import comms
+			parcel = comms.unpack(package)
+			return parcel, addr # This is a basket
 		except:
-			return None
+			return None, None
 	
 	def throw(self, item, addr):
 		import comms
@@ -315,19 +303,20 @@ class UDP_CLIENT:
 		import socket
 		self.socket = socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	
+
 	def catch(self):
 		try:
 			package, addr = self.sock.recvfrom(4096)
 			import comms
-			data = comms.unpack(package)
-			return package, addr
+			item = comms.unpack(package)
+			return item, addr
 		except:
 			return None, None
 	
-	def throw(self, data, addr):
+	def throw(self, ticket, item, addr):
 		import comms
-		package = comms.packUDP(data)
+		parcel = (ticket, item)
+		package = comms.packUDP(parcel)
 		self.sock.sendto(package, addr)
 	
 	def terminate(self):

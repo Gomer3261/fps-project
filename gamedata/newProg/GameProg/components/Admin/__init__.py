@@ -75,12 +75,15 @@ class Class:
 					if gameInfo["server"]:
 						# We're a server!
 						#Network.gpsnet.startServer(gameInfo["serverInfo"])
-						address = gameInfo['address']
-						Network.startServer(address)
+						address = gameInfo['hostaddress']
+						print("\nAdmin, Starting Server...")
+						Network.startServer(address, Interface)
+						print("")
 						Interface.out(" ", note=False)
 				
 				else: # We are not the host
 					address = gameInfo['address']
+					print("Admin, connecting as client...")
 					Network.startClient(address)
 				
 				
@@ -99,12 +102,12 @@ class Class:
 			print("\n===========================================================================")
 			print("====== Administrated Game Initiation Complete; Game loop starts now! ======")
 			print("===========================================================================\n")
-			Interface.out("Welcome!")
-			Interface.out("You can press ~ (tilde) to toggle the in-game terminal.")
-			Interface.out("You can press spacebar to spawn a testing entity (yes you can spawn multiple, that's not a glitch).")
-			Interface.out("Use WASD keys and mouse movement to control the nanoshooter testing entity.")
-			Interface.out("Press the delete key to kill the testing entity.")
-			Interface.out("If those controls don't work, you should enter /defaultOptions() into the terminal. The terminal can also be used to customize any of your controls.")
-			Interface.out("That's all for now folks.")
+			Interface.out("Welcome!", note=True)
+			Interface.out("You can press ~ (tilde) to toggle the in-game terminal.", note=True)
+			Interface.out("You can press spacebar to spawn a testing entity (yes you can spawn multiple, that's not a glitch).", note=True)
+			Interface.out("Use WASD keys and mouse movement to control the nanoshooter testing entity.", note=True)
+			Interface.out("Press the delete key to kill the testing entity.", note=True)
+			Interface.out("If those controls don't work, you should enter /defaultOptions() into the terminal. The terminal can also be used to customize any of your controls.", note=True)
+			Interface.out("That's all for now folks.", note=True)
 			Interface.out(" ", note=False)
 			

@@ -7,6 +7,8 @@ class SESSIONSTORAGE:
 	class SESSION:
 		def __init__(self, clientSock=None, sessionTimeout=60.0):
 			self.clientSock = clientSock
+			self.udp = None
+			self.UID = None
 			self.sessionTimeout = sessionTimeout
 			import comms
 			self.sessionTimeoutClock = comms.TIMER()

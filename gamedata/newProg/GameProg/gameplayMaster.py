@@ -32,8 +32,9 @@ def initiate(cont):
 		import GameLogic
 		GI = {}
 		GI['host'] = True
-		GI['server'] = False
-		GI['address'] = "chasemoskal.dyndns.org:3203"
+		GI['server'] = True
+		GI['address'] = "chasemoskal.dyndns.org:3200/3201"
+		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, 3200, 3201) )
 		GameLogic.globalDict['gameInfo'] = GI
 		
 		###
@@ -70,8 +71,7 @@ def run(cont):
 		
 		Admin.initiationLoop(GameLogic, Network, GameState, Interface) # Setting up the game
 		
-		Network.run(Admin, Interface)
-		Network.incoming() # Receiving data to the in buffer.
+		Network.run(Admin, GameState, Interface) # Maintaining connections and stuff, and also receiving data to inBundles.
 		
 		Interface.run() # Runs the interface (user inputs).
 		GameState.run(Admin, Network) # Runs the GameState: represents the game world based on changes it finds in the Network in buffer.
@@ -79,7 +79,6 @@ def run(cont):
 		
 		Network.inBundles = [] # Clearing the inBundles buffer
 		Network.outgoing(Admin, GameState) # Asynchronously sends out data that has accumulated in the buffers.
-	
 	
 	
 	

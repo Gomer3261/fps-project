@@ -2,14 +2,18 @@
 ###### ### ### HIGH CLASSES ### ### ######
 ###### ### #################### ### ######
 
-class GP_SERVER:
+class GPS:
 	"""
 	WIP?
 	"""
+	import classes
 	def __init__(self, address=("IP", 3200, 3201)):
+		self.TERMINATING = False
+		self.TERMINATED = False
+		
 		# Initiating Server
-		self.tcpServer = TCP_SERVER(tcpAddr)
-		self.udpServer = UDP_SERVER(udpAddr)
+		self.tcpServer = self.classes.TCP_SERVER(address)
+		self.udpServer = self.classes.UDP_SERVER(address)
 	
 	def bind(self):
 		serverSuccess = False
@@ -19,26 +23,54 @@ class GP_SERVER:
 			serverSuccess = True
 		return serverSuccess
 	
-	def run(self, GameState, Interface):
-		newInItems = []
+	def associateUser(self, ticket, UID):
+		session = self.tcpServer.getSession(ticket)
+		session.UID = UID
+	
+	def getUIDByTicket(self, ticket):
+		session = self.tcpServer.getSession(ticket)
+		return session.UID
 		
-		bundles, newConnections, staleClient, staleSessions = self.tcpServer.run()
-		for bundle in bundles:
-			ticket, item = bundle
+	
+	def run(self, Interface):
+		allParcels = [] # We will return this at the end
+		
+		### TCP SERVER ###
+		parcels, newConnections, staleClient, staleSessions = self.tcpServer.run()
+		for parcel in parcels:
+			ticket, item = parcel
 			flag, data = item
 			if flag == 'CHK': # This is a check.
 				self.tcpServer.sendTo(ticket, item) # We echo those back.
 			else:
-				newInItems.append(item)
+				allParcels.append(parcel)
+		###
 		
-		baskets = self.udpServer.run()
-		for basket in baskets:
-			item, addr = basket
+		### UDP SERVER ###
+		parcel, addr = self.udpServer.run()
+		if parcel:
+			ticket, item = parcel
 			flag, data = item
 			if flag == 'CHK':
 				self.udpServer.throw(item, addr) # echoing the check back
+			### Checking for new TCP/UDP Associations ###
+			session = self.tcpServer.getSession(ticket)
+			if session:
+				if not session.udp: print("UDP associated with ticket %s"%ticket)
+				session.udp = addr
+				allParcels.append(parcel)
+			else: print("Error, Network/core, UDP message specified non-existant session... O_o")
+			###
+		
+		return allParcels
+	
+	def terminate(self):
+		self.tcpServer.terminate()
+		self.udpServer.terminate()
+		self.TERMINATED = True
+			
 
-class GPS_CLIENT:
+class GPC:
 	pass
 
 		
