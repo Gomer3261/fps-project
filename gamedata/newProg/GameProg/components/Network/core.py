@@ -1,5 +1,5 @@
 ###### ### #################### ### ######
-###### ### ### HIGH CLASSES ### ### ######
+###### ### ### CORE CLASSES ### ### ######
 ###### ### #################### ### ######
 
 class GPS:
@@ -8,7 +8,7 @@ class GPS:
 	"""
 	import classes
 	def __init__(self, address=("IP", 3200, 3201)):
-		self.TERMINATING = False
+		self.SHUTDOWN = False
 		self.TERMINATED = False
 		
 		# Initiating Server
@@ -36,38 +36,45 @@ class GPS:
 		allParcels = [] # We will return this at the end
 		
 		### TCP SERVER ###
-		parcels, newConnections, staleClient, staleSessions = self.tcpServer.run()
-		for parcel in parcels:
-			ticket, item = parcel
-			flag, data = item
-			if flag == 'CHK': # This is a check.
-				self.tcpServer.sendTo(ticket, item) # We echo those back.
-			else:
-				allParcels.append(parcel)
+		if self.tcpServer:
+			parcels, newConnections, staleClient, staleSessions, terminated = self.tcpServer.run()
+			for parcel in parcels:
+				ticket, item = parcel
+				flag, data = item
+				if flag == 'CHK': # This is a check.
+					self.tcpServer.sendTo(ticket, item) # We echo those back.
+				else:
+					allParcels.append(parcel)
+			if terminated:
+				self.tcpServer = None
+				self.TERMINATED = True
 		###
 		
 		### UDP SERVER ###
-		parcel, addr = self.udpServer.run()
-		if parcel:
-			ticket, item = parcel
-			flag, data = item
-			if flag == 'CHK':
-				self.udpServer.throw(item, addr) # echoing the check back
-			### Checking for new TCP/UDP Associations ###
-			session = self.tcpServer.getSession(ticket)
-			if session:
-				if not session.udp: print("UDP associated with ticket %s"%ticket)
-				session.udp = addr
-				allParcels.append(parcel)
-			else: print("Error, Network/core, UDP message specified non-existant session... O_o")
-			###
+		if self.udpServer:
+			basket = self.udpServer.run()
+			if basket:
+				parcel, addr = basket
+				ticket, item = parcel
+				flag, data = item
+				if flag == 'CHK':
+					self.udpServer.throw(item, addr) # echoing the check back
+				### Checking for new TCP/UDP Associations ###
+				session = self.tcpServer.getSession(ticket)
+				if session:
+					if not session.udp: print("UDP associated with ticket %s"%ticket)
+					session.udp = addr
+					allParcels.append(parcel)
+				else: print("Error, Network/core, UDP message specified non-existant session... O_o")
+		###
 		
-		return allParcels
+		return allParcels, self.TERMINATED
 	
-	def terminate(self):
-		self.tcpServer.terminate()
-		self.udpServer.terminate()
-		self.TERMINATED = True
+	def shutdown(self):
+		self.tcpServer.shutdown() # TCP servers need to be shutdown first.
+		self.udpServer.terminate() # UDP servers can be instantly terminated.
+		self.udpServer = None
+		self.SHUTDOWN = True
 			
 
 class GPC:
