@@ -35,7 +35,7 @@ class Class:
 		Maintains GPS and GPC by running them. If they exist, that is.
 		"""
 		if self.GPS:
-			parcels = self.GPS.run(Interface)
+			parcels, terminated = self.GPS.run(Interface)
 			for parcel in parcels:
 				ticket, item = parcel
 				flag, data = item
@@ -43,8 +43,7 @@ class Class:
 					name = data
 					UID = GameState.addUser(ticket, name)
 			bundles = self.convertParcelsToBundles(parcels)
-			
-			if self.GPS.TERMINATED:
+			if terminated:
 				self.GPS = None; Interface.out("Server terminated.", note=False, console=True)
 		
 		if self.GPC:
@@ -60,6 +59,11 @@ class Class:
 			bundle = (UID, item); bundles.append(bundle)
 		return bundles
 	
+	
+	
+	
+	
+	
 	def startServer(self, address, Interface):
 		"""
 		Starts the GPS.
@@ -74,7 +78,7 @@ class Class:
 			Interface.out("Server failed to bind!", note=True, console=True)
 	
 	def endServer(self):
-		self.GPS.terminate()
+		self.GPS.shutdown()
 	
 	def startClient(self, address):
 		"""
@@ -84,12 +88,12 @@ class Class:
 		self.GPC = self.core.GPC(addressTuple)
 		self.GPC.connect()
 	
-	def incoming(self):
-		"""
-		If there is a GPS or GPC, or both, we receive bundles from them and plop them into
-		inBundles.
-		"""
-		pass
+	
+	
+	
+	
+	
+	
 	
 	def outgoing(self, Admin, GameState):
 		"""

@@ -1,2 +1,2 @@
-Implemented server-side networking, other various tweaks.
+Server now has shutdown methods, which allow it to peacefully disconnect all clients and close the sockets softly and peacefully. I still plan to rewrite the server-side stuff and try to make it a lot cleaner before moving to client-side.
     /Chase.

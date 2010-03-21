@@ -7,6 +7,9 @@
 
 class TCP_SERVER:
 	def __init__(self, address):
+		self.SHUTDOWN = False
+		self.TERMINATED = False
+		
 		self.address = address
 		import sessions
 		self.sessionStorage = sessions.SESSIONSTORAGE()
@@ -67,9 +70,9 @@ class TCP_SERVER:
 					sent = self.sock.send(self.outbuffer)
 					self.outbuffer = self.outbuffer[sent:]
 			except: pass
-		def send(self, data):
+		def send(self, item):
 			try:
-				self.outbuffer += self.comms.pack(data)
+				self.outbuffer += self.comms.pack(item)
 				if self.outbuffer:
 					sent = self.sock.send(self.outbuffer)
 					self.outbuffer = self.outbuffer[sent:]
@@ -87,12 +90,13 @@ class TCP_SERVER:
 		staleClients = []
 		staleSessions = []
 		
-		newConnection = self.acceptNewConnection()
-		if newConnection:
-			clientSock = self.CLIENTSOCK(newConnection)
-			ticket, session = self.sessionStorage.newSession(clientSock)
-			#print("New connection from (%s), ticket=%s."%(clientSock.IP, ticket))
-			newConnections.append( (clientSock.IP, ticket) )
+		if not self.SHUTDOWN:
+			newConnection = self.acceptNewConnection()
+			if newConnection:
+				clientSock = self.CLIENTSOCK(newConnection)
+				ticket, session = self.sessionStorage.newSession(clientSock)
+				#print("New connection from (%s), ticket=%s."%(clientSock.IP, ticket))
+				newConnections.append( (clientSock.IP, ticket) )
 		
 		staleSessions = []
 		for sessionTicket in self.sessionStorage.sessions:
@@ -100,8 +104,10 @@ class TCP_SERVER:
 			if session.clientSock:
 				items, hasGoneStale = session.clientSock.run()
 				for item in items:
+					flag, data = item
 					parcel = (sessionTicket, item)
 					parcels.append(parcel)
+					if flag == 'BYE': session.terminateClientSock()
 				if hasGoneStale:
 					#session.clientSock.terminate()
 					#print("Client (%s) has gone stale."%(session.clientSock.IP))
@@ -114,10 +120,22 @@ class TCP_SERVER:
 		
 		for staleSession in staleSessions:
 			self.sessionStorage.deleteSession(staleSession)
-			#print("Session number %s went stale."%(staleSession))
 			staleSessions.append( staleSession )
 		
-		return parcels, newConnections, staleClients, staleSessions
+		if self.SHUTDOWN:
+			clientSocks = self.countClientSocks()
+			if clientSocks == 0:
+				self.TERMINATED = True
+		
+		return parcels, newConnections, staleClients, staleSessions, self.TERMINATED
+	
+	def countClientSocks(self):
+		num = 0
+		for ticket in self.sessionStorage.sessions:
+			session = self.sessionStorage.sessions[ticket]
+			if session.clientSock:
+				num += 1
+		return num
 	
 	def acceptNewConnection(self):
 		try:
@@ -127,23 +145,20 @@ class TCP_SERVER:
 			return (client, address)
 		except: pass
 	
-	def sendToAll(self, data):
+	def sendToAll(self, item):
 		for sessionTicket in self.sessionStorage.sessions:
 			session = self.sessionStorage.sessions[sessionTicket]
 			if session.clientSock:
-				session.clientSock.send(data)
+				session.clientSock.send(item)
 	
-	def sendTo(self, ticket, data):
+	def sendTo(self, ticket, item):
 		session = self.sessionStorage.sessions[ticket]
-		session.clientSock.send(data)
+		session.clientSock.send(item)
 	
-	def terminate(self):
-		# Terminate all sockets.
-		for sessionTicket in self.sessionStorage.sessions:
-			session = self.sessionStorage.sessions[sessionTicket]
-			session.terminateClientSock()
-		import socket
+	def shutdown(self):
+		self.sendToAll( ('BYE', 'BYE') )
 		self.sock.close()
+		self.SHUTDOWN = True # Start the shutdown.
 
 
 ###### ### ################################ ### ######
@@ -277,13 +292,15 @@ class UDP_SERVER:
 		return basket
 	
 	def catch(self):
+		# Returns a basket
 		try:
 			package, addr = self.sock.recvfrom(4096)
 			import comms
 			parcel = comms.unpack(package)
-			return parcel, addr # This is a basket
+			basket = (parcel, addr)
+			return basket # This is a basket
 		except:
-			return None, None
+			return None
 	
 	def throw(self, item, addr):
 		import comms
@@ -311,11 +328,10 @@ class UDP_CLIENT:
 			item = comms.unpack(package)
 			return item, addr
 		except:
-			return None, None
+			return None
 	
-	def throw(self, ticket, item, addr):
+	def throw(self, parcel, addr):
 		import comms
-		parcel = (ticket, item)
 		package = comms.packUDP(parcel)
 		self.sock.sendto(package, addr)
 	
