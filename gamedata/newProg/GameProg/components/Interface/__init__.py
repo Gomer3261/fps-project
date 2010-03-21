@@ -24,14 +24,6 @@ class Class:
 		"""
 		self.Terminal.handleOpenClose()
 	
-	def terminalOutputWithNotification(self, string, time=None):
-		"""
-		DEPRECATED
-		Use Interface.out() instead.
-		"""
-		self.Terminal.output(string)
-		self.Notes.notify(string, time)
-	
 	def out(self, text, terminal=True, note=True):
 		"""
 		Basic output method. Outputs to the terminal, and to notifications by default.

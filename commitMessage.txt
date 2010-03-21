@@ -1,2 +1,2 @@
-Offline gameplay now works as it did before, but under the hood, things have been restructured to make way for the introduction and implementation of online gameplay.
-    /Chase.
+Just adjusting some things to the new Interface.out() function.
+    /Geoff.

@@ -12,9 +12,9 @@ class Class():
 		"""
 		Outputs the current gamestate information to the terminal.
 		"""
-		terminal = self.slab.Interface.Terminal
+		interface = self.slab.Interface
 		gamestate = self.slab.GameState
-		terminal.output( str(gamestate.contents) )
+		interface.out( str(gamestate.contents), 1, 0 )
 
 #	def users():
 #		"""
