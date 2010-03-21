@@ -145,8 +145,6 @@ class Class(base_entity.Class):
 		if Controller.isPositive('backward'): Y -= SPEED
 		if Controller.isPositive('left'): X -= SPEED
 		if Controller.isPositive('right'): X += SPEED
-		if Controller.isPositive('rise'): Z += SPEED
-		if Controller.isPositive('sink'): Z -= SPEED
 		
 		return X, Y, Z
 	

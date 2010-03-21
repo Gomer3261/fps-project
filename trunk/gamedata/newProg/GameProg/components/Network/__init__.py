@@ -35,21 +35,22 @@ class Class:
 		Maintains GPS and GPC by running them. If they exist, that is.
 		"""
 		if self.GPS:
-			parcels, terminated = self.GPS.run(Interface)
-			for parcel in parcels:
-				ticket, item = parcel
-				flag, data = item
-				if flag == 'AU': # Add User to GameState for this client.
-					name = data
-					UID = GameState.addUser(ticket, name)
+			parcels = self.GPS.run(Interface)
+			self.handleAddUserRequests(parcels)
 			bundles = self.convertParcelsToBundles(parcels)
-			if terminated:
-				self.GPS = None; Interface.out("Server terminated.", note=False, console=True)
+			for bundle in bundles: self.inBundles.append(bundle)
+			if not self.GPS.active: self.GPS = None; Interface.out("Gameplay server terminated.", console=True)
 		
 		if self.GPC:
 			self.GPC.run()
 	
-	
+	def handleAddUserRequests(self, parcels):
+		for parcel in parcels:
+			ticket, item = parcel
+			flag, data = item
+			if flag == 'AU': # Add User to GameState for this client.
+				name = data
+				UID = GameState.addUser(ticket, name)
 	
 	def convertParcelsToBundles(self, parcels):
 		bundles = []
@@ -58,10 +59,6 @@ class Class:
 			UID = self.GPS.getUIDByTicket(ticket)
 			bundle = (UID, item); bundles.append(bundle)
 		return bundles
-	
-	
-	
-	
 	
 	
 	def startServer(self, address, Interface):
@@ -78,7 +75,7 @@ class Class:
 			Interface.out("Server failed to bind!", note=True, console=True)
 	
 	def endServer(self):
-		self.GPS.shutdown()
+		self.GPS.startShutdown()
 	
 	def startClient(self, address):
 		"""
@@ -87,13 +84,6 @@ class Class:
 		addressTuple = self.comms.makeAddressTuple(address)
 		self.GPC = self.core.GPC(addressTuple)
 		self.GPC.connect()
-	
-	
-	
-	
-	
-	
-	
 	
 	def outgoing(self, Admin, GameState):
 		"""
