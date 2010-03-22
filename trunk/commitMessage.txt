@@ -1,6 +1,2 @@
-The server no longer starts automatically -- you must provoke it with the terminal (see the in-game terminal for details).
-You can now spawn any entity type with the /spawn('entityType') command -- but for now your options are 'nanoshooter' and 'explorer'. For laughs and giggles go ahead and spawn both at the same time.
-You can now only spawn one of each type of entity at one given moment.
-Lots of old/deprecated crap removed.
-Various tweaks and improvements.
+The GPC (Gameplay Client) has been implemented (TCP only so far), and connects happily, exchanges data, and both the GPC and the GPS seem to handle common errors elegantly. Next up, I implement the UDP component of the GPC, test everything out for a bit, then it's time to dust everything off and rig up some online gameplay. It's getting close now folks.
     /Chase.

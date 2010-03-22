@@ -24,7 +24,7 @@ class TCP_SERVER:
 	def bind(self):
 		bound = False
 		try:
-			self.sock.bind( ("", self.address[1]) )
+			self.sock.bind(self.address)
 			bound = True
 			self.active = True
 		except:
@@ -109,12 +109,13 @@ class TCP_SERVER:
 				items, hasGoneStale = session.clientSock.run()
 				for item in items:
 					flag, data = item
-					parcel = (sessionTicket, item)
+					parcel = (ticket, item)
 					parcels.append(parcel)
 					if flag == 'BYE': session.terminateClientSock()
 				if hasGoneStale:
+					IP = session.clientSock.IP
 					session.terminateClientSock()
-					staleClients.append( (session.clientSock.IP, ticket) )
+					staleClients.append( (IP, ticket) )
 			else:
 				if session.hasGoneStale(): staleSessions.append(ticket)
 		
@@ -146,8 +147,8 @@ class TCP_SERVER:
 		except: pass
 	
 	def sendToAll(self, item):
-		for sessionTicket in self.sessionStorage.sessions:
-			session = self.sessionStorage.sessions[sessionTicket]
+		for ticket in self.sessionStorage.sessions:
+			session = self.sessionStorage.sessions[ticket]
 			if session.clientSock:
 				session.clientSock.send(item)
 	
@@ -175,7 +176,9 @@ class TCP_SERVER:
 class TCP_CLIENT:
 
 	def __init__(self, address, timeout=10.0):
+		self.active = True # We start off active because we don't want to lose it right away.
 		self.address = address
+		
 		import comms
 		self.comms = comms
 		self.instream = comms.STREAM()
@@ -187,75 +190,89 @@ class TCP_CLIENT:
 		self.socket = socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.settimeout(0.0); self.sock.setblocking(0)
-		self.CONNECTED = False
-		self.CONNECTING = False
-	
-	def handleConnection(self):
-		justConnected = False
-		if not self.CONNECTED:
-			if not self.CONNECTING:
-				# We'll leave it to the higher level to initiate the connection when they want...
-				#self.initiateConnection()
-				pass
-			else: # connection is in progress...
-				connected, hasGoneStale = self.refreshConnectionStatus()
-				if connected: justConnected = True
-				if hasGoneStale: self.terminate()
-		return justConnected
-	
-	def initiateConnection(self):
-		try:
-			self.sock.connect(self.address)
-		except:
-			pass
-		self.timeoutClock.reset()
-		self.CONNECTING = True
+		
+		self.nextCHK = 1
+		self.CHK = 0
+		
+		self.connected = False
+		self.connecting = False
 	
 	def refreshConnectionStatus(self):
-		hasGoneStale = False
-		connected = False
-		try:
-			peer = self.sock.getpeername()
-			if peer:
-				connected = True
-				self.CONNECTING = False
-				self.CONNECTED = True
-				self.timeoutClock.reset()
-			else:
-				hasGoneStale = self.hasGoneStale()
-		except:
-			pass
-		return connected, hasGoneStale
-			
+		staleOnConnection = False
+		justConnected = False
+		try: peer = self.sock.getpeername()
+		except: peer = None
+		if peer:
+			justConnected = True
+			self.connecting = False
+			self.connected = True
+			self.timeoutClock.reset()
+		else:
+			staleOnConnection = self.hasGoneStale()
+		return justConnected, staleOnConnection
+	
+	def initiateConnection(self):
+		try: self.sock.connect(self.address)
+		except: pass
+		self.timeoutClock.reset()
+		self.connecting = True
+	
+	def doCHK(self):
+		if not self.CHK:
+			if self.timeoutClock.get() > 2.0:
+				self.CHK = self.nextCHK; self.nextCHK += 1
+				self.send(('CHK', self.CHK))
 	
 	def run(self):
-		justConnected = self.handleConnection()
-				
-		if self.CONNECTED:
-			self.IO()
-		items = self.items; self.items = []
-		return items, self.hasGoneStale(), justConnected
+		items = []
+		justConnected = False
+		staleOnConnection = False
+		gotShutdown = False
+		hasGoneStale = False
+		###
+		if (not self.connected) and self.connecting:
+			justConnected, staleOnConnection = self.refreshConnectionStatus()
+			if staleOnConnection: self.terminate()
+		if self.connected:
+			items, gotShutdown = self.IO()
+			if gotShutdown: self.terminate()
+			hasGoneStale = self.hasGoneStale()
+			if hasGoneStale: self.terminate()
+		return items, justConnected, staleOnConnection, gotShutdown, hasGoneStale
 	
 	def IO(self):
 		# RECEIVING (IN)
+		items = []
+		gotShutdown = False
 		try:
 			data = self.sock.recv(1024)
 			if data:
 				self.instream.add(data)
 				packages = self.instream.extract()
-				items = self.comms.unpackList(packages)
-				for item in items: self.items.append(item)
+				newItems = self.comms.unpackList(packages)
+				for newItem in newItems:
+					items.append(newItem)
+					flag, data = newItem
+					if flag == 'BYE':
+						self.send(('BYE', 'BYE'))
+						gotShutdown = True
+					if flag == 'CHK':
+						if data == self.CHK:
+							self.CHK = 0
 				self.timeoutClock.reset()
 		except: pass
 		# SENDING (OUT)
 		try:
+			self.doCHK()
 			if self.outbuffer:
 				sent = self.sock.send(self.outbuffer)
 				self.outbuffer = self.outbuffer[sent:]
 		except: pass
-	def send(self, data):
+		return items, gotShutdown
+	
+	def send(self, item):
 		try:
-			self.outbuffer += self.comms.pack(data)
+			self.outbuffer += self.comms.pack(item)
 			if self.outbuffer:
 				sent = self.sock.send(self.outbuffer)
 				self.outbuffer = self.outbuffer[sent:]
@@ -264,11 +281,13 @@ class TCP_CLIENT:
 	def hasGoneStale(self): # In other words, "hasTimedOut()".
 		if self.timeoutClock.get() > self.timeout: return True
 		else: return False
+	
 	def terminate(self):
-		self.CONNECTING = False
-		self.CONNECTION = False
+		self.connected = False
+		self.connecting = False
 		self.timeoutClock.reset()
 		self.sock.close()
+		self.active = False
 
 
 
@@ -289,7 +308,7 @@ class UDP_SERVER:
 	def bind(self):
 		bound = False
 		try: 
-			self.sock.bind( ('', self.address[2]) )
+			self.sock.bind(self.address)
 			bound = True
 			self.active = True
 		except: 
@@ -350,10 +369,10 @@ class UDP_CLIENT:
 		except:
 			return None
 	
-	def throw(self, parcel, addr):
+	def throw(self, parcel):
 		import comms
 		package = comms.packUDP(parcel)
-		self.sock.sendto(package, addr)
+		self.sock.sendto(package, self.address)
 	
 	def terminate(self):
 		self.sock.close()

@@ -19,8 +19,9 @@ class Class:
 		print("Admin's good.")
 	
 	
-	def getUID(self):
-		return self.UID
+	def getGameInfo(self):
+		import GameLogic
+		return GameLogic.globalDict['gameInfo']
 	
 	
 	
@@ -48,6 +49,8 @@ class Class:
 			print("====== Component Initiation Completed; Administrated Game Initiation starts now! ======")
 			print("=======================================================================================\n")
 			
+			### Clearing the GameState ###
+			GameState.reset()
 			
 			# GameInfo was found saved to the globalDict
 			if "gameInfo" in GameLogic.globalDict:

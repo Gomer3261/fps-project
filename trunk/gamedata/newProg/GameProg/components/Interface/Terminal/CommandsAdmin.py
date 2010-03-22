@@ -19,3 +19,10 @@ class Class():
 			GI = GameLogic.globalDict['gameInfo']
 			address = GI['hostaddress']
 		self.slab.Network.startServer(address, self.slab.Interface)
+	
+	def startClient(self, address=None):
+		if not address:
+			import GameLogic
+			GI = GameLogic.globalDict['gameInfo']
+			address = GI['address']
+		self.slab.Network.startClient(address)
