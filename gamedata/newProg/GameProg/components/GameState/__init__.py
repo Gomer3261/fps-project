@@ -4,12 +4,11 @@ class Class:
 	def __init__(self, slab):
 		import RequestHandler
 		self.RequestHandler = RequestHandler.Class()
-	
-		self.resetContents()
-		self.changes = []
 		
-		self.EID = 1 # Entity ID
-		self.UID = 1 # User ID
+		self.reset()
+		
+		self.nextEID = 1 # Entity ID
+		self.nextUID = 1 # User ID
 		
 		
 		print("GameState is ready.")

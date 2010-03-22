@@ -16,7 +16,6 @@ class Class:
 		"""
 		for bundle in Network.inBundles:
 			senderUID,item=bundle; flag,data=item
-			request=data; requestFlag,requestData=request
 			if flag == 'LG':
 				self.handleRequest(bundle, LocalGame, Network)
 		#if items: print("\nGameState Changed!: %s\n"%(GameState.contents))

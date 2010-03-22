@@ -35,30 +35,31 @@ class Class:
 		"""
 		Maintains GPS and GPC by running them. If they exist, that is.
 		"""
-		if self.GPS:
-			parcels = self.GPS.run(Interface)
-			self.handleAddUserRequests(parcels)
-			bundles = self.convertParcelsToBundles(parcels)
-			for bundle in bundles: self.inBundles.append(bundle)
-			if not self.GPS.active: self.GPS = None; Interface.out("Gameplay server terminated peacefully.", console=True)
-		
-		if self.GPC:
-			self.GPC.run()
-	
-	def handleAddUserRequests(self, parcels):
-		for parcel in parcels:
-			ticket, item = parcel
-			flag, data = item
-			if flag == 'AU': # Add User to GameState for this client.
-				name = data
-				UID = GameState.addUser(ticket, name)
+		try:
+			if self.GPS:
+				parcels = self.GPS.run(Admin, GameState, Interface)
+				bundles = self.convertParcelsToBundles(parcels)
+				for bundle in bundles: self.inBundles.append(bundle)
+				if not self.GPS.active: self.GPS = None; Interface.out("Gameplay server terminated peacefully.", console=True)
+			
+			if self.GPC:
+				bundles = self.GPC.run(Admin, Interface)
+				for bundle in bundles: self.inBundles.append(bundle)
+				if not self.GPC.active:
+					self.GPC = None
+					Interface.out("Gameplay client terminated.")
+					# We might have to restart the entire game by reinitializing via Admin at this point.
+		except:
+			import traceback; traceback.print_exc()
 	
 	def convertParcelsToBundles(self, parcels):
 		bundles = []
 		for parcel in parcels:
-			ticket, item = parcel
-			UID = self.GPS.getUIDByTicket(ticket)
-			bundle = (UID, item); bundles.append(bundle)
+			try:
+				ticket, item = parcel
+				UID = self.GPS.getUIDByTicket(ticket)
+				bundle = (UID, item); bundles.append(bundle)
+			except: pass
 		return bundles
 	
 	
@@ -66,8 +67,7 @@ class Class:
 		"""
 		Starts the GPS.
 		"""
-		addressTuple = self.comms.makeAddressTuple(address)
-		self.GPS = self.core.GPS(addressTuple)
+		self.GPS = self.core.GPS(address)
 		bound = self.GPS.bind()
 		if bound:
 			Interface.out("Server successfully bound to %s"%address, note=True, console=True)
@@ -83,9 +83,8 @@ class Class:
 		"""
 		Starts the GPC.
 		"""
-		addressTuple = self.comms.makeAddressTuple(address)
-		self.GPC = self.core.GPC(addressTuple)
-		self.GPC.connect()
+		self.GPC = self.core.GPC(address)
+		self.GPC.initiateConnection()
 	
 	def outgoing(self, Admin, GameState):
 		"""

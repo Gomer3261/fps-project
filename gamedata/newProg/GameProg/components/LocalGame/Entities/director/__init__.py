@@ -39,7 +39,7 @@ class Class(base_entity.Class):
 		#self.Network.gpsnet.send( ('LG', ('MEMO', (self.EID, ('SE', (entityType,IDs,args)) ) )) )
 	
 	def handleMemos(self):
-		if self.Admin.getUID() == self.getOwner(): # Only be handling memos when we are the owner (even though the owner should be the only one who recieves memos?)
+		if self.Admin.UID == self.getOwner(): # Only be handling memos when we are the owner (even though the owner should be the only one who recieves memos?)
 			for memo in self.memos:
 				memoFlag, memoData = memo
 				if memoFlag == 'SE':
