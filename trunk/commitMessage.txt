@@ -1,2 +1,6 @@
-Server shutdown operations improved; various other tweaks.
+The server no longer starts automatically -- you must provoke it with the terminal (see the in-game terminal for details).
+You can now spawn any entity type with the /spawn('entityType') command -- but for now your options are 'nanoshooter' and 'explorer'. For laughs and giggles go ahead and spawn both at the same time.
+You can now only spawn one of each type of entity at one given moment.
+Lots of old/deprecated crap removed.
+Various tweaks and improvements.
     /Chase.

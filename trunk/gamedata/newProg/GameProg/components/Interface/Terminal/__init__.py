@@ -23,6 +23,9 @@ Important functions:
 	/listUserCommands() # Lists the commands you can use.
 	/help(cmd) # Use this to get help on a particular command.
 	/defaultOptions() # Use this whenever things seem to be not working.
+	/startServer() -- you should end the server before you hit escape.
+	/endServer()
+	/spawn('explorer') or /spawn('nanoshooter') or just spawn() -- which defaults to explorer.
 
 ================================================================"""
 

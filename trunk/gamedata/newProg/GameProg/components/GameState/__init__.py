@@ -90,6 +90,11 @@ class Class:
 	### ================================================
 	### Public Convenient Methods
 	### ================================================
+	def getDirectorEID(self):
+		for EID in self.contents['E']:
+			entityData=self.contents['E'][EID]; type=entityData['T']
+			if type == 'director': return EID
+		return None
 	
 	def getHost(self):
 		host = self.contents['owner']

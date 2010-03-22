@@ -15,6 +15,7 @@ class Class:
 	import core
 	
 	def __init__(self, slab):
+		self.slab = slab
 		# A bundle is a pair, (UID, item)
 		self.inBundles = []
 		self.sendOutBuffer = []
@@ -39,7 +40,7 @@ class Class:
 			self.handleAddUserRequests(parcels)
 			bundles = self.convertParcelsToBundles(parcels)
 			for bundle in bundles: self.inBundles.append(bundle)
-			if not self.GPS.active: self.GPS = None; Interface.out("Gameplay server terminated.", console=True)
+			if not self.GPS.active: self.GPS = None; Interface.out("Gameplay server terminated peacefully.", console=True)
 		
 		if self.GPC:
 			self.GPC.run()
@@ -69,12 +70,13 @@ class Class:
 		self.GPS = self.core.GPS(addressTuple)
 		bound = self.GPS.bind()
 		if bound:
-			Interface.out("Server successfully bound.", note=True, console=True)
+			Interface.out("Server successfully bound to %s"%address, note=True, console=True)
 			Interface.out("If you're NOT behind a router, people over the internet can now connect to you at %s. If you are behind a router, people can connect to you at that address, but only over LAN."%address, note=False, console=False)
 		else:
-			Interface.out("Server failed to bind!", note=True, console=True)
+			Interface.out("Server failed to bind to %s"%address, note=True, console=True)
 	
 	def endServer(self):
+		self.slab.Interface.out("Please be prepared to wait for up to 15 seconds for the gameplay server to terminate peacefully.")
 		self.GPS.startShutdown()
 	
 	def startClient(self, address):

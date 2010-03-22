@@ -1,6 +1,5 @@
 ### Director Entity ###
 import base_entity
-
 class Class(base_entity.Class):
 	type = "director"
 	
@@ -33,7 +32,7 @@ class Class(base_entity.Class):
 		except:
 			pass
 	
-	def requestSpawn(self, entityType="nanoshooter", args=[]):
+	def requestSpawn(self, entityType, args=[]):
 		IDs = (self.Admin.UID, self.Admin.UID) # First UID needs to be the host, second UID needs to be the controller.
 		memoData = ('SE', (entityType,IDs,args))
 		self.sendMemo(self.EID, memoData)
@@ -44,8 +43,14 @@ class Class(base_entity.Class):
 			for memo in self.memos:
 				memoFlag, memoData = memo
 				if memoFlag == 'SE':
-					entityType, IDs, args = memoData
-					self.Network.send( ('GS', ('AR', ('SE', (entityType, IDs, args)))) )
+					entityType, UIDs, args = memoData
+					entitiesOfThatType = self.GameState.getEIDsByType(entityType)
+					if not entitiesOfThatType:
+						self.Network.send( ('GS', ('AR', ('SE', (entityType, UIDs, args)))) )
+				if memoFlag == 'RE':
+					EID = memoData
+					if EID != self.EID:
+						self.Network.send( ('GS', ('AR', ('RE', EID))) )
 			self.memos = []
 	
 	def userSpawnRequestControl(self):
