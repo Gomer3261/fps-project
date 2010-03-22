@@ -109,11 +109,8 @@ class Class(base_entity.Class):
 	def suicideControlLoop(self):
 		if not self.Interface.Terminal.active:
 			suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
-			if suicideStatus == 1:
-				# Suicide!
-				item = ('GS', ('AR', ('RE', self.EID)))
-				self.Network.send(item)
-				print("Remove (nanoshooter) Entity request sent via Network.send(item)...")
+			if suicideStatus == 3:
+				self.sendMemo(self.GameState.getDirectorEID(), ('RE', self.EID))
 	
 	def displayAimPoint(self):
 		pos = self.mouseOver.hitPosition

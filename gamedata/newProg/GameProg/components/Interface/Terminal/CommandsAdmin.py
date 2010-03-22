@@ -8,9 +8,14 @@ class Class():
 		"""
 		Outputs the current gamestate information to the terminal.
 		"""
-		interface = self.slab.Interface
-		gamestate = self.slab.GameState
-		Interface.out( str(gamestate.contents), 1, 0 )
+		self.slab.Interface.out( str(self.slab.GameState.contents), 1, 0 )
 	
 	def endServer(self):
 		self.slab.Network.endServer()
+	
+	def startServer(self, address=None):
+		if not address:
+			import GameLogic
+			GI = GameLogic.globalDict['gameInfo']
+			address = GI['hostaddress']
+		self.slab.Network.startServer(address, self.slab.Interface)

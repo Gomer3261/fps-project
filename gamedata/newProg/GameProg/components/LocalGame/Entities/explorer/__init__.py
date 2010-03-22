@@ -1,15 +1,10 @@
 ### Explorer Entity ###
+import base_entity
+class Class(base_entity.Class):
+	type = "explorer"
+	
+	def initiate(self):
 
-class Class:
-	def __init__(self, EID, LocalGame):
-		self.type = "explorer"
-		self.EID = EID
-		self.LocalGame = LocalGame
-		
-		self.GameState = LocalGame.GameState
-		self.Networking = LocalGame.Networking
-		self.Interface = LocalGame.Interface
-		
 		# Initiating the gameObject
 		import GameLogic as gl
 		own = gl.getCurrentController().owner
@@ -22,17 +17,18 @@ class Class:
 		self.XPivot = self.gameObject
 		self.YPivot = self.gameObject
 		
-		print("Explorer Initiated.")
+		self.Interface.out("Explorer Initiated.", terminal=False, console=True)
 	
 	def end(self):
 		self.LocalGame.Camera.clear()
 		self.gameObject.endObject()
 		self.gameObject = None
-		print("Explorer Entity Ended.")
+		self.Interface.out("Explorer Ended.", terminal=False, console=True)
 	
 	def run(self):
 		# Camera Management
 		self.LocalGame.Camera.set(self.cam)
+		
 		self.suicideControlLoop()
 		self.doMouseLook()
 		
@@ -45,11 +41,8 @@ class Class:
 	def suicideControlLoop(self):
 		if not self.Interface.Terminal.active:
 			suicideStatus = self.Interface.Inputs.Controller.getStatus("suicide")
-			if suicideStatus == 1:
-				# Suicide!
-				package = ['GS', ['AR', ['RE', self.EID]]]
-				self.Networking.gpsnet.send(package)
-				print("Remove Entity request sent via Networking.gpsnet.send(request)...")
+			if suicideStatus == 3:
+				self.sendMemo(self.GameState.getDirectorEID(), ('RE', self.EID))
 	
 	def getDesiredLocalMovement(self):
 		Controller = self.Interface.Inputs.Controller

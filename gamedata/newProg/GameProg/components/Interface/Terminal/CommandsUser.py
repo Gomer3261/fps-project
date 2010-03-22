@@ -26,6 +26,11 @@ Precede your input with "/" to designate it as a python command or it will be se
 			self.output(cmd.__doc)
 		else:
 			self.output(self.helpText)
+	
+	def spawn(self, entityType='explorer'):
+		directorEID = self.slab.GameState.getDirectorEID()
+		director = self.slab.LocalGame.entities[directorEID]
+		director.requestSpawn(entityType)
 
 	def output(self, s):
 		"""
