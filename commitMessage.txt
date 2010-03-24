@@ -1,1 +1,3 @@
-minor changes /Chase.
+Network functionality is fully implemented (though certainly not fully tested). At this point, the entities are pretty much the only objects that need any coding to give this game fully functional online multiplayer gameplay. Of course, much testing and many tweaks must be made to Network and the other components to make it good and fun :D
+Depending on how things go, we _might_ be able to test some form of online gameplay this weekend. We'll see.
+    /Chase.

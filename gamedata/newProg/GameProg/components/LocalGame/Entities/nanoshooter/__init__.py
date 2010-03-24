@@ -106,9 +106,13 @@ class Class(base_entity.Class):
 		"""
 		Replicates the GameState description of this entity's controller data to the local self's copy.
 		"""
-		self.gameObject.position = CD['P']
-		self.aimPoint.position = CD['AP']
-		self.trackToAimPoint()
+		try:
+			CD = self.getCD()
+			self.gameObject.position = CD['P']
+			self.aimPoint.position = CD['AP']
+			self.trackToAimPoint()
+		except:
+			pass
 
 	################################################
 	################################################
@@ -133,7 +137,7 @@ class Class(base_entity.Class):
 		X, Y, Z = self.aimPoint.position
 		if X or Y:
 			Z = self.gameObject.position[2]
-			self.trackTo(pos)
+			self.trackTo([X, Y, Z])
 	
 	def getDesiredLocalMovement(self):
 		Controller = self.Interface.Inputs.Controller
