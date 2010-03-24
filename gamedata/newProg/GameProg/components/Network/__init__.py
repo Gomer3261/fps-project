@@ -27,8 +27,21 @@ class Class:
 		self.GPS = None # GamePlay Server
 		self.GPC = None # GamePlay Client
 		
+		self.gameStateFullDistroClock = self.comms.TIMER()
+		
 		print("Networking's ready.")
 	
+	
+	
+	def gameStateDistro(self, GameState):
+		"""
+		If we're running a server, then we will distribute the GameState (full, and in changes) to each client.
+		"""
+		if self.GPS:
+			if self.gameStateFullDistroClock.get() > 2.0:
+				self.GPS.sendToAll( ('GS', ('FD', GameState.contents)) )
+				print("SENT FULL DISTRO!")
+				self.gameStateFullDistroClock.reset()
 	
 	
 	def run(self, Admin, GameState, Interface):

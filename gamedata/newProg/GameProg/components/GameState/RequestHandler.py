@@ -5,6 +5,12 @@ class Class:
 	Interprets requests to make changes to the GameState.
 	GameState Request Protocol:
 	
+	Full Distro
+		('GS', ('FD', contents))
+	
+	Change Distro
+		('GS', ('CD', changes))
+	
 	Entity Mod Item:
 		('GS', ('EM', changes))
 		('EM', changes)
@@ -58,12 +64,25 @@ class Class:
 			
 			if requestFlag == 'AR': # Action Request
 				self.handleActionRequest(bundle, GameState, Network)
+			
+			if requestFlag == 'FD': # Full Distro
+				print("GS Request Handler: GOT FD!")
+				self.handleFullDistroRequest(bundle, GameState, Network)
 		except:
 			import traceback; traceback.print_exc()
 	
 	
 	
-	
+	def handleFullDistroRequest(self, bundle, GameState, Network):
+		"""
+		Handles an EM Request.
+		('GS', ('FD', contents))
+		"""
+		senderUID,item=bundle; flag,data=item
+		request=data; requestFlag,requestData=request
+		
+		newGameStateContents = requestData
+		GameState.applyNewContents(newGameStateContents)
 	
 	def handleEntityModRequest(self, bundle, GameState, Network):
 		"""

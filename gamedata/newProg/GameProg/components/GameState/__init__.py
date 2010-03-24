@@ -7,6 +7,7 @@ class Class:
 		
 		self.reset()
 		
+		# Deprecated?
 		self.nextEID = 1 # Entity ID
 		self.nextUID = 1 # User ID
 		
@@ -49,6 +50,9 @@ class Class:
 		"""
 		self.contents = new
 		self.changes = []
+		print ("New GameState Contents Applied.")
+		print(self.contents)
+		print(" ")
 
 	def addEntity(self, type, ownerUID=0, controllerUID=0, args=[]):
 		print("GameState.addEntity, type=%s"%(type))
