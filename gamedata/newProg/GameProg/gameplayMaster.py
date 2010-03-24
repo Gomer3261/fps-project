@@ -31,8 +31,8 @@ def initiate(cont):
 		# Initiating Game Information #
 		import GameLogic
 		GI = {}
-		GI['host'] = True
-		GI['server'] = True
+		GI['host'] = False
+		GI['server'] = False
 		GI['username'] = "-NoName-"
 		GI['address'] = "chasemoskal.dyndns.org:3200/3200"
 		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, 3200, 3200) )

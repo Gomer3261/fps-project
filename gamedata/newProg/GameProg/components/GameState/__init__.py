@@ -17,14 +17,8 @@ class Class:
 	
 	
 	def run(self, Admin, Network):
-		"""
-		When we are the server, we send out full distributions of the gamestate periodically,
-		but we also send out GameState Changes every tick.
-		"""
 		self.Admin = Admin
 		self.RequestHandler.run(self, Network) # Interprets requests from Network...
-		self.changes = [] # XXX Clearing Changes... (We don't need em for now!)
-		# Distribution stuff goes here...
 	
 	
 	### ================================================
@@ -41,7 +35,7 @@ class Class:
 		Resets the GameState, and also clears the GameState changes.
 		"""
 		self.resetContents()
-		self.changes = []
+		#self.changes = []
 	
 	def applyNewContents(self, new):
 		"""
@@ -49,10 +43,7 @@ class Class:
 		Clears the changes.
 		"""
 		self.contents = new
-		self.changes = []
-		print ("New GameState Contents Applied.")
-		print(self.contents)
-		print(" ")
+		#self.changes = []
 
 	def addEntity(self, type, ownerUID=0, controllerUID=0, args=[]):
 		print("GameState.addEntity, type=%s"%(type))
