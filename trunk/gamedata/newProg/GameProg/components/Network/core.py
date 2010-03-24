@@ -138,8 +138,8 @@ class GPC:
 		self.addressString = addressString
 		self.addressTuple = self.comms.makeAddressTuple(addressString)
 		host, tcpPort, udpPort = self.addressTuple
-		tcpAddress = ("", tcpPort)
-		udpAddress = ("", udpPort)
+		tcpAddress = (self.addressTuple[0], tcpPort)
+		udpAddress = (self.addressTuple[0], udpPort)
 		
 		self.tcpClient = self.classes.TCP_CLIENT(tcpAddress)
 		self.udpClient = self.classes.UDP_CLIENT(udpAddress)
