@@ -11,6 +11,7 @@ class Class:
 		import GameLogic as gl
 		own = gl.getCurrentController().owner
 		self.eCam = gl.getCurrentScene().addObject("eCam", own)
+		self.eCam.position = [0.0, 0.0, 50.0]
 		gl.getCurrentScene().active_camera = self.eCam
 		print("  Camera's happy.")
 	
