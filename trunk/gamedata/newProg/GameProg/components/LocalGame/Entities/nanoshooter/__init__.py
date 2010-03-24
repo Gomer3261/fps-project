@@ -15,7 +15,7 @@ class Class(base_entity.Class):
 		
 		CD = {}
 		CD['P'] = [0.0, 0.0, 0.0] # Position
-		CD['O'] = None # Orientation
+		CD['AP'] = [0.0, 0.0, 0.0] # AimPoint
 		CD['S'] = False # Shooting Status
 		
 		self.sendData('OD', None, OD)
@@ -40,7 +40,7 @@ class Class(base_entity.Class):
 		# Getting the Camera
 		self.cam = self.cont.actuators["cam"].owner
 		
-		print("Nanoshooter Initiated.")
+		#print("Nanoshooter Initiated.")
 	
 	def end(self):
 		self.LocalGame.Camera.clear()
@@ -48,7 +48,7 @@ class Class(base_entity.Class):
 		self.aimPoint = None
 		self.gameObject.endObject()
 		self.gameObject = None
-		print("Nanoshooter Entity Ended.")
+		#print("Nanoshooter Entity Ended.")
 		
 		
 		
@@ -95,17 +95,20 @@ class Class(base_entity.Class):
 			self.Resources.Tools.Damper.dampXY(self.gameObject, 20.0)
 		
 		if self.updateClock.get() > 0.1:
-			position = self.gameObject.position
-			self.throwData('CD', 'P', position)
-			print("UPDATED POSITION:", position)
+			CD = {}
+			CD['P'] = self.gameObject.position
+			CD['AP'] = self.gameObject.aimPoint.position
+			CD['S'] = False
+			self.throwData('CD', None, CD)
 	
 	def controllerDataReplicate(self):
 		"""
 		Replicates the GameState description of this entity's controller data to the local self's copy.
 		"""
-		#print("controllerDataReplicate")
-		pass
-
+		CD = self.getCD()
+		self.gameObject.position = CD['P']
+		self.aimPoint.position = CD['AP']
+		self.trackToAimPoint()
 
 	################################################
 	################################################

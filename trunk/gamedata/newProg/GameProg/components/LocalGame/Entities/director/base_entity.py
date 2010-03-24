@@ -4,10 +4,12 @@ class Class:
 	type = "base_entity"
 	
 	def weAreOwner(self):
-		if self.Admin.UID == self.getOwner():
-			return True
-		else:
-			return False
+		if self.Admin.UID == self.getOwner(): return True
+		else: return False
+	
+	def weAreController(self):
+		if self.Admin.UID == self.getController(): return True
+		else: return False
 	
 	class CLOCK:
 		def __init__(self):
