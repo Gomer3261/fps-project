@@ -24,6 +24,8 @@ class Class(base_entity.Class):
 	
 	
 	def initiate(self):
+		self.updateClock = self.CLOCK()
+	
 		# Initiating the gameObject
 		import GameLogic as gl
 		own = gl.getCurrentController().owner
@@ -91,6 +93,11 @@ class Class(base_entity.Class):
 			X, Y, Z = self.getDesiredLocalMovement()
 			self.gameObject.applyForce( (X,Y,Z), 0 )
 			self.Resources.Tools.Damper.dampXY(self.gameObject, 20.0)
+		
+		if self.updateClock.get() > 0.1:
+			position = self.gameObject.position
+			self.throwData('CD', 'P', position)
+			print("UPDATED POSITION:", position)
 	
 	def controllerDataReplicate(self):
 		"""

@@ -9,6 +9,16 @@ class Class:
 		else:
 			return False
 	
+	class CLOCK:
+		def __init__(self):
+			import time
+			self.time = time
+			self.lastTime = self.time.time()
+		def get(self):
+			return self.time.time() - self.lastTime
+		def reset(self, target=-2.0):
+			self.lastTime = self.time.time()-target
+	
 	################################################
 	################################################
 	################################################
