@@ -45,6 +45,9 @@ class GPS:
 	def getUIDByTicket(self, ticket):
 		return self.tcpServer.getSession(ticket).UID
 	
+	def setUID(self, ticket, UID):
+		self.tcpServer.getSession(ticket).UID = UID
+	
 	def getUdpAddrByTicket(self, ticket):
 		return self.tcpServer.getSession(ticket).udp
 		
@@ -76,6 +79,7 @@ class GPS:
 					Interface.out("Server: Got AU")
 					name = data
 					UID = GameState.addUser(ticket, name)
+					self.setUID(ticket, UID) # Setting their UID to their ticket (essential)
 					self.send(ticket, ('UID', UID))
 					Interface.out("Server: Sent UID")
 				allParcels.append(parcel)
@@ -120,8 +124,16 @@ class GPS:
 	def send(self, ticket, item):
 		self.tcpServer.sendTo(ticket, item)
 	
+	def sendToAll(self, item):
+		self.tcpServer.sendToAll(item)
+	
 	def throw(self, ticket, item):
 		addr = self.getUdpAddrByTicket(ticket); self.udpServer.throw(item, addr)
+	
+	def throwToAll(self, item):
+		for ticket in self.tcpServer.sessionStorage:
+			addr = self.getUdpAddrByTicket(ticket)
+			self.udpServer.throw(item, addr)
 	
 	def startShutdown(self):
 		self.tcpServer.startShutdown() # TCP servers need to be shutdown first.
