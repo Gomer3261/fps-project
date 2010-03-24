@@ -1,2 +1,1 @@
-Implemented UDP Component in the GPC, and Network now sends items to the host via GPC when we are not the host (and when we're connected, of course). Errors are expected, will test now.
-    /Chase.
+minor changes /Chase.
