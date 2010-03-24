@@ -68,7 +68,7 @@ class TIMER:
         self.lastTime = self.time.time()
     def get(self):
         return self.time.time() - self.lastTime
-    def reset(self, target=-2.0):
+    def reset(self, target=0.0):
         self.lastTime = self.time.time()-target
 
 

@@ -97,15 +97,15 @@ class Class(base_entity.Class):
 		if self.updateClock.get() > 0.1:
 			CD = {}
 			CD['P'] = self.gameObject.position
-			CD['AP'] = self.gameObject.aimPoint.position
+			CD['AP'] = self.aimPoint.position
 			CD['S'] = False
 			self.throwData('CD', None, CD)
+			self.updateClock.reset()
 	
 	def controllerDataReplicate(self):
 		"""
 		Replicates the GameState description of this entity's controller data to the local self's copy.
 		"""
-		CD = self.getCD()
 		self.gameObject.position = CD['P']
 		self.aimPoint.position = CD['AP']
 		self.trackToAimPoint()
@@ -130,10 +130,9 @@ class Class(base_entity.Class):
 			self.aimPoint.position = [0.0, 0.0, -100.0]
 	
 	def trackToAimPoint(self):
-		pos = self.mouseOver.hitPosition
-		
-		if pos[0] or pos[1] or pos[2]:
-			pos[2] = self.gameObject.position[2]
+		X, Y, Z = self.aimPoint.position
+		if X or Y:
+			Z = self.gameObject.position[2]
 			self.trackTo(pos)
 	
 	def getDesiredLocalMovement(self):
