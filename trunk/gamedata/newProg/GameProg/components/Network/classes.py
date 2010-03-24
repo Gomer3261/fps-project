@@ -191,6 +191,7 @@ class TCP_CLIENT:
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.settimeout(0.0); self.sock.setblocking(0)
 		
+		self.chkClock = comms.TIMER()
 		self.nextCHK = 1
 		self.CHK = 0
 		
@@ -219,9 +220,10 @@ class TCP_CLIENT:
 	
 	def doCHK(self):
 		if not self.CHK:
-			if self.timeoutClock.get() > 2.0:
+			if self.chkClock.get() > 2.0:
 				self.CHK = self.nextCHK; self.nextCHK += 1
 				self.send(('CHK', self.CHK))
+				self.chkClock.reset()
 	
 	def run(self):
 		items = []

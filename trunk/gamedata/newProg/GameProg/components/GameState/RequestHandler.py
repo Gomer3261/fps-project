@@ -72,7 +72,7 @@ class Class:
 			
 			if requestFlag == 'SD': # Shout Distro
 				for shout in requestData:
-					self.handleRequest(bundle, GameState, Network) # Holy recursive batman!
+					self.handleRequest(shout, GameState, Network) # Holy recursive batman!
 		except:
 			import traceback; traceback.print_exc()
 	
