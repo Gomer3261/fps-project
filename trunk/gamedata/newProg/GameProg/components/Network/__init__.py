@@ -39,7 +39,7 @@ class Class:
 		If we're running a server, then we will distribute the GameState (full, and in changes) to each client.
 		"""
 		if self.GPS:
-			if self.gameStateFullDistroClock.get() > 2.0:
+			if self.gameStateFullDistroClock.get() > 0.5:
 				self.GPS.sendToAll( ('GS', ('FD', GameState.contents)) )
 				self.gameStateFullDistroClock.reset()
 			if self.gameStateShoutDistroClock.get() > 0.1:
