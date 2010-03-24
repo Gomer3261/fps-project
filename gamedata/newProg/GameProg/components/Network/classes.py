@@ -359,15 +359,22 @@ class UDP_CLIENT:
 		import socket
 		self.socket = socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self.sock.settimeout(0.0); self.sock.setblocking(0)
 
-	def catch(self):
-		try:
-			package, addr = self.sock.recvfrom(4096)
-			import comms
-			item = comms.unpack(package)
-			return item, addr
-		except:
-			return None
+	def catch(self, max=10):
+		items = []
+		for i in range(max):
+			try:
+				package, addr = self.sock.recvfrom(4096)
+				if package:
+					import comms
+					item = comms.unpack(package)
+					items.append(item)
+				else:
+					break
+			except:
+				break
+		return items
 	
 	def throw(self, parcel):
 		import comms

@@ -86,7 +86,7 @@ class Class:
 		self.GPC = self.core.GPC(address)
 		self.GPC.initiateConnection()
 	
-	def outgoing(self, Admin, GameState):
+	def outgoing(self, Admin, GameState, Interface):
 		"""
 		Sends/throws all of the items in the out buffers to the Host.
 		If we are the host, then we just plop them straight into inBundles.
@@ -109,8 +109,13 @@ class Class:
 			self.throwOutBuffer = []
 		
 		else:
-			# We have to send/throw our crap through the GPC.
-			pass
+			if self.GPC:
+				for item in self.sendOutBuffer:
+					self.GPC.send(item)
+				for item in self.throwOutBuffer:
+					self.GPC.throw(item)
+			else:
+				Interface.out("Error: We're not the host, but there is no GPC?")
 	
 	def send(self, item):
 		"""
