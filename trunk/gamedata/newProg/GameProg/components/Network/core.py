@@ -184,7 +184,7 @@ class GPC:
 				if self.hostUID:
 					bundles.append( (self.hostUID, item) )
 			if justConnected: Interface.out("Client: We just connected as a client to the server!")
-			if staleOnConnection: Interface.out("Client: Failed to connect to host.")
+			if staleOnConnection: Interface.out("Client: Failed to connect to host: %s"%self.addressString)
 			if gotShutdown: Interface.out("Client: The server has shut down the connection.")
 			if hasGoneStale: Interface.out("Client: Connection to the server just went stale.")
 			if not self.tcpClient.active:
