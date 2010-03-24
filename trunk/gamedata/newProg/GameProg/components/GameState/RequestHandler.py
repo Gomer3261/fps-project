@@ -8,8 +8,8 @@ class Class:
 	Full Distro
 		('GS', ('FD', contents))
 	
-	Change Distro
-		('GS', ('CD', changes))
+	Shout Distro
+		('GS', ('SD', shouts))
 	
 	Entity Mod Item:
 		('GS', ('EM', changes))
@@ -34,6 +34,7 @@ class Class:
 	"""
 	
 	def __init__(self):
+		self.shouts = []
 		print("  GameState's Request Handler ready.")
 		pass
 	
@@ -68,6 +69,10 @@ class Class:
 			if requestFlag == 'FD': # Full Distro
 				print("GS Request Handler: GOT FD!")
 				self.handleFullDistroRequest(bundle, GameState, Network)
+			
+			if requestFlag == 'SD': # Shout Distro
+				for shout in requestData:
+					self.handleRequest(bundle, GameState, Network) # Holy recursive batman!
 		except:
 			import traceback; traceback.print_exc()
 	
@@ -75,7 +80,7 @@ class Class:
 	
 	def handleFullDistroRequest(self, bundle, GameState, Network):
 		"""
-		Handles an EM Request.
+		Handles an FD Request.
 		('GS', ('FD', contents))
 		"""
 		senderUID,item=bundle; flag,data=item
@@ -99,7 +104,7 @@ class Class:
 				GameState.contents['E'][EID][type][key] = value
 			else:
 				GameState.contents['E'][EID][type] = value
-		GameState.changes.append(request)
+		self.shouts.append(bundle)
 
 	
 	def handleActionRequest(self, bundle, GameState, Network):

@@ -28,6 +28,7 @@ class Class:
 		self.GPC = None # GamePlay Client
 		
 		self.gameStateFullDistroClock = self.comms.TIMER()
+		self.gameStateShoutDistroClock = self.comms.TIMER()
 		
 		print("Networking's ready.")
 	
@@ -40,8 +41,11 @@ class Class:
 		if self.GPS:
 			if self.gameStateFullDistroClock.get() > 2.0:
 				self.GPS.sendToAll( ('GS', ('FD', GameState.contents)) )
-				print("SENT FULL DISTRO!")
 				self.gameStateFullDistroClock.reset()
+			if self.gameStateShoutDistroClock.get() > 0.1:
+				self.GPS.sendToAll( ('GS', ('SD', GameState.RequestHandler.shouts)) )
+				GameState.RequestHandler.shouts = [] # We have to clear the shouts here
+				self.gameStateShoutDistroClock.reset()
 	
 	
 	def run(self, Admin, GameState, Interface):
@@ -50,6 +54,7 @@ class Class:
 		"""
 		try:
 			if self.GPS:
+				self.gameStateDistro(GameState)
 				parcels = self.GPS.run(Admin, GameState, Interface)
 				bundles = self.convertParcelsToBundles(parcels)
 				for bundle in bundles: self.inBundles.append(bundle); print('GPS Bundle:', bundle)
@@ -118,9 +123,6 @@ class Class:
 			for item in self.throwOutBuffer:
 				bundle = (Admin.UID, item)
 				self.inBundles.append(bundle)
-			self.sendOutBuffer = []
-			self.throwOutBuffer = []
-		
 		else:
 			if self.GPC:
 				for item in self.sendOutBuffer:
@@ -131,6 +133,8 @@ class Class:
 					print("GPC THREW:", item)
 			else:
 				Interface.out("Error: We're not the host, but there is no GPC?")
+		self.sendOutBuffer = []
+		self.throwOutBuffer = []
 	
 	def send(self, item):
 		"""
