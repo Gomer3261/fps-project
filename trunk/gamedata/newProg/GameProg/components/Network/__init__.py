@@ -39,12 +39,12 @@ class Class:
 			if self.GPS:
 				parcels = self.GPS.run(Admin, GameState, Interface)
 				bundles = self.convertParcelsToBundles(parcels)
-				for bundle in bundles: self.inBundles.append(bundle)
+				for bundle in bundles: self.inBundles.append(bundle); print('GPS Bundle:', bundle)
 				if not self.GPS.active: self.GPS = None; Interface.out("Gameplay server terminated peacefully.", console=True)
 			
 			if self.GPC:
 				bundles = self.GPC.run(Admin, Interface)
-				for bundle in bundles: self.inBundles.append(bundle)
+				for bundle in bundles: self.inBundles.append(bundle); print('GPC Bundle:', bundle)
 				if not self.GPC.active:
 					self.GPC = None
 					Interface.out("Gameplay client terminated.")
@@ -59,7 +59,7 @@ class Class:
 				ticket, item = parcel
 				UID = self.GPS.getUIDByTicket(ticket)
 				bundle = (UID, item); bundles.append(bundle)
-			except: pass
+			except: import traceback; traceback.print_exc()
 		return bundles
 	
 	
@@ -112,8 +112,10 @@ class Class:
 			if self.GPC:
 				for item in self.sendOutBuffer:
 					self.GPC.send(item)
+					print("GPC SENT:", item)
 				for item in self.throwOutBuffer:
 					self.GPC.throw(item)
+					print("GPC THREW:", item)
 			else:
 				Interface.out("Error: We're not the host, but there is no GPC?")
 	

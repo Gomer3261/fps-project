@@ -34,8 +34,8 @@ def initiate(cont):
 		GI['host'] = False
 		GI['server'] = False
 		GI['username'] = "-NoName-"
-		GI['address'] = "chasemoskal.dyndns.org:3207/3208"
-		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, 3207, 3208) )
+		GI['address'] = "chasemoskal.dyndns.org:3200/3200"
+		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, 3200, 3200) )
 		GameLogic.globalDict['gameInfo'] = GI
 		
 		###
@@ -78,7 +78,7 @@ def run(cont):
 		GameState.run(Admin, Network) # Runs the GameState: represents the game world based on changes it finds in the Network in buffer.
 		LocalGame.run(Admin, GameState, Network, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		
-		if Network.inBundles: print(Network.inBundles)
+		#if Network.inBundles: print(Network.inBundles)
 		Network.inBundles = [] # Clearing the inBundles buffer
 		Network.outgoing(Admin, GameState, Interface) # Asynchronously sends out data that has accumulated in the buffers.
 	
