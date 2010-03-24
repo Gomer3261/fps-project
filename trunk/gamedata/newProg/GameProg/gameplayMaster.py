@@ -78,8 +78,9 @@ def run(cont):
 		GameState.run(Admin, Network) # Runs the GameState: represents the game world based on changes it finds in the Network in buffer.
 		LocalGame.run(Admin, GameState, Network, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		
+		if Network.inBundles: print(Network.inBundles)
 		Network.inBundles = [] # Clearing the inBundles buffer
-		Network.outgoing(Admin, GameState) # Asynchronously sends out data that has accumulated in the buffers.
+		Network.outgoing(Admin, GameState, Interface) # Asynchronously sends out data that has accumulated in the buffers.
 	
 	
 	

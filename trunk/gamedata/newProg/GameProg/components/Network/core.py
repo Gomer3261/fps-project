@@ -142,6 +142,7 @@ class GPC:
 		udpAddress = ("", udpPort)
 		
 		self.tcpClient = self.classes.TCP_CLIENT(tcpAddress)
+		self.udpClient = self.classes.UDP_CLIENT(udpAddress)
 		self.ticket = 0
 		self.hostUID = 0
 	
@@ -151,7 +152,19 @@ class GPC:
 	def send(self, item):
 		self.tcpClient.send(item)
 	
+	def throw(self, item):
+		if self.ticket:
+			self.udpClient.throw( (self.ticket, item) )
+		else:
+			print("GPC: Cannot throw; did not obtain ticket yet.")
+	
 	def run(self, Admin, Interface):
+		bundles = self.runTcp(Admin, Interface)
+		udpBundles = self.runUdp(Admin, Interface)
+		for udpBundle in udpBundles: bundles.append(udpBundle)
+		return bundles
+	
+	def runTcp(self, Admin, Interface):
 		bundles = []
 		if self.tcpClient:
 			items, justConnected, staleOnConnection, gotShutdown, hasGoneStale = self.tcpClient.run()
@@ -162,7 +175,8 @@ class GPC:
 					Interface.out("Client: Got GREET.")
 					self.ticket, self.hostUID = data
 					self.send( ('AU', Admin.getGameInfo()['username']) )
-					Interface.out("Client: Sent AU.")
+					self.throw( ('X', 0) )
+					Interface.out("Client: Sent AU and threw X.")
 				if flag == "UID":
 					Interface.out("Client: Got UID")
 					Admin.UID = data
@@ -177,8 +191,18 @@ class GPC:
 				self.terminate()
 		return bundles
 	
+	def runUdp(self, Admin, Interface):
+		bundles = []
+		if self.udpClient:
+			items = self.udpClient.catch()
+			for item in items:
+				bundles.append( (self.hostUID, item) )
+		return bundles
+			
+	
 	def terminate(self):
-		self.tcpServer = None
+		self.tcpClient = None
+		self.udpClient.terminate(); self.udpClient = None
 		self.active = False
 
 
