@@ -25,6 +25,8 @@ class Class(base_entity.Class):
 	
 	def initiate(self):
 		self.updateClock = self.CLOCK()
+		targetPosition = [0.0, 0.0, 0.0] # These are used for
+		targetAimPoint = [0.0, 0.0, 0.0] # Interpolation.
 	
 		# Initiating the gameObject
 		import GameLogic as gl
@@ -62,14 +64,13 @@ class Class(base_entity.Class):
 		"""
 		Simulates owner data, and updates the changes to the GameState via Network.
 		"""
-		#print("ownerDataSimulate")
+		# Delete this entity when we run out of health?
 		pass
 	
 	def ownerDataReplicate(self):
 		"""
 		Replicates the GameState description of this entity's owner data.
 		"""
-		#print("ownerDataReplicate")
 		pass
 	
 	################################################
@@ -108,17 +109,39 @@ class Class(base_entity.Class):
 		"""
 		try:
 			CD = self.getCD()
-			self.gameObject.position = CD['P']
-			self.aimPoint.position = CD['AP']
-			self.trackToAimPoint()
-		except:
-			pass
+			self.targetPosition = CD['P']
+			self.targetAimPoint = CD['AP']
+		except: pass
+		self.gameObject.position = self.interpolate(self.gameObject.position, self.targetPosition, 20.0)
+		self.aimPoint.position = self.interpolate(self.aimPoint.position, self.targetAimPoint, 20.0)
+		self.trackToAimPoint()
 
 	################################################
 	################################################
 	################################################
 	################################################
-
+	
+	def interpolate(self, origin, target, percent=20.0):
+		"""
+		Interpolates two positions by a percentage; used for smoothing motion between
+		positional updates.
+		"""
+		oX, oY, oZ = origin
+		tX, tY, yZ = origin
+		
+		dX = tX - oX # Getting the difference between them
+		dY = tY - oY
+		dZ = tZ - oZ
+		
+		fX = dX*(percent/100.0) # Getting a fraction of the difference
+		fY = dY*(percent/100.0)
+		fZ = dZ*(percent/100.0)
+		
+		nX = oX + fX # Applying the fraction of difference to the origin
+		nY = oY + fY
+		nZ = oZ + fZ
+		
+		result = [nX, nY, nZ]
 	
 	def suicideControlLoop(self):
 		if not self.Interface.Terminal.active:

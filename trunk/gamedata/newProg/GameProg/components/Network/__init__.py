@@ -48,11 +48,34 @@ class Class:
 				self.gameStateShoutDistroClock.reset()
 	
 	
+	
+	def removeGameStateUsersWithNoConnection(self, GameState, Admin):
+		for UID in GameState.contents['U']:
+			noConnection = False
+			userData = GameState.contents['U'][UID]
+			ticket = userData['T']
+			if self.GPS:
+				session = self.GPS.tcpServer.getSession(ticket)
+				if session:
+					if not session.clientSock:
+						noConnection = True
+				else:
+					noConnection = True
+			else:
+				noConnection = True
+			if noConnection:
+				if UID != Admin.UID:
+					GameState.removeUser(UID)
+					
+	
+	
 	def run(self, Admin, GameState, Interface):
 		"""
 		Maintains GPS and GPC by running them. If they exist, that is.
 		"""
 		try:
+			self.removeGameStateUsersWithNoConnection(GameState, Admin)
+			
 			if self.GPS:
 				self.gameStateDistro(GameState)
 				parcels = self.GPS.run(Admin, GameState, Interface)
