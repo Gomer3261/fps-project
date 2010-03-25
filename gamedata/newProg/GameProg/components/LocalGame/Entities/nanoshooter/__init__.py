@@ -127,7 +127,7 @@ class Class(base_entity.Class):
 		positional updates.
 		"""
 		oX, oY, oZ = origin
-		tX, tY, tZ = origin
+		tX, tY, tZ = target
 		
 		dX = tX - oX # Getting the difference between them
 		dY = tY - oY
