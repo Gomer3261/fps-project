@@ -98,11 +98,14 @@ class Class:
 		
 		changes = requestData
 		for change in changes:
-			EID, type, key, value = change
-			if key:
-				GameState.contents['E'][EID][type][key] = value
-			else:
-				GameState.contents['E'][EID][type] = value
+			try:
+				EID, type, key, value = change
+				if key:
+					GameState.contents['E'][EID][type][key] = value
+				else:
+					GameState.contents['E'][EID][type] = value
+			except:
+				pass
 		self.shouts.append(bundle)
 
 	
