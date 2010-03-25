@@ -20,8 +20,6 @@ class Class:
 		self.RequestHandler.run(self, self.Network)
 		self.replicateGameState(self.GameState)
 		self.runEntities()
-		if Admin.weAreHost():
-			self.removeEntitiesWithNonExistantUsers()
 	
 	
 	def giveMemo(self, EID, memoData):
@@ -67,7 +65,7 @@ class Class:
 	# Removing Entities
 	def removeEntity(self, EID):
 		self.entities[EID].end()
-		del self.entities[EID]
+		self.entities.pop(EID)
 	
 	
 	# Running Entities
@@ -80,18 +78,6 @@ class Class:
 				print("\nError in entity %s (%s):" % (EID, self.entities[EID].type))
 				traceback.print_exc()
 				print(" ")
-	
-	# Remove entities with non-existant users as controller/owner
-	def removeEntitiesWithNonExistantUsers(self):
-		toRemove = []
-		for EID in self.entities:
-			entity = self.entities[EID]
-			owner = entity.getOwner()
-			controller = entity.getController()
-			if (not owner in self.GameState.contents['U']) or (not controller in self.GameState.contents['U']):
-				toRemove.append(EID)
-		for EID in toRemove:
-			self.removeEntity(EID)
 
 
 

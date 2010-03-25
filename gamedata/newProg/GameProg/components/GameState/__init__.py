@@ -18,12 +18,25 @@ class Class:
 	
 	def run(self, Admin, Network):
 		self.Admin = Admin
+		if Admin.weAreHost(): self.removeEntitiesWithNonExistantUsers()
 		self.RequestHandler.run(self, Network) # Interprets requests from Network...
 	
 	
 	### ================================================
 	### Public Methods
 	### ================================================
+	
+	# Remove entities with non-existant users as controller/owner
+	def removeEntitiesWithNonExistantUsers(self):
+		toRemove = []
+		for EID in self.contents['E']:
+			entity = self.contents['E'][EID]
+			owner = entity['O']
+			controller = entity['C']
+			if (not owner in self.contents['U']) or (not controller in self.contents['U']):
+				toRemove.append(EID)
+		for EID in toRemove:
+			self.removeEntity(EID)
 	
 	def declareHost(self, UID):
 		self.contents['owner'] = UID

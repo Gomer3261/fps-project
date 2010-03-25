@@ -42,10 +42,11 @@ class Class:
 			if self.gameStateFullDistroClock.get() > 0.5:
 				self.GPS.sendToAll( ('GS', ('FD', GameState.contents)) )
 				self.gameStateFullDistroClock.reset()
-			if self.gameStateShoutDistroClock.get() > 0.1:
+			#if self.gameStateShoutDistroClock.get() > 0.1:
+			if GameState.RequestHandler.shouts:
 				self.GPS.sendToAll( ('GS', ('SD', GameState.RequestHandler.shouts)) )
 				GameState.RequestHandler.shouts = [] # We have to clear the shouts here
-				self.gameStateShoutDistroClock.reset()
+			#self.gameStateShoutDistroClock.reset()
 	
 	
 	

@@ -102,7 +102,6 @@ class TCP_SERVER:
 				#print("New connection from (%s), ticket=%s."%(clientSock.IP, ticket))
 				newConnections.append( (clientSock.IP, ticket) )
 		
-		staleSessions = []
 		for ticket in self.sessionStorage.sessions:
 			session = self.sessionStorage.sessions[ticket]
 			if session.clientSock:
@@ -121,7 +120,6 @@ class TCP_SERVER:
 		
 		for staleSession in staleSessions:
 			self.sessionStorage.deleteSession(staleSession)
-			staleSessions.append( staleSession )
 		
 		if self.shutdown:
 			clientSocks = self.countClientSocks()

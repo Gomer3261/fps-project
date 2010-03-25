@@ -73,7 +73,7 @@ class GPS:
 				ticket, item = parcel
 				flag, data = item
 				if flag == 'CHK': # This is a check.
-					Interface.out("Server: TCP CHK handled.")
+					#Interface.out("Server: TCP CHK handled.")
 					self.send(ticket, item) # We echo those back.
 				if flag == 'AU': # Add User Request (to the GameState)
 					Interface.out("Server: Got AU")
@@ -131,7 +131,7 @@ class GPS:
 		addr = self.getUdpAddrByTicket(ticket); self.udpServer.throw(item, addr)
 	
 	def throwToAll(self, item):
-		for ticket in self.tcpServer.sessionStorage:
+		for ticket in self.tcpServer.sessionStorage.sessions:
 			addr = self.getUdpAddrByTicket(ticket)
 			self.udpServer.throw(item, addr)
 	
