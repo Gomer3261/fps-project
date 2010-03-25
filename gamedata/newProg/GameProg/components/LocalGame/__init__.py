@@ -20,7 +20,8 @@ class Class:
 		self.RequestHandler.run(self, self.Network)
 		self.replicateGameState(self.GameState)
 		self.runEntities()
-		self.removeEntitiesWithNonExistantUsers()
+		if Admin.weAreHost():
+			self.removeEntitiesWithNonExistantUsers()
 	
 	
 	def giveMemo(self, EID, memoData):

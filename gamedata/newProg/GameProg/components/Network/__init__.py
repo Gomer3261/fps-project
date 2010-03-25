@@ -77,7 +77,8 @@ class Class:
 		Maintains GPS and GPC by running them. If they exist, that is.
 		"""
 		try:
-			self.removeGameStateUsersWithNoConnection(GameState, Admin)
+			if Admin.weAreHost():
+				self.removeGameStateUsersWithNoConnection(GameState, Admin)
 			
 			if self.GPS:
 				self.gameStateDistro(GameState)
