@@ -23,6 +23,10 @@ class Class:
 		import GameLogic
 		return GameLogic.globalDict['gameInfo']
 	
+	def weAreHost(self):
+		GI = self.getGameInfo()
+		return GI['host']
+	
 	
 	
 	

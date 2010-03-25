@@ -10,6 +10,9 @@ class Class():
 		"""
 		self.slab.Interface.out( str(self.slab.GameState.contents), 1, 0 )
 	
+	def sessions(self):
+		self.slab.Interface.out( self.slab.Network.GPS.tcpServer.sessionStorage )
+	
 	def endServer(self):
 		self.slab.Network.endServer()
 	
