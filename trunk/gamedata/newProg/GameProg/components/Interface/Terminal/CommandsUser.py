@@ -27,7 +27,7 @@ Precede your input with "/" to designate it as a python command or it will be se
 		else:
 			self.output(self.helpText)
 	
-	def sendText(self, text):
+	def text(self, text):
 		self.slab.Network.send( ('TXT', (self.slab.Admin.UID, text)) ) # Sending Text
 	
 	def spawn(self, entityType='explorer'):

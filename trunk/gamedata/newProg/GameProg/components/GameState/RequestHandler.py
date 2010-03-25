@@ -67,7 +67,6 @@ class Class:
 				self.handleActionRequest(bundle, GameState, Network)
 			
 			if requestFlag == 'FD': # Full Distro
-				print("GS Request Handler: GOT FD!")
 				self.handleFullDistroRequest(bundle, GameState, Network)
 			
 			if requestFlag == 'SD': # Shout Distro
