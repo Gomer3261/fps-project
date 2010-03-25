@@ -1,2 +1,1 @@
-Now we can have as many nanoshooters as we want.
-    /Chase.
+Minor fix. /Chase.
