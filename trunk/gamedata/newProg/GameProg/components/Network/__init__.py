@@ -50,6 +50,7 @@ class Class:
 	
 	
 	def removeGameStateUsersWithNoConnection(self, GameState, Admin):
+		toRemove = []
 		for UID in GameState.contents['U']:
 			noConnection = False
 			userData = GameState.contents['U'][UID]
@@ -65,7 +66,9 @@ class Class:
 				noConnection = True
 			if noConnection:
 				if UID != Admin.UID:
-					GameState.removeUser(UID)
+					toRemove.append(UID)
+		for UID in toRemove:
+			GameState.removeUser(UID)
 					
 	
 	

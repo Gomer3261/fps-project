@@ -25,8 +25,8 @@ class Class(base_entity.Class):
 	
 	def initiate(self):
 		self.updateClock = self.CLOCK()
-		targetPosition = [0.0, 0.0, 0.0] # These are used for
-		targetAimPoint = [0.0, 0.0, 0.0] # Interpolation.
+		self.targetPosition = [0.0, 0.0, 0.0] # These are used for
+		self.targetAimPoint = [0.0, 0.0, 0.0] # Interpolation.
 	
 		# Initiating the gameObject
 		import GameLogic as gl
@@ -127,7 +127,7 @@ class Class(base_entity.Class):
 		positional updates.
 		"""
 		oX, oY, oZ = origin
-		tX, tY, yZ = origin
+		tX, tY, tZ = origin
 		
 		dX = tX - oX # Getting the difference between them
 		dY = tY - oY
@@ -142,6 +142,7 @@ class Class(base_entity.Class):
 		nZ = oZ + fZ
 		
 		result = [nX, nY, nZ]
+		return result
 	
 	def suicideControlLoop(self):
 		if not self.Interface.Terminal.active:
