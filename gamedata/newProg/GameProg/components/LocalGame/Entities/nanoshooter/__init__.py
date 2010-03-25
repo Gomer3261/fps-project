@@ -112,8 +112,8 @@ class Class(base_entity.Class):
 			self.targetPosition = CD['P']
 			self.targetAimPoint = CD['AP']
 		except: pass
-		self.gameObject.position = self.interpolate(self.gameObject.position, self.targetPosition, 20.0)
-		self.aimPoint.position = self.interpolate(self.aimPoint.position, self.targetAimPoint, 20.0)
+		self.gameObject.position = self.interpolate(self.gameObject.position, self.targetPosition, 15.0)
+		self.aimPoint.position = self.interpolate(self.aimPoint.position, self.targetAimPoint, 15.0)
 		self.trackToAimPoint()
 
 	################################################

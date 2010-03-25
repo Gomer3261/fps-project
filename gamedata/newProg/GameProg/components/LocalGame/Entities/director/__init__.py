@@ -45,8 +45,8 @@ class Class(base_entity.Class):
 				if memoFlag == 'SE':
 					entityType, UIDs, args = memoData
 					entitiesOfThatType = self.GameState.getEIDsByType(entityType)
-					if not entitiesOfThatType:
-						self.Network.send( ('GS', ('AR', ('SE', (entityType, UIDs, args)))) )
+					#if not entitiesOfThatType:
+					self.Network.send( ('GS', ('AR', ('SE', (entityType, UIDs, args)))) )
 				if memoFlag == 'RE':
 					EID = memoData
 					if EID != self.EID:
