@@ -24,6 +24,14 @@ class Class:
 		"""
 		self.Terminal.handleOpenClose()
 	
+	def displayTexts(self):
+		for bundle in self.slab.Network.inBundles:
+			fwdUID, item = bundle
+			flag, data = item
+			if flag == 'TXT':
+				UID, text = data
+				self.out("%s: %s"%(UID,text), note=True)
+	
 	def out(self, text, terminal=True, note=False, console=False):
 		"""
 		Basic output method. Outputs to the terminal, and to notifications by default.

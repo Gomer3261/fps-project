@@ -1,3 +1,9 @@
-Network functionality is fully implemented (though certainly not fully tested). At this point, the entities are pretty much the only objects that need any coding to give this game fully functional online multiplayer gameplay. Of course, much testing and many tweaks must be made to Network and the other components to make it good and fun :D
-Depending on how things go, we _might_ be able to test some form of online gameplay this weekend. We'll see.
+I added a bunch of features while sipping my strawberry frappuccino and daintily munching on my apple fritter at Starbucks -- when I was supposed to be in chemistry class. The point that I'm getting at, is that all of these features are completely untested because I didn't have access to two computers and an internet conection.
+
+- Interpolation for Nanoshooter Entity
+- Network removes GameState users on disconnect
+- LocalGame removes entities that have non-existant owners/controllers.
+- Temporary text-chat added.
+
+I'm going to test and debug all of this now.
     /Chase.

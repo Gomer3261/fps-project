@@ -75,6 +75,10 @@ class Class:
 		self.contents["U"][UID] = U
 		return UID
 	
+	def removeUser(self, UID):
+		del self.contents['U'][UID]
+		print("GS: User (%s) Removed."%UID)
+	
 	
 	def getEntity(self, EID):
 		return self.contents['E'][EID]
