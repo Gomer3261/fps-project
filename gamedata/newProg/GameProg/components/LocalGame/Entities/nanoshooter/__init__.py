@@ -24,7 +24,8 @@ class Class(base_entity.Class):
 	
 	
 	def initiate(self):
-		ARGS = self.getOD()['ARGS']
+		try: ARGS = self.getOD()['ARGS']
+		except: ARGS = {}
 		self.updateClock = self.CLOCK()
 		self.fireRateClock = self.CLOCK()
 		self.targetPosition = [0.0, 0.0, 0.0] # These are used for

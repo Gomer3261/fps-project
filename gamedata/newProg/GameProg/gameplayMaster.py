@@ -37,7 +37,7 @@ def initiate(cont):
 		GI['server'] = False
 		
 		address = "chasemoskal.dyndns.org"
-		tcpPort, udpPort = 3201, 3201
+		tcpPort, udpPort = 3202, 3202
 		
 		GI['address'] = slab.Network.comms.makeAddressString( (address, tcpPort, udpPort) )
 		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, tcpPort, udpPort) )
