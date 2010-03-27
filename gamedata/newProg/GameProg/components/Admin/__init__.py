@@ -27,6 +27,13 @@ class Class:
 		GI = self.getGameInfo()
 		return GI['host']
 	
+	def getHostUID(self):
+		if self.weAreHost:
+			return self.UID
+		else:
+			if self.slab.Network.GPC: return self.slab.Network.GPC.hostUID
+		return 0
+	
 	
 	
 	

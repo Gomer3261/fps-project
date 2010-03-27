@@ -76,10 +76,12 @@ class Class(base_entity.Class):
 	
 	def handleMemos(self):
 		for memo in self.memos:
+			print("memo handled at %s:"%self.EID, memo)
 			memoFlag, memoData = memo
 			if memoFlag == 'DMG':
 				damage = memoData
 				self.HP -= damage
+				print("HP: %s"%self.HP)
 		self.memos = []
 		
 		
@@ -96,14 +98,16 @@ class Class(base_entity.Class):
 		# Delete this entity when we run out of health?
 		if self.HP <= 0: self.Network.send( ('GS', ('AR', ('RE', self.EID))) )
 		OD = self.getOD()
-		OD['HP'] = self.HP
-		self.throwData('OD', None, OD)
+		if OD['HP'] != self.HP:
+			OD['HP'] = self.HP
+			self.throwData('OD', None, OD)
 	
 	def ownerDataReplicate(self):
 		"""
 		Replicates the GameState description of this entity's owner data.
 		"""
-		pass
+		OD = self.getOD()
+		self.HP = OD['HP']
 	
 	################################################
 	################################################
@@ -186,7 +190,7 @@ class Class(base_entity.Class):
 			if "damageable" in obj:
 				EID = obj['EID']
 				self.sendMemo( EID, ("DMG", damage) )
-				#print('NS: DAMAGE_MEMO_SENT!')
+				print('NS: Damage memo sent to: %s'%EID)
 	
 	def getProjectedPoint(self, distance):
 		o = self.gameObject.orientation
