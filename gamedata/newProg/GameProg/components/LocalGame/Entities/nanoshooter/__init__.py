@@ -16,7 +16,7 @@ class Class(base_entity.Class):
 		CD = {}
 		CD['P'] = [0.0, 0.0, 0.0] # Position
 		CD['AP'] = [0.0, 0.0, 0.0] # AimPoint
-		CD['S'] = False # Shooting Status
+		CD['S'] = 0 # Shoots fired by controller
 		
 		self.sendData('OD', None, OD)
 		self.sendData('CD', None, CD)
@@ -24,9 +24,14 @@ class Class(base_entity.Class):
 	
 	
 	def initiate(self):
+		ARGS = self.getOD()['ARGS']
 		self.updateClock = self.CLOCK()
+		self.fireRateClock = self.CLOCK()
 		self.targetPosition = [0.0, 0.0, 0.0] # These are used for
 		self.targetAimPoint = [0.0, 0.0, 0.0] # Interpolation.
+		self.shotsFired = 0 # Local copy of number of shots fired
+		
+		if 'S' in ARGS: self.shotsFired = ARGS['S']
 	
 		# Initiating the gameObject
 		import GameLogic as gl
@@ -34,6 +39,12 @@ class Class(base_entity.Class):
 		self.gameObject = gl.getCurrentScene().addObject("nanoshooter", own)
 		# Initiating the Aimpoint
 		self.aimPoint = gl.getCurrentScene().addObject("ns_aimPoint", own)
+		
+		# If we are not the controller, the aimpoint is not visible.
+		if not self.weAreController():
+			self.aimPoint.visible = False
+		
+		self.gameObject['dyn'] = True
 		
 		# Getting the Controller
 		self.cont = self.gameObject.controllers[0]
@@ -89,17 +100,25 @@ class Class(base_entity.Class):
 		self.displayAimPoint()
 		self.trackToAimPoint()
 		
+		CD = self.getCD()
+		OD = self.getOD()
+		
 		# Movement can only occur when the terminal is not active.
 		if not self.Interface.Terminal.active:
 			X, Y, Z = self.getDesiredLocalMovement()
 			self.gameObject.applyForce( (X,Y,Z), 0 )
 			self.Resources.Tools.Damper.dampXY(self.gameObject, 20.0)
 		
+		if self.Interface.Inputs.Controller.getStatus("use") == 2:
+			if self.fireRateClock.get() > (1.0/10.0):
+				self.shoot()
+				self.shotsFired += 1
+				self.fireRateClock.reset()
+		
 		if self.updateClock.get() > 0.1:
-			CD = {}
 			CD['P'] = self.gameObject.position
 			CD['AP'] = self.aimPoint.position
-			CD['S'] = False
+			CD['S'] = self.shotsFired
 			self.throwData('CD', None, CD)
 			self.updateClock.reset()
 	
@@ -107,19 +126,43 @@ class Class(base_entity.Class):
 		"""
 		Replicates the GameState description of this entity's controller data to the local self's copy.
 		"""
+		shotsWeNeedToFire = 0
 		try:
 			CD = self.getCD()
 			self.targetPosition = CD['P']
 			self.targetAimPoint = CD['AP']
+			shotsWeNeedToFire = CD['S'] - self.shotsFired
 		except: pass
 		self.gameObject.position = self.interpolate(self.gameObject.position, self.targetPosition, 15.0)
 		self.aimPoint.position = self.interpolate(self.aimPoint.position, self.targetAimPoint, 15.0)
 		self.trackToAimPoint()
+		if shotsWeNeedToFire > 0:
+			if self.fireRateClock.get() > (1.0/10.0):
+				self.shoot()
+				self.shotsFired += 1
+				self.fireRateClock.reset()
 
 	################################################
 	################################################
 	################################################
 	################################################
+	
+	def shoot(self, range=500.0):
+		import Rasterizer
+		projectedPoint = self.getProjectedPoint(range)
+		obj, point, normal = self.gameObject.rayCast(self.gameObject.position, projectedPoint)
+		if point:
+			Rasterizer.drawLine(self.gameObject.position, point, [1.0, 0.5, 0.0])
+		else:
+			Rasterizer.drawLine(self.gameObject.position, projectedPoint, [1.0, 0.5, 0.0])
+	
+	def getProjectedPoint(self, distance):
+		o = self.gameObject.orientation
+		Yp = [ o[0][1], o[1][1], o[2][1] ]
+		return self.multiplyPosition(Yp, distance)
+	
+	def multiplyPosition(self, p, x):
+		return [ p[0]*x, p[1]*x, p[2]*x ]
 	
 	def interpolate(self, origin, target, percent=20.0):
 		"""
