@@ -153,7 +153,9 @@ class Class(base_entity.Class):
 		projectedPoint = self.getProjectedPoint(range)
 		obj, point, normal = self.gameObject.rayCast(self.gameObject.position, projectedPoint)
 		if point:
+			print ("OBJ", obj)
 			Rasterizer.drawLine(self.gameObject.position, point, [1.0, 0.5, 0.0])
+			print("POINT", point)
 		else:
 			Rasterizer.drawLine(self.gameObject.position, projectedPoint, [1.0, 0.5, 0.0])
 	
