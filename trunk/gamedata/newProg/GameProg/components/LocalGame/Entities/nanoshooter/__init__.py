@@ -26,18 +26,28 @@ class Class(base_entity.Class):
 	def initiate(self):
 		try: ARGS = self.getOD()['ARGS']
 		except: ARGS = {}
+		
 		self.updateClock = self.CLOCK()
 		self.fireRateClock = self.CLOCK()
+		
 		self.targetPosition = [0.0, 0.0, 0.0] # These are used for
 		self.targetAimPoint = [0.0, 0.0, 0.0] # Interpolation.
-		self.shotsFired = 0 # Local copy of number of shots fired
 		
+		# Local CD
+		self.shotsFired = 0 # Local copy of number of shots fired
 		if 'S' in ARGS: self.shotsFired = ARGS['S']
-	
-		# Initiating the gameObject
+		
+		# Local OD
+		self.HP = 100
+		
 		import GameLogic as gl
 		own = gl.getCurrentController().owner
+		
+		# Initiating the gameObject
 		self.gameObject = gl.getCurrentScene().addObject("nanoshooter", own)
+		self.gameObject['EID'] = self.EID
+		self.gameObject['damageable'] = True
+		
 		# Initiating the Aimpoint
 		self.aimPoint = gl.getCurrentScene().addObject("ns_aimPoint", own)
 		
@@ -63,7 +73,14 @@ class Class(base_entity.Class):
 		self.gameObject.endObject()
 		self.gameObject = None
 		#print("Nanoshooter Entity Ended.")
-		
+	
+	def handleMemos(self):
+		for memo in self.memos:
+			memoFlag, memoData = memo
+			if memoFlag == 'DMG':
+				damage = memoData
+				self.HP -= damage
+		self.memos = []
 		
 		
 	################################################
@@ -77,7 +94,10 @@ class Class(base_entity.Class):
 		Simulates owner data, and updates the changes to the GameState via Network.
 		"""
 		# Delete this entity when we run out of health?
-		pass
+		if self.HP <= 0: self.Network.send( ('GS', ('AR', ('RE', self.EID))) )
+		OD = self.getOD()
+		OD['HP'] = self.HP
+		self.throwData('OD', None, OD)
 	
 	def ownerDataReplicate(self):
 		"""
@@ -112,6 +132,7 @@ class Class(base_entity.Class):
 		
 		if self.Interface.Inputs.Controller.getStatus("use") == 2:
 			if self.fireRateClock.get() > (1.0/10.0):
+				self.fireForEffect()
 				self.shoot()
 				self.shotsFired += 1
 				self.fireRateClock.reset()
@@ -139,7 +160,7 @@ class Class(base_entity.Class):
 		self.trackToAimPoint()
 		if shotsWeNeedToFire > 0:
 			if self.fireRateClock.get() > (1.0/10.0):
-				self.shoot()
+				self.fireForEffect()
 				self.shotsFired += 1
 				self.fireRateClock.reset()
 
@@ -148,7 +169,7 @@ class Class(base_entity.Class):
 	################################################
 	################################################
 	
-	def shoot(self, range=500.0):
+	def fireForEffect(self, range=500.0):
 		import Rasterizer
 		projectedPoint = self.getProjectedPoint(range)
 		obj, point, normal = self.gameObject.rayCast(projectedPoint, self.gameObject.position)
@@ -156,6 +177,16 @@ class Class(base_entity.Class):
 			Rasterizer.drawLine(self.gameObject.position, point, [1.0, 0.5, 0.0])
 		else:
 			Rasterizer.drawLine(self.gameObject.position, projectedPoint, [1.0, 0.5, 0.0])
+	
+	def shoot(self, range=500.0, damage=10):
+		import Rasterizer
+		projectedPoint = self.getProjectedPoint(range)
+		obj, point, normal = self.gameObject.rayCast(projectedPoint, self.gameObject.position)
+		if obj:
+			if "damageable" in obj:
+				EID = obj['EID']
+				self.sendMemo( EID, ("DMG", damage) )
+				#print('NS: DAMAGE_MEMO_SENT!')
 	
 	def getProjectedPoint(self, distance):
 		o = self.gameObject.orientation
