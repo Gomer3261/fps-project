@@ -18,19 +18,25 @@ class Class:
 		
 		print("Interface -- check.")
 	
-	def run(self):
+	def run(self, Network, GameState):
 		"""
 		handles controlling the terminal scene.
 		"""
 		self.Terminal.handleOpenClose()
+		self.handleTexts(Network, GameState)
 	
-	def displayTexts(self):
-		for bundle in self.slab.Network.inBundles:
+	def handleTexts(self, Network, GameState):
+		for bundle in Network.inBundles:
 			fwdUID, item = bundle
 			flag, data = item
 			if flag == 'TXT':
 				UID, text = data
-				self.out("%s: %s"%(UID,text), note=True)
+				self.displayText(UID, text, GameState)
+				if Network.GPS: Network.GPS.sendToAll( ('TXT', (UID, text)) )
+	
+	def displayText(self, UID, text, GameState):
+		name = GameState.getUserName(UID)
+		self.out("%s: %s"%(name, text), note=True)
 	
 	def out(self, text, terminal=True, note=False, console=False):
 		"""
