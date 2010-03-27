@@ -14,6 +14,7 @@ class Class:
 		self.AdminInfo["director"]["index"] = 0 # current spot in the playlist.
 		self.AdminInfo["director"]["intermission"] = None # None=In Game, float=intermission (time left).
 		"""
+		self.slab = slab
 		self.gameInitiated = False
 		self.UID = 0 # We don't have a UID!
 		print("Admin's good.")
@@ -28,7 +29,7 @@ class Class:
 		return GI['host']
 	
 	def getHostUID(self):
-		if self.weAreHost:
+		if self.weAreHost():
 			return self.UID
 		else:
 			if self.slab.Network.GPC: return self.slab.Network.GPC.hostUID
