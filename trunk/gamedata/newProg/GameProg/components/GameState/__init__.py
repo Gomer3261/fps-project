@@ -26,6 +26,12 @@ class Class:
 	### Public Methods
 	### ================================================
 	
+	def getUserName(self, UID):
+		try:
+			return self.contents['U'][UID]['N']
+		except:
+			return "-ErrorGettingUserName-"
+	
 	# Remove entities with non-existant users as controller/owner
 	def removeEntitiesWithNonExistantUsers(self):
 		toRemove = []

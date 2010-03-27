@@ -67,7 +67,8 @@ class Class:
 				if gameInfo['host']:
 					# First, we must obtain a UID, then declare that UID the owner and
 					# controller of the GameState.
-					UID = GameState.addUser(None) # Adding a user with no ticket signifies that the user is local.
+					username = gameInfo['username']
+					UID = GameState.addUser(0, username) # Adding a user with no ticket signifies that the user is local.
 					GameState.declareHost(UID)
 					self.UID = UID
 					

@@ -30,12 +30,22 @@ def initiate(cont):
 		
 		# Initiating Game Information #
 		import GameLogic
+		
 		GI = {}
-		GI['host'] = True
+		
+		GI['host'] = False
 		GI['server'] = False
-		GI['username'] = "-NoName-"
-		GI['address'] = "chasemoskal.dyndns.org:3200/3200"
-		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, 3200, 3200) )
+		
+		address = "chasemoskal.dyndns.org"
+		tcpPort, udpPort = 3201, 3201
+		
+		GI['address'] = slab.Network.comms.makeAddressString( (address, tcpPort, udpPort) )
+		GI['hostaddress'] = slab.Network.comms.makeAddressString( (slab.Network.IP, tcpPort, udpPort) )
+		
+		username = slab.Interface.Options.getSetting("username")
+		if username: GI['username'] = username
+		else: GI['username'] = "-NoName-"
+		
 		GameLogic.globalDict['gameInfo'] = GI
 		
 		###
@@ -74,7 +84,7 @@ def run(cont):
 		
 		Network.run(Admin, GameState, Interface) # Maintaining connections and stuff, and also receiving data to inBundles.
 		
-		Interface.run() # Runs the interface (user inputs).
+		Interface.run(Network, GameState) # Runs the interface (user inputs).
 		GameState.run(Admin, Network) # Runs the GameState: represents the game world based on changes it finds in the Network in buffer.
 		LocalGame.run(Admin, GameState, Network, Resources, Interface) # LocalGame: Reflects the scene described by GameData.
 		

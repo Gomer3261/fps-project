@@ -9,10 +9,7 @@ class Class:
 	The Options class collects, changes, and saves all user controlled settings & controls.
 	It allows the user to change many aspects of the game to suit their personal preferences.
 	"""
-
 	import traceback
-
-
 
 	#the init function. Most modules have this.
 	def __init__(self, Inputs):
@@ -27,27 +24,14 @@ class Class:
 		self.load()
 		print("  Interface/Options' smiling.")
 
-
-
-
-
-
-
-
-
-
-
 	####################################
 	### ------ OPTIONS SYSTEM ------ ###
 	####################################
-
-
-
+	
 	def saveDefaults(self):
 		"""
 		Sets all controls and settings to default, then saves them all to the options file.
 		"""
-		
 		try:
 			settings = {}
 			controls = {}
@@ -60,6 +44,7 @@ class Class:
 			settings["filter-hdr"] = 0
 			settings["lens"] = 15.0
 			settings["crouch"] = "hold"
+			settings["username"] = "-NoName-"
 			
 			# CONTROLS
 			controls["spawn"] = "space-key"
@@ -98,41 +83,40 @@ class Class:
 		except:
 			self.traceback.print_exc()
 
-
-
 	def setSetting(self, key, value):
 		"""
 		sets the given setting to the given value, then saves the setting.
 		"""
 		key = key.lower()
-		
 		if key == "lens":
 			if value > 25.0:
 				value = 25.0
 			elif value < 15.0:
 				value = 15.0
-		
 		self.settings[key] = value
-		
-
-		
 		r = self.save()
 		return r
 
-
+	def getSetting(self, key):
+		key = key.lower()
+		if key in self.settings:
+			return self.settings[key]
+		return None
 
 	def setControl(self, key, value):
 		"""
 		sets the given control to the given value, then saves the control.
 		"""
-		
 		key = key.lower()
-		
 		self.controls[key] = value
 		r = self.save()
 		return r
-
-
+	
+	def getControl(self, key):
+		key = key.lower()
+		if key in self.controls:
+			return self.controls[key]
+		return None
 
 	def save(self):
 		"""
