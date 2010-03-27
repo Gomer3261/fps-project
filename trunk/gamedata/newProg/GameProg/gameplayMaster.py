@@ -31,7 +31,7 @@ def initiate(cont):
 		# Initiating Game Information #
 		import GameLogic
 		GI = {}
-		GI['host'] = False
+		GI['host'] = True
 		GI['server'] = False
 		GI['username'] = "-NoName-"
 		GI['address'] = "chasemoskal.dyndns.org:3200/3200"
