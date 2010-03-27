@@ -33,7 +33,7 @@ def initiate(cont):
 		
 		GI = {}
 		
-		GI['host'] = True
+		GI['host'] = False
 		GI['server'] = False
 		
 		address = "chasemoskal.dyndns.org"
