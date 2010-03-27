@@ -151,11 +151,9 @@ class Class(base_entity.Class):
 	def shoot(self, range=500.0):
 		import Rasterizer
 		projectedPoint = self.getProjectedPoint(range)
-		obj, point, normal = self.gameObject.rayCast(self.gameObject.position, projectedPoint)
+		obj, point, normal = self.gameObject.rayCast(projectedPoint, self.gameObject.position)
 		if point:
-			print ("OBJ", obj)
 			Rasterizer.drawLine(self.gameObject.position, point, [1.0, 0.5, 0.0])
-			print("POINT", point)
 		else:
 			Rasterizer.drawLine(self.gameObject.position, projectedPoint, [1.0, 0.5, 0.0])
 	
