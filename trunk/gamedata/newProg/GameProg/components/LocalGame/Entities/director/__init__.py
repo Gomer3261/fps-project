@@ -33,7 +33,7 @@ class Class(base_entity.Class):
 			pass
 	
 	def requestSpawn(self, entityType, args=[]):
-		IDs = (self.Admin.UID, self.Admin.UID) # First UID needs to be the host, second UID needs to be the controller.
+		IDs = (self.Admin.getHostUID, self.Admin.UID) # First UID needs to be the host, second UID needs to be the controller.
 		memoData = ('SE', (entityType,IDs,args))
 		self.sendMemo(self.EID, memoData)
 		#self.Network.gpsnet.send( ('LG', ('MEMO', (self.EID, ('SE', (entityType,IDs,args)) ) )) )
