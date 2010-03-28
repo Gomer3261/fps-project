@@ -205,7 +205,7 @@ Important functions:
 		
 		else:
 			#Network = self.slab
-			self.slab.Network.send( ('TXT', (self.slab.Admin.UID, s)) )
+			self.slab.Network.sendText(self.slab.Admin.UID, s)
 			#self.output(s)
 			# Now we assume this is a text message....
 			#pass

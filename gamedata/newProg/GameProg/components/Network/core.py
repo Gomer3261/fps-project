@@ -43,7 +43,9 @@ class GPS:
 		self.tcpServer.getSession(ticket).UID = UID
 	
 	def getUIDByTicket(self, ticket):
-		return self.tcpServer.getSession(ticket).UID
+		session = self.tcpServer.getSession(ticket)
+		if session: return session.UID
+		else: return None
 	
 	def setUID(self, ticket, UID):
 		self.tcpServer.getSession(ticket).UID = UID
@@ -51,10 +53,10 @@ class GPS:
 	def getUdpAddrByTicket(self, ticket):
 		return self.tcpServer.getSession(ticket).udp
 		
-	def run(self, Admin, GameState, Interface):
+	def run(self, Admin, GameState, Interface, Network):
 		allParcels = [] # We will return this at the end
 		
-		parcels = self.runTcpServer(Admin, GameState, Interface)
+		parcels = self.runTcpServer(Admin, GameState, Interface, Network)
 		for parcel in parcels: allParcels.append(parcel)
 		
 		parcels = self.runUdpServer(Interface)
@@ -64,11 +66,11 @@ class GPS:
 		
 		return allParcels
 	
-	def runTcpServer(self, Admin, GameState, Interface):
+	def runTcpServer(self, Admin, GameState, Interface, Network):
 		allParcels = []
 		### TCP SERVER ###
 		if self.tcpServer:
-			parcels, newConnections, staleClients, staleSessions = self.tcpServer.run()
+			parcels, newConnections, staleConnections, staleSessions, clientsWhoLeft = self.tcpServer.run()
 			for parcel in parcels:
 				ticket, item = parcel
 				flag, data = item
@@ -76,22 +78,26 @@ class GPS:
 					#Interface.out("Server: TCP CHK handled.")
 					self.send(ticket, item) # We echo those back.
 				if flag == 'AU': # Add User Request (to the GameState)
-					Interface.out("Server: Got AU")
+					#Interface.out("Server: Got AU")
 					name = data
 					UID = GameState.addUser(ticket, name)
 					self.setUID(ticket, UID) # Setting their UID to their ticket (essential)
 					self.send(ticket, ('UID', UID))
-					Interface.out("Server: Sent UID")
+					Network.sendText(0,"Server: %s has joined the game."%name)
+					#Interface.out("Server: Sent UID")
 				allParcels.append(parcel)
-			for newConnection in newConnections:
-				IP, ticket = newConnection
+			
+			for connection in newConnections:
+				IP, ticket = connection
 				Interface.out("Server: New connection, %s, %s."%(IP, ticket))
 				self.send(ticket, ('GREET', (ticket, Admin.UID)))
-				Interface.out("Server: Sent GREET")
-			for staleClient in staleClients:
-				Interface.out("Server: A client went stale.")
-			for staleSession in staleSessions:
-				Interface.out("Server: A session went stale.")
+				#Interface.out("Server: Sent GREET")
+			for connection in staleConnections:
+				IP, ticket = connection
+				Network.sendText(0,"Server: %s's connection went stale."%Network.getUserNameByTicket(ticket))
+			for ticket in staleSessions: pass
+			for ticket in clientsWhoLeft:
+				Network.sendText(0,"Server: %s has left the game."%Network.getUserNameByTicket(ticket))
 			
 			if not self.tcpServer.active: self.tcpServer=None; Interface.out("Server: TCP server terminated.", console=True)
 		###

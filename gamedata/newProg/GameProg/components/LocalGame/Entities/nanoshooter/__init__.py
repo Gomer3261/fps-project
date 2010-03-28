@@ -39,6 +39,8 @@ class Class(base_entity.Class):
 		
 		# Local OD
 		self.HP = 100
+		self.lastHP = self.HP
+		self.lastDamageFrom = 0 # UID responsible for last damage
 		
 		import GameLogic as gl
 		own = gl.getCurrentController().owner
@@ -76,15 +78,12 @@ class Class(base_entity.Class):
 	
 	def handleMemos(self):
 		for memo in self.memos:
-			print("memo handled at %s:"%self.EID, memo)
 			memoFlag, memoData = memo
 			if memoFlag == 'DMG':
-				damage = memoData
+				damage, responsibleUID = memoData
 				self.HP -= damage
-				print("HP: %s"%self.HP)
 		self.memos = []
-		
-		
+	
 	################################################
 	################################################
 	################################################
@@ -95,12 +94,16 @@ class Class(base_entity.Class):
 		"""
 		Simulates owner data, and updates the changes to the GameState via Network.
 		"""
+		self.handleMemos()
 		# Delete this entity when we run out of health?
-		if self.HP <= 0: self.Network.send( ('GS', ('AR', ('RE', self.EID))) )
+		if (self.HP <= 0) and not (self.lastHP <= 0):
+			self.Network.send( ('GS', ('AR', ('RE', self.EID))) )
+			self.Network.sendText(0,"%s was killed by %s."%(Network.getUserNameByTicket(self.Admin.UID,self.Network.getUserNameByTicket(self.lastDamageFrom))))
 		OD = self.getOD()
 		if OD['HP'] != self.HP:
 			OD['HP'] = self.HP
 			self.throwData('OD', None, OD)
+		self.lastHP = self.HP
 	
 	def ownerDataReplicate(self):
 		"""
@@ -189,7 +192,7 @@ class Class(base_entity.Class):
 		if obj:
 			if "damageable" in obj:
 				EID = obj['EID']
-				self.sendMemo( EID, ("DMG", damage) )
+				self.sendMemo( EID, ("DMG", (damage, self.Admin.UID)) )
 				print('NS: Damage memo sent to: %s'%EID)
 	
 	def getProjectedPoint(self, distance):

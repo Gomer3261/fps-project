@@ -114,6 +114,9 @@ class Class:
 		self.Network.throw( ('LG', ('MEMO', (EID, memoData))) )
 	
 	def handleMemos(self):
+		"""
+		Memo handling is for owners only.
+		"""
 		self.memos = []
 	
 	
@@ -131,8 +134,6 @@ class Class:
 		if self.getController() == UID: self.controllerDataSimulate()
 		else: self.controllerDataReplicate()
 		
-		self.handleMemos()
-		
 		self.alwaysRun()
 	
 	def alwaysRun(self):
@@ -149,7 +150,7 @@ class Class:
 		"""
 		Simulates owner data, and updates the changes to the GameState via Network.
 		"""
-		pass
+		self.handleMemos()
 	
 	def ownerDataReplicate(self):
 		"""
