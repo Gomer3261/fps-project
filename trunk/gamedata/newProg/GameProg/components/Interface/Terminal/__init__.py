@@ -20,12 +20,15 @@ Remember:
    Precede all python commands with a slash (/), otherwise it is regarded as a text message.
 
 Important functions:
-	/listUserCommands() # Lists the commands you can use.
-	/help(cmd) # Use this to get help on a particular command.
 	/defaultOptions() # Use this whenever things seem to be not working.
-	/startServer() -- you should end the server before you hit escape.
+	/setSetting("username", "Stewart Walton") # Set your username.
 	/endServer()
-	/spawn('explorer') or /spawn('nanoshooter') or just spawn() -- which defaults to explorer.
+	/spawn() # Spawns an Explorer/Manipulator entity.
+
+Explorer/Manipulator Entity Instructions:
+	Press number buttons like 1 and 2 to select different items.
+	Click to place items.
+	Look at an item and press R to remove it.
 
 ================================================================"""
 

@@ -118,8 +118,4 @@ class Class:
 			print("\n===========================================================================")
 			print("====== Administrated Game Initiation Complete; Game loop starts now! ======")
 			print("===========================================================================\n")
-			Interface.out("You can feel free to try /startServer() and /endServer(). It's a good idea to use /endServer() before hitting escape, if you have server running.")
-			Interface.out("Use /spawn() to spawn an explorer, or specify another entity with /spawn('entityType'). Currently, 'nanoshooter' is basically your only other option.")
-			Interface.out("You can only spawn one of each type of entity -- but for kicks, try spawning both an explorer and a nanoshooter.")
-			Interface.out(" ", note=False)
 			

@@ -4,39 +4,127 @@ class Class(base_entity.Class):
 	type = "explorer"
 	
 	def initiate(self):
-
-		# Initiating the gameObject
-		import GameLogic as gl
-		own = gl.getCurrentController().owner
-		self.gameObject = gl.getCurrentScene().addObject("explorer", own)
-		
-		# Getting the Camera
-		self.cam = self.gameObject.controllers[0].actuators["cam"].owner
-		
-		# The gameObject acts as both the XPivot and the YPivot for the explorer.
-		self.XPivot = self.gameObject
-		self.YPivot = self.gameObject
-		
-		self.Interface.out("Explorer Initiated.", terminal=False, console=True)
+		if self.weAreController():
+			# Initiating the gameObject
+			import GameLogic as gl
+			own = gl.getCurrentController().owner
+			self.gameObject = gl.getCurrentScene().addObject("explorer", own)
+			
+			self.aimEnd = self.gameObject.controllers[0].actuators["aimEnd"].owner
+			
+			self.selectedEntityType = ""
+			self.selectedEntityGhost = None
+			self.aimedEID = 0
+			
+			# Getting the Camera
+			self.cam = self.gameObject.controllers[0].actuators["cam"].owner
+			
+			# The gameObject acts as both the XPivot and the YPivot for the explorer.
+			self.XPivot = self.gameObject
+			self.YPivot = self.gameObject
+			
+			self.Interface.out("Explorer Initiated.", terminal=False, console=True)
 	
 	def end(self):
 		self.LocalGame.Camera.clear()
 		self.gameObject.endObject()
 		self.gameObject = None
+		self.clearGhost()
 		self.Interface.out("Explorer Ended.", terminal=False, console=True)
 	
 	def run(self):
-		# Camera Management
-		self.LocalGame.Camera.set(self.cam)
-		
-		self.suicideControlLoop()
-		self.doMouseLook()
-		
-		# Movement can only occur when the terminal is not active.
-		if not self.Interface.Terminal.active:
-			X, Y, Z = self.getDesiredLocalMovement()
-			self.gameObject.applyMovement( (X,Y,0), 1 ) # X and Y applied locally.
-			self.gameObject.applyMovement( (0,0,Z), 0 ) # Z applied globally.
+		if self.weAreController():
+			# Camera Management
+			self.LocalGame.Camera.set(self.cam)
+			self.doMouseLook()
+			
+			self.handleSelection()
+			aimpoint = self.getAimpoint()
+			self.handleGhostDisplay(aimpoint)
+			self.handleEntityPlacement(aimpoint)
+			self.handleEntityRemoval()
+			
+			
+			self.suicideControlLoop()
+			
+			# Movement can only occur when the terminal is not active.
+			if not self.Interface.Terminal.active:
+				X, Y, Z = self.getDesiredLocalMovement()
+				self.gameObject.applyMovement( (X,Y,0), 1 ) # X and Y applied locally.
+				self.gameObject.applyMovement( (0,0,Z), 0 ) # Z applied globally.
+	
+	
+	def handleSelection(self):
+		Controller = self.Interface.Inputs.Controller
+		if Controller.getStatus("select-spawnpoint") == 3:
+			if self.selectedEntityType != "spawnpoint":
+				self.clearGhost()
+				self.selectedEntityType = "spawnpoint"
+			else:
+				self.selectedEntityType = ""
+		if Controller.getStatus("select-box") == 3:
+			if self.selectedEntityType != "box":
+				self.clearGhost()
+				self.selectedEntityType = "box"
+			else:
+				self.selectedEntityType = ""
+	
+	def clearGhost(self):
+		if self.selectedEntityGhost:
+			self.selectedEntityGhost.endObject()
+			self.selectedEntityGhost = None
+	
+	def handleGhostDisplay(self, aimpoint):
+		if self.selectedEntityType:
+			if not self.selectedEntityGhost:
+				import GameLogic as gl
+				self.selectedEntityGhost = gl.getCurrentScene().addObject(self.selectedEntityType+"_ghost", gl.getCurrentController().owner)
+				self.selectedEntityGhost.position = self.getEntitySpawnHeight(aimpoint)
+			else:
+				self.selectedEntityGhost.position = self.getEntitySpawnHeight(aimpoint)
+		else:
+			if self.selectedEntityGhost:
+				self.clearGhost()
+	
+	def getEntitySpawnHeight(self, aimpoint):
+		return [aimpoint[0], aimpoint[1], aimpoint[2]+(self.selectedEntityGhost['height']/2.0)]
+	
+	def handleEntityPlacement(self, aimpoint):
+		Controller = self.Interface.Inputs.Controller
+		if Controller.getStatus("add-entity") == 3:
+			if self.selectedEntityType:
+				if self.LocalGame.getEntityClass(self.selectedEntityType):
+					UIDs = self.Admin.getHostUID(), self.Admin.getHostUID()
+					args = {"P":self.getEntitySpawnHeight(aimpoint)}
+					self.Network.send( ('GS', ('AR', ('SE', (self.selectedEntityType, UIDs, args)))) )
+	
+	def handleEntityRemoval(self):
+		Controller = self.Interface.Inputs.Controller
+		if Controller.getStatus("remove-entity") == 3:
+			EID = self.getHitEID()
+			if EID:
+				self.Network.send( ('GS', ('AR', ('RE', EID))) )
+	
+	def getAimpoint(self):
+		start = self.gameObject.position
+		target = self.aimEnd.position
+		#import Rasterizer; Rasterizer.drawLine(start, target, [1.0, 0.0, 0.0])
+		obj, point, normal = self.gameObject.rayCast(target, start)
+		if point: target = point
+		return target
+	
+	def getHitEID(self):
+		start = self.gameObject.position
+		target = self.aimEnd.position
+		#import Rasterizer; Rasterizer.drawLine(start, target, [1.0, 0.0, 0.0])
+		obj, point, normal = self.gameObject.rayCast(target, start)
+		if obj:
+			if "EID" in obj:
+				entity = self.GameState.getEntity(obj["EID"])
+				if entity:
+					print(obj['EID'])
+					return obj['EID']
+		return None
 	
 	def suicideControlLoop(self):
 		if not self.Interface.Terminal.active:
