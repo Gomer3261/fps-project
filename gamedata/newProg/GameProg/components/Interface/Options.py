@@ -1,7 +1,6 @@
 #############################
 ### ------ OPTIONS ------ ###
 #############################
-### Copyright 2009 Chase Moskal!
 # This object handles the saving/loading of options.
 
 class Class:
@@ -71,6 +70,12 @@ class Class:
 			controls["interact"] = "e-key"
 			
 			controls["menu"] = "tab-key"
+			
+			# Explorer Manipulation Mode
+			controls["remove-entity"] = "r-key"
+			controls["add-entity"] = "lmb"
+			controls["select-spawnpoint"] = "one-key"
+			controls["select-box"] = "two-key"
 			
 			
 			self.settings = settings

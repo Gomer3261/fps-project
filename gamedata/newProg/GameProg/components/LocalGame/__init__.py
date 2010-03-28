@@ -62,6 +62,10 @@ class Class:
 		type = self.GameState.getEntity(EID)['T']
 		self.entities[EID] = Entities.getEntityClass(type)(EID, self)
 	
+	def getEntityClass(self, type):
+		import Entities
+		return Entities.getEntityClass(type)
+	
 	def getEntity(self, EID):
 		if EID in self.entities: return self.entities[EID]
 		else: return None
