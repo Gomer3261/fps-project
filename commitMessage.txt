@@ -1,1 +1,1 @@
-Working towards online gameplay... /Chase.
+Added server notifications, like when players join the game, and kill each other and crap. /Chase.
