@@ -62,6 +62,10 @@ class Class:
 		type = self.GameState.getEntity(EID)['T']
 		self.entities[EID] = Entities.getEntityClass(type)(EID, self)
 	
+	def getEntity(self, EID):
+		if EID in self.entities: return self.entities[EID]
+		else: return None
+	
 	# Removing Entities
 	def removeEntity(self, EID):
 		self.entities[EID].end()

@@ -27,6 +27,9 @@ class Class(base_entity.Class):
 		try: ARGS = self.getOD()['ARGS']
 		except: ARGS = {}
 		
+		self.fireRate = 2.0 # Shots per second...
+		self.damage = 51 # Damage per shot...
+		
 		self.updateClock = self.CLOCK()
 		self.fireRateClock = self.CLOCK()
 		
@@ -141,10 +144,10 @@ class Class(base_entity.Class):
 			self.gameObject.applyForce( (X,Y,Z), 0 )
 			self.Resources.Tools.Damper.dampXY(self.gameObject, 20.0)
 		
-		if self.Interface.Inputs.Controller.getStatus("use") == 2:
-			if self.fireRateClock.get() > (1.0/10.0):
+		if self.Interface.Inputs.Controller.getStatus("use") == 1:
+			if self.fireRateClock.get() > (1.0/self.fireRate):
 				self.fireForEffect()
-				self.shoot()
+				self.shoot(damage=self.damage)
 				self.shotsFired += 1
 				self.fireRateClock.reset()
 		
@@ -170,7 +173,7 @@ class Class(base_entity.Class):
 		self.aimPoint.position = self.interpolate(self.aimPoint.position, self.targetAimPoint, 15.0)
 		self.trackToAimPoint()
 		if shotsWeNeedToFire > 0:
-			if self.fireRateClock.get() > (1.0/10.0):
+			if self.fireRateClock.get() > (1.0/self.fireRate):
 				self.fireForEffect()
 				self.shotsFired += 1
 				self.fireRateClock.reset()
