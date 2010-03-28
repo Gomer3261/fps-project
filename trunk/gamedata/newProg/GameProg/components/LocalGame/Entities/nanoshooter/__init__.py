@@ -82,6 +82,7 @@ class Class(base_entity.Class):
 			if memoFlag == 'DMG':
 				damage, responsibleUID = memoData
 				self.HP -= damage
+				self.lastDamageFrom = responsibleUID
 		self.memos = []
 	
 	################################################
@@ -98,7 +99,10 @@ class Class(base_entity.Class):
 		# Delete this entity when we run out of health?
 		if (self.HP <= 0) and not (self.lastHP <= 0):
 			self.Network.send( ('GS', ('AR', ('RE', self.EID))) )
-			self.Network.sendText(0,"%s was killed by %s."%(Network.getUserNameByTicket(self.Admin.UID,self.Network.getUserNameByTicket(self.lastDamageFrom))))
+			ourName = self.GameState.getUserName(self.getController())
+			killerName = self.GameState.getUserName(self.lastDamageFrom)
+			print(self.Admin.UID, ourName, self.lastDamageFrom, killerName)
+			self.Network.sendText( 0,"%s killed %s."%(killerName, ourName) )
 		OD = self.getOD()
 		if OD['HP'] != self.HP:
 			OD['HP'] = self.HP
@@ -193,7 +197,7 @@ class Class(base_entity.Class):
 			if "damageable" in obj:
 				EID = obj['EID']
 				self.sendMemo( EID, ("DMG", (damage, self.Admin.UID)) )
-				print('NS: Damage memo sent to: %s'%EID)
+				#print('NS: Damage memo sent to: %s'%EID)
 	
 	def getProjectedPoint(self, distance):
 		o = self.gameObject.orientation
