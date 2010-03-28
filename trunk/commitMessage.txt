@@ -1,1 +1,2 @@
-Added server notifications, like when players join the game, and kill each other and crap. /Chase.
+Players can only have one nanoshooter under their control at any given moment, and it only takes two shots to kill somebody -- but the weapon is now semi-automatic (single-fire), and the firing rate only allows for a maximum of 2 shots per second, so aim well, and make good use of timing!
+/Chase.

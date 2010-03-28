@@ -72,11 +72,18 @@ class Class(base_entity.Class):
 		if self.Admin.UID == self.getOwner(): # Only be handling memos when we are the owner (even though the owner should be the only one who recieves memos?)
 			for memo in self.memos:
 				memoFlag, memoData = memo
+				
 				if memoFlag == 'SE':
 					entityType, UIDs, args = memoData
+					owner, controller = UIDs
 					entitiesOfThatType = self.GameState.getEIDsByType(entityType)
-					#if not entitiesOfThatType:
-					self.Network.send( ('GS', ('AR', ('SE', (entityType, UIDs, args)))) )
+					entitiesOfThatTypeThatThisGuyControls = 0
+					for EID in entitiesOfThatType:
+						entity = self.LocalGame.getEntity(EID)
+						if entity.getController() == controller: entitiesOfThatTypeThatThisGuyControls += 1
+					if entitiesOfThatTypeThatThisGuyControls == 0:
+						self.Network.send( ('GS', ('AR', ('SE', (entityType, UIDs, args)))) )
+				
 				if memoFlag == 'RE':
 					EID = memoData
 					if EID != self.EID:
