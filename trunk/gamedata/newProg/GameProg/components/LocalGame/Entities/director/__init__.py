@@ -24,6 +24,34 @@ class Class(base_entity.Class):
 	################################################################################################
 	################################################################################################
 	
+	def ownerDataSimulate(self):
+		self.handleMemos()
+	
+	
+	def controllerDataSimulate(self): # Maybe game time stuff should be owner data? Probably doesn't matter.. I don't know...
+		"""
+		Simulates controller data, and updates the changes to the GameState via Network.
+		"""
+		
+		### Only updates the clock every second ###
+		CD = self.getCD()
+		if 'gameTime' in CD:
+			oldGameTime = CD['gameTime']
+			currentGameTime = self.getCurrentGameTime()
+			difference = currentGameTime - oldGameTime
+			if difference > 1.0:
+				self.throwData('CD', 'gameTime', currentGameTime)
+	
+	def alwaysRun(self):
+		try:
+			self.userSpawnRequestControl()
+		except: import traceback; traceback.print_exc()
+	
+	################################################################################################
+	################################################################################################
+	################################################################################################
+	################################################################################################
+	
 	def getCurrentGameTime(self):
 		try:
 			start = self.getCD()['gameTimeStart']
@@ -64,31 +92,4 @@ class Class(base_entity.Class):
 			if s==3:
 				self.requestSpawn('nanoshooter') # Adding a spawn request to the respawnRequestQueue.
 
-	################################################################################################
-	################################################################################################
-	################################################################################################
-	################################################################################################
-
-	def controllerDataSimulate(self): # Maybe game time stuff should be owner data? Probably doesn't matter.. I don't know...
-		"""
-		Simulates controller data, and updates the changes to the GameState via Network.
-		"""
-		
-		### Only updates the clock every second ###
-		CD = self.getCD()
-		if 'gameTime' in CD:
-			oldGameTime = CD['gameTime']
-			currentGameTime = self.getCurrentGameTime()
-			difference = currentGameTime - oldGameTime
-			if difference > 1.0:
-				self.throwData('CD', 'gameTime', currentGameTime)
 	
-	
-	
-	
-	
-	
-	def alwaysRun(self):
-		try:
-			self.userSpawnRequestControl()
-		except: import traceback; traceback.print_exc()

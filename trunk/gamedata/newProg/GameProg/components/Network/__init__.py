@@ -1,4 +1,4 @@
-### Networking Component ###
+### Network Component ###
 
 class Class:
 	"""
@@ -32,6 +32,16 @@ class Class:
 		
 		print("Networking's ready.")
 	
+	def sendText(self, UID, text):
+		self.send( ('TXT', (UID, text)) )
+	
+	def getUserNameByTicket(self, ticket):
+		username = "-NameError-"
+		if self.GPS:
+			UID = self.GPS.getUIDByTicket(ticket)
+			if UID:
+				username = self.slab.GameState.getUserName(UID)
+		return username
 	
 	
 	def gameStateDistro(self, GameState):
@@ -83,7 +93,7 @@ class Class:
 			
 			if self.GPS:
 				self.gameStateDistro(GameState)
-				parcels = self.GPS.run(Admin, GameState, Interface)
+				parcels = self.GPS.run(Admin, GameState, Interface, self)
 				bundles = self.convertParcelsToBundles(parcels)
 				for bundle in bundles: self.inBundles.append(bundle)#; print('GPS Bundle:', bundle)
 				if not self.GPS.active: self.GPS = None; Interface.out("Gameplay server terminated peacefully.", console=True)

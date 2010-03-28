@@ -91,8 +91,9 @@ class TCP_SERVER:
 	def run(self):
 		parcels = []
 		newConnections = []
-		staleClients = []
+		staleConnections = []
 		staleSessions = []
+		clientsWhoLeft = []
 		
 		if not self.shutdown:
 			newConnection = self.acceptNewConnection()
@@ -110,23 +111,23 @@ class TCP_SERVER:
 					flag, data = item
 					parcel = (ticket, item)
 					parcels.append(parcel)
-					if flag == 'BYE': session.terminateClientSock()
+					if flag == 'BYE': session.terminateClientSock(); clientsWhoLeft.append(ticket)
 				if hasGoneStale:
 					IP = session.clientSock.IP
 					session.terminateClientSock()
-					staleClients.append( (IP, ticket) )
+					staleConnections.append( (IP, ticket) )
 			else:
 				if session.hasGoneStale(): staleSessions.append(ticket)
 		
-		for staleSession in staleSessions:
-			self.sessionStorage.deleteSession(staleSession)
+		for ticket in staleSessions:
+			self.sessionStorage.deleteSession(ticket)
 		
 		if self.shutdown:
 			clientSocks = self.countClientSocks()
 			if clientSocks == 0:
 				self.active = False
 		
-		return parcels, newConnections, staleClients, staleSessions
+		return parcels, newConnections, staleConnections, staleSessions, clientsWhoLeft
 	
 	def countClientSocks(self):
 		num = 0

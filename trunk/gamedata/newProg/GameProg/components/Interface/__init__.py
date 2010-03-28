@@ -35,8 +35,11 @@ class Class:
 				if Network.GPS: Network.GPS.sendToAll( ('TXT', (UID, text)) )
 	
 	def displayText(self, UID, text, GameState):
-		name = GameState.getUserName(UID)
-		self.out("%s: %s"%(name, text), note=True)
+		if UID:
+			name = GameState.getUserName(UID)
+			self.out("%s: %s"%(name, text), note=True)
+		else:
+			self.out(text, note=True)
 	
 	def out(self, text, terminal=True, note=False, console=False):
 		"""
