@@ -10,7 +10,7 @@ class Class(base_entity.Class):
 		"""
 		import time
 		
-		OD = {}
+		OD = self.getOD()
 		
 		CD = {}
 		CD['P'] = [0.0, 0.0, 0.0] # Position
