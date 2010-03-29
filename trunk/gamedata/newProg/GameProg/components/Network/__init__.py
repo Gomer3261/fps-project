@@ -16,6 +16,9 @@ class Class:
 	
 	def __init__(self, slab):
 		self.slab = slab
+		
+		import monitor; self.monitor = monitor.Class()
+		
 		# A bundle is a pair, (UID, item)
 		self.inBundles = []
 		self.sendOutBuffer = []
@@ -31,55 +34,6 @@ class Class:
 		self.gameStateShoutDistroClock = self.comms.TIMER()
 		
 		print("Networking's ready.")
-	
-	def sendText(self, UID, text):
-		self.send( ('TXT', (UID, text)) )
-	
-	def getUserNameByTicket(self, ticket):
-		username = "-NameError-"
-		if self.GPS:
-			UID = self.GPS.getUIDByTicket(ticket)
-			if UID:
-				username = self.slab.GameState.getUserName(UID)
-		return username
-	
-	
-	def gameStateDistro(self, GameState):
-		"""
-		If we're running a server, then we will distribute the GameState (full, and in changes) to each client.
-		"""
-		if self.GPS:
-			if self.gameStateFullDistroClock.get() > 0.5:
-				self.GPS.sendToAll( ('GS', ('FD', GameState.contents)) )
-				self.gameStateFullDistroClock.reset()
-			#if self.gameStateShoutDistroClock.get() > 0.1:
-			if GameState.RequestHandler.shouts:
-				self.GPS.sendToAll( ('GS', ('SD', GameState.RequestHandler.shouts)) )
-				GameState.RequestHandler.shouts = [] # We have to clear the shouts here
-			#self.gameStateShoutDistroClock.reset()
-	
-	
-	
-	def removeGameStateUsersWithNoConnection(self, GameState, Admin):
-		toRemove = []
-		for UID in GameState.contents['U']:
-			noConnection = False
-			userData = GameState.contents['U'][UID]
-			ticket = userData['T']
-			if self.GPS:
-				session = self.GPS.tcpServer.getSession(ticket)
-				if session:
-					if not session.clientSock:
-						noConnection = True
-				else:
-					noConnection = True
-			else:
-				noConnection = True
-			if noConnection:
-				if UID != Admin.UID:
-					toRemove.append(UID)
-		for UID in toRemove:
-			GameState.removeUser(UID)
 					
 	
 	
@@ -105,8 +59,63 @@ class Class:
 					self.GPC = None
 					Interface.out("Gameplay client terminated.")
 					# We might have to restart the entire game by reinitializing via Admin at this point.
+			
+			self.monitor.reportIn(self.GPS, self.GPC)
+			self.monitor.run()
+			
 		except:
 			import traceback; traceback.print_exc()
+	
+	
+	
+	def gameStateDistro(self, GameState):
+		"""
+		If we're running a server, then we will distribute the GameState (full, and in changes) to each client.
+		"""
+		if self.GPS:
+			if self.gameStateFullDistroClock.get() > 0.5:
+				self.GPS.throwToAll( ('GS', ('FD', GameState.contents)) )
+				self.gameStateFullDistroClock.reset()
+			#if self.gameStateShoutDistroClock.get() > 0.1:
+			if GameState.RequestHandler.shouts:
+				self.GPS.throwToAll( ('GS', ('SD', GameState.RequestHandler.shouts)) )
+				GameState.RequestHandler.shouts = [] # We have to clear the shouts here
+			#self.gameStateShoutDistroClock.reset()
+	
+	
+	def removeGameStateUsersWithNoConnection(self, GameState, Admin):
+		toRemove = []
+		for UID in GameState.contents['U']:
+			noConnection = False
+			userData = GameState.contents['U'][UID]
+			ticket = userData['T']
+			if self.GPS:
+				session = self.GPS.tcpServer.getSession(ticket)
+				if session:
+					if not session.clientSock:
+						noConnection = True
+				else:
+					noConnection = True
+			else:
+				noConnection = True
+			if noConnection:
+				if UID != Admin.UID:
+					toRemove.append(UID)
+		for UID in toRemove:
+			GameState.removeUser(UID)
+	
+	
+	def sendText(self, UID, text):
+		self.send( ('TXT', (UID, text)) )
+	
+	def getUserNameByTicket(self, ticket):
+		username = "-NameError-"
+		if self.GPS:
+			UID = self.GPS.getUIDByTicket(ticket)
+			if UID:
+				username = self.slab.GameState.getUserName(UID)
+		return username
+	
 	
 	def convertParcelsToBundles(self, parcels):
 		bundles = []

@@ -33,8 +33,8 @@ def initiate(cont):
 		
 		GI = {}
 		
-		GI['host'] = False
-		GI['server'] = False
+		GI['host'] = True
+		GI['server'] = True
 		
 		address = "chasemoskal.dyndns.org"
 		tcpPort, udpPort = 3204, 3204
