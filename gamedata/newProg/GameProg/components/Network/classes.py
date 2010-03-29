@@ -10,6 +10,9 @@ class TCP_SERVER:
 		self.shutdown = False
 		self.active = False
 		
+		self.sentBytes = 0
+		self.receivedBytes = 0
+		
 		self.address = address
 		import sessions
 		self.sessionStorage = sessions.SESSIONSTORAGE()
@@ -20,6 +23,10 @@ class TCP_SERVER:
 			self.sock.settimeout(0.0); self.sock.setblocking(0) # Set non-blocking
 			self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		except: import traceback; traceback.print_exc()
+	
+	def resetByteCount(self):
+		self.sentBytes = 0
+		self.receivedBytes = 0
 	
 	def bind(self):
 		bound = False
@@ -37,11 +44,12 @@ class TCP_SERVER:
 	
 	########################################################################
 	class CLIENTSOCK:
-		def __init__(self, connection, timeout=10.0):
+		def __init__(self, connection, tcpServer, timeout=10.0):
 			self.active = True
 			
-			self.timeout = timeout
 			self.connection = connection
+			self.tcpServer = tcpServer
+			self.timeout = timeout
 			self.sock, self.address = connection
 			self.IP = self.address[0]
 			import comms
@@ -61,6 +69,7 @@ class TCP_SERVER:
 			try:
 				data = self.sock.recv(1024)
 				if data:
+					self.tcpServer.receivedBytes += len(data)
 					self.instream.add(data)
 					packages = self.instream.extract()
 					items = self.comms.unpackList(packages)
@@ -72,6 +81,7 @@ class TCP_SERVER:
 				if self.outbuffer:
 					sent = self.sock.send(self.outbuffer)
 					self.outbuffer = self.outbuffer[sent:]
+					self.tcpServer.sentBytes += sent
 			except: pass
 		def send(self, item):
 			try:
@@ -79,6 +89,7 @@ class TCP_SERVER:
 				if self.outbuffer:
 					sent = self.sock.send(self.outbuffer)
 					self.outbuffer = self.outbuffer[sent:]
+					self.tcpServer.sentBytes += sent
 			except: pass
 		def hasGoneStale(self): # In other words, "hasTimedOut()".
 			if self.timeoutClock.get() > self.timeout: return True
@@ -98,7 +109,7 @@ class TCP_SERVER:
 		if not self.shutdown:
 			newConnection = self.acceptNewConnection()
 			if newConnection:
-				clientSock = self.CLIENTSOCK(newConnection)
+				clientSock = self.CLIENTSOCK(newConnection, self)
 				ticket, session = self.sessionStorage.newSession(clientSock)
 				#print("New connection from (%s), ticket=%s."%(clientSock.IP, ticket))
 				newConnections.append( (clientSock.IP, ticket) )
@@ -178,6 +189,9 @@ class TCP_CLIENT:
 		self.active = True # We start off active because we don't want to lose it right away.
 		self.address = address
 		
+		self.sentBytes = 0
+		self.receivedBytes = 0
+		
 		import comms
 		self.comms = comms
 		self.instream = comms.STREAM()
@@ -196,6 +210,10 @@ class TCP_CLIENT:
 		
 		self.connected = False
 		self.connecting = False
+	
+	def resetByteCount(self):
+		self.sentBytes = 0
+		self.receivedBytes = 0
 	
 	def refreshConnectionStatus(self):
 		staleOnConnection = False
@@ -248,6 +266,7 @@ class TCP_CLIENT:
 		try:
 			data = self.sock.recv(1024)
 			if data:
+				self.receivedBytes += len(data)
 				self.instream.add(data)
 				packages = self.instream.extract()
 				newItems = self.comms.unpackList(packages)
@@ -268,6 +287,7 @@ class TCP_CLIENT:
 			if self.outbuffer:
 				sent = self.sock.send(self.outbuffer)
 				self.outbuffer = self.outbuffer[sent:]
+				self.sentBytes += sent
 		except: pass
 		return items, gotShutdown
 	
@@ -300,6 +320,10 @@ class TCP_CLIENT:
 class UDP_SERVER:
 	def __init__(self, address):
 		self.active = False
+		
+		self.sentBytes = 0
+		self.receivedBytes = 0
+		
 		self.address = address
 		import socket
 		self.socket = socket
@@ -316,6 +340,10 @@ class UDP_SERVER:
 			import traceback; traceback.print_exc()
 		return bound
 	
+	def resetByteCount(self):
+		self.sentBytes = 0
+		self.receivedBytes = 0
+	
 	def run(self):
 		basket = self.catch()
 		return basket
@@ -327,6 +355,7 @@ class UDP_SERVER:
 			try:
 				package, addr = self.sock.recvfrom(4096)
 				if package:
+					self.receivedBytes += len(package)
 					import comms
 					parcel = comms.unpack(package)
 					basket = (parcel, addr)
@@ -341,6 +370,7 @@ class UDP_SERVER:
 		import comms
 		package = comms.packUDP(item)
 		self.sock.sendto(package, addr)
+		self.sentBytes += len(package)
 	
 	def terminate(self):
 		"""
@@ -356,11 +386,20 @@ class UDP_SERVER:
 
 class UDP_CLIENT:
 	def __init__(self, address):
+		self.active = True
+		
+		self.sentBytes = 0
+		self.receivedBytes = 0
+		
 		self.address = address
 		import socket
 		self.socket = socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.sock.settimeout(0.0); self.sock.setblocking(0)
+	
+	def resetByteCount(self):
+		self.sentBytes = 0
+		self.receivedBytes = 0
 
 	def catch(self, max=10):
 		items = []
@@ -368,6 +407,7 @@ class UDP_CLIENT:
 			try:
 				package, addr = self.sock.recvfrom(4096)
 				if package:
+					self.receivedBytes += len(package)
 					import comms
 					item = comms.unpack(package)
 					items.append(item)
@@ -381,6 +421,7 @@ class UDP_CLIENT:
 		import comms
 		package = comms.packUDP(parcel)
 		self.sock.sendto(package, self.address)
+		self.sentBytes += len(package)
 	
 	def terminate(self):
 		self.sock.close()

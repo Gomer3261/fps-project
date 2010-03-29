@@ -1,3 +1,1 @@
-Entities being placed by the explorer can now be rotated at 45 degree angles. 
-/defaultOptions() required.
-/Geoff.
+stuff. /Chase.
