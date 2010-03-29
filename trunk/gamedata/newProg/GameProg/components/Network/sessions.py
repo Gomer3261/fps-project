@@ -21,6 +21,7 @@ class SESSIONSTORAGE:
 			if self.clientSock:
 				self.clientSock.terminate()
 				self.clientSock = None
+				self.udp = None
 				self.sessionTimeoutClock.reset()
 	################################################
 	
