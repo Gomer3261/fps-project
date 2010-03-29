@@ -80,7 +80,7 @@ class Class:
 	# Removing Entities
 	def removeEntity(self, EID):
 		self.entities[EID].end()
-		self.entities.pop(EID)
+		del self.entities[EID]
 	
 	
 	# Running Entities

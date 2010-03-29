@@ -100,7 +100,10 @@ class Class:
 	
 	
 	def getEntity(self, EID):
-		return self.contents['E'][EID]
+		if EID in self.contents['E']:
+			return self.contents['E'][EID]
+		else:
+			return None
 	
 	
 	
