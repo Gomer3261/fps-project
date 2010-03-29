@@ -7,6 +7,8 @@ class Class(base_entity.Class):
 		self.gameObject = None
 		self.selectedEntityType = ""
 		self.selectedEntityGhost = None
+		self.entityRotationStep = 0
+		self.entityRotationAngles = [[0.0, 1.0, 0.0], [0.7071, 0.7071, 0.0], [1.0, 0.0, 0.0], [0.7071, -0.7071, 0.0], [0.0, -1.0, 0.0], [-0.7071, -0.7071, 0.0], [-1.0, 0.0, 0.0], [-0.7071, 0.7071, 0.0]]
 		self.aimedEID = 0
 		
 		if self.weAreController():
@@ -42,6 +44,7 @@ class Class(base_entity.Class):
 			
 			self.handleSelection()
 			aimpoint = self.getAimpoint()
+			self.handleGhostRotation()
 			self.handleGhostDisplay(aimpoint)
 			self.handleEntityPlacement(aimpoint)
 			self.handleEntityRemoval()
@@ -55,6 +58,9 @@ class Class(base_entity.Class):
 				self.gameObject.applyMovement( (X,Y,0), 1 ) # X and Y applied locally.
 				self.gameObject.applyMovement( (0,0,Z), 0 ) # Z applied globally.
 	
+	#######################################################
+	#######################################################
+	#######################################################
 	
 	def handleSelection(self):
 		Controller = self.Interface.Inputs.Controller
@@ -71,6 +77,17 @@ class Class(base_entity.Class):
 			else:
 				self.selectedEntityType = ""
 	
+	def increaseRotationStep(self):
+		if self.entityRotationStep != (len(self.entityRotationAngles)-1):
+			self.entityRotationStep += 1
+		else:
+			self.entityRotationStep = 0
+	
+	def handleGhostRotation(self):
+		Controller = self.Interface.Inputs.Controller
+		if Controller.getStatus("rotate-entity") == 3:
+			self.increaseRotationStep()
+	
 	def clearGhost(self):
 		if self.selectedEntityGhost:
 			self.selectedEntityGhost.endObject()
@@ -82,8 +99,12 @@ class Class(base_entity.Class):
 				import GameLogic as gl
 				self.selectedEntityGhost = gl.getCurrentScene().addObject(self.selectedEntityType+"_ghost", gl.getCurrentController().owner)
 				self.selectedEntityGhost.position = self.getEntitySpawnHeight(aimpoint)
+				self.selectedEntityGhost.alignAxisToVect(self.entityRotationAngles[self.entityRotationStep], 1)
+				self.selectedEntityGhost.alignAxisToVect([0.0, 0.0, 1.0], 2)
 			else:
 				self.selectedEntityGhost.position = self.getEntitySpawnHeight(aimpoint)
+				self.selectedEntityGhost.alignAxisToVect(self.entityRotationAngles[self.entityRotationStep], 1)
+				self.selectedEntityGhost.alignAxisToVect([0.0, 0.0, 1.0], 2)
 		else:
 			if self.selectedEntityGhost:
 				self.clearGhost()
@@ -97,7 +118,7 @@ class Class(base_entity.Class):
 			if self.selectedEntityType:
 				if self.LocalGame.getEntityClass(self.selectedEntityType):
 					UIDs = self.Admin.getHostUID(), self.Admin.getHostUID()
-					args = {"P":self.getEntitySpawnHeight(aimpoint)}
+					args = {"P":self.getEntitySpawnHeight(aimpoint), "R":self.entityRotationAngles[self.entityRotationStep]}
 					self.Network.send( ('GS', ('AR', ('SE', (self.selectedEntityType, UIDs, args)))) )
 	
 	def handleEntityRemoval(self):
@@ -127,6 +148,10 @@ class Class(base_entity.Class):
 					print(obj['EID'])
 					return obj['EID']
 		return None
+		
+	#######################################################
+	#######################################################
+	#######################################################
 	
 	def suicideControlLoop(self):
 		if not self.Interface.Terminal.active:
