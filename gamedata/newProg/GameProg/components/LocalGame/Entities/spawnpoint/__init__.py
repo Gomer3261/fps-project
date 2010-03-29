@@ -28,6 +28,8 @@ class Class(base_entity.Class):
 		self.gameObject = gl.getCurrentScene().addObject("spawnpoint", own)
 		self.gameObject["EID"] = self.EID
 		self.gameObject.position = ARGS['P']
+		self.gameObject.alignAxisToVect(ARGS['R'], 1)
+		self.gameObject.alignAxisToVect([0.0, 0.0, 1.0], 2)
 	
 	def getSpawnPosition(self):
 		x, y, z = self.gameObject.position

@@ -28,6 +28,7 @@ class Class(base_entity.Class):
 		self.gameObject = gl.getCurrentScene().addObject("box", own)
 		self.gameObject["EID"] = self.EID
 		self.gameObject.position = ARGS['P']
+		self.gameObject.alignAxisToVect(ARGS['R'], 1)
 	
 	def end(self):
 		self.gameObject.endObject()

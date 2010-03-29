@@ -74,6 +74,7 @@ class Class:
 			# Explorer Manipulation Mode
 			controls["remove-entity"] = "r-key"
 			controls["add-entity"] = "lmb"
+			controls["rotate-entity"] = "rmb"
 			controls["select-spawnpoint"] = "one-key"
 			controls["select-box"] = "two-key"
 			
