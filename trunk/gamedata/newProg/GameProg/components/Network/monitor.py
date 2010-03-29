@@ -22,10 +22,10 @@ class Class:
 			self.receivedBytesUDP += GPS.udpServer.receivedBytes; GPS.udpServer.receivedBytes = 0
 		
 		if GPC:
-			self.sentBytesTCP += GPC.tcpClient.sentBytes; GPS.tcpClient.sentBytes = 0
-			self.sentBytesUDP += GPC.udpClient.sentBytes; GPS.udpClient.sentBytes = 0
-			self.receivedBytesTCP += GPC.tcpClient.receivedBytes; GPS.tcpClient.receivedBytes = 0
-			self.receivedBytesUDP += GPC.udpClient.receivedBytes; GPS.udpClient.receivedBytes = 0
+			self.sentBytesTCP += GPC.tcpClient.sentBytes; GPC.tcpClient.sentBytes = 0
+			self.sentBytesUDP += GPC.udpClient.sentBytes; GPC.udpClient.sentBytes = 0
+			self.receivedBytesTCP += GPC.tcpClient.receivedBytes; GPC.tcpClient.receivedBytes = 0
+			self.receivedBytesUDP += GPC.udpClient.receivedBytes; GPC.udpClient.receivedBytes = 0
 	
 	def run(self):
 		if self.reportOutClock.get() > self.reportOutInterval:
