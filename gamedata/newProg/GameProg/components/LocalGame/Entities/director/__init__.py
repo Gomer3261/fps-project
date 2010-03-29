@@ -60,7 +60,17 @@ class Class(base_entity.Class):
 		except:
 			pass
 	
-	def requestSpawn(self, entityType, args=[]):
+	def getRandomSpawnpoint(self):
+		spawnpoints = self.LocalGame.getEntitiesByType("spawnpoint")
+		if len(spawnpoints) > 0:
+			import random
+			EID = random.choice(spawnpoints)
+			entity = self.LocalGame.getEntity(EID)
+			return entity.getSpawnPosition()
+		else:
+			return [0.0, 0.0, 5.0]
+	
+	def requestSpawn(self, entityType, args={}):
 		hostUID = self.Admin.getHostUID()
 		myUID = self.Admin.UID
 		UIDs = (hostUID, myUID) # First UID needs to be the host, second UID needs to be the controller.
@@ -97,6 +107,6 @@ class Class(base_entity.Class):
 		if not self.Interface.Terminal.active:
 			s = self.Interface.Inputs.Controller.getStatus('spawn')
 			if s==3:
-				self.requestSpawn('nanoshooter') # Adding a spawn request to the respawnRequestQueue.
+				self.requestSpawn('nanoshooter', {'P':self.getRandomSpawnpoint()}) # Adding a spawn request to the respawnRequestQueue.
 
 	

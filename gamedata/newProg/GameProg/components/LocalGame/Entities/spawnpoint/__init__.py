@@ -29,5 +29,9 @@ class Class(base_entity.Class):
 		self.gameObject["EID"] = self.EID
 		self.gameObject.position = ARGS['P']
 	
+	def getSpawnPosition(self):
+		x, y, z = self.gameObject.position
+		return [x, y, (z+2.0)]
+	
 	def end(self):
 		self.gameObject.endObject()

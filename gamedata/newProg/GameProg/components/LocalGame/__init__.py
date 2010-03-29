@@ -70,6 +70,13 @@ class Class:
 		if EID in self.entities: return self.entities[EID]
 		else: return None
 	
+	def getEntitiesByType(self, type):
+		result = []
+		for EID in self.entities:
+			entity = self.entities[EID]
+			if entity.type == type: result.append(EID)
+		return result
+	
 	# Removing Entities
 	def removeEntity(self, EID):
 		self.entities[EID].end()
