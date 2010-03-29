@@ -1,2 +1,2 @@
-Spawnpoints now work.
+Fixed a tiny bug; it all seems to be working online now.
 /Chase.
