@@ -10,7 +10,7 @@ class Class(base_entity.Class):
 		"""
 		import time
 		
-		OD = {}
+		OD = self.getOD()
 		OD['HP'] = 100
 		
 		CD = {}
@@ -52,6 +52,10 @@ class Class(base_entity.Class):
 		self.gameObject = gl.getCurrentScene().addObject("nanoshooter", own)
 		self.gameObject['EID'] = self.EID
 		self.gameObject['damageable'] = True
+		
+		# Starting Position
+		if self.weAreController():
+			self.gameObject.position = ARGS['P']
 		
 		# Initiating the Aimpoint
 		self.aimPoint = gl.getCurrentScene().addObject("ns_aimPoint", own)
