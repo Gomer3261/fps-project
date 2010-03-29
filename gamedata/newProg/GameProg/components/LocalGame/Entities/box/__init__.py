@@ -31,3 +31,4 @@ class Class(base_entity.Class):
 	
 	def end(self):
 		self.gameObject.endObject()
+		self.gameObject = None

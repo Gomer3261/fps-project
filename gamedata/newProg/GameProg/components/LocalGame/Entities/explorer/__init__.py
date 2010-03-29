@@ -4,6 +4,11 @@ class Class(base_entity.Class):
 	type = "explorer"
 	
 	def initiate(self):
+		self.gameObject = None
+		self.selectedEntityType = ""
+		self.selectedEntityGhost = None
+		self.aimedEID = 0
+		
 		if self.weAreController():
 			# Initiating the gameObject
 			import GameLogic as gl
@@ -11,10 +16,6 @@ class Class(base_entity.Class):
 			self.gameObject = gl.getCurrentScene().addObject("explorer", own)
 			
 			self.aimEnd = self.gameObject.controllers[0].actuators["aimEnd"].owner
-			
-			self.selectedEntityType = ""
-			self.selectedEntityGhost = None
-			self.aimedEID = 0
 			
 			# Getting the Camera
 			self.cam = self.gameObject.controllers[0].actuators["cam"].owner
@@ -27,8 +28,9 @@ class Class(base_entity.Class):
 	
 	def end(self):
 		self.LocalGame.Camera.clear()
-		self.gameObject.endObject()
-		self.gameObject = None
+		if self.gameObject:
+			self.gameObject.endObject()
+			self.gameObject = None
 		self.clearGhost()
 		self.Interface.out("Explorer Ended.", terminal=False, console=True)
 	
