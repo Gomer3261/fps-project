@@ -9,6 +9,8 @@ class Class:
 	It allows the user to change many aspects of the game to suit their personal preferences.
 	"""
 	import traceback
+	
+
 
 	#the init function. Most modules have this.
 	def __init__(self, Inputs):
@@ -19,6 +21,63 @@ class Class:
 		self.controls = {}
 		
 		self.Inputs = Inputs
+		
+		#####################
+		### Defaults ########
+		#####################
+		
+		defaultSettings = {}
+		defaultControls = {}
+		
+		# SETTINGS
+		defaultSettings["mxsens"] = 5.0
+		defaultSettings["mysens"] = 5.0
+		defaultSettings["inverty"] = 0
+		defaultSettings["invertx"] = 0
+		defaultSettings["filter-hdr"] = 0
+		defaultSettings["lens"] = 15.0
+		defaultSettings["crouch"] = "hold"
+		defaultSettings["username"] = "-NoName-"
+		
+		# CONTROLS
+		defaultControls["spawn"] = "space-key"
+		defaultControls["suicide"] = "del-key"
+		
+		defaultControls["forward"] = "w-key"
+		defaultControls["backward"] = "s-key"
+		defaultControls["left"] = "a-key"
+		defaultControls["right"] = "d-key"
+		
+		defaultControls["jump"] = "space-key"
+		defaultControls["sprint"] = "leftshift-key"
+		defaultControls["crouch"] = "leftctrl-key"
+		
+		defaultControls["rise"] = "e-key"
+		defaultControls["sink"] = "q-key"
+
+		defaultControls["use"] = "lmb"
+		defaultControls["aim"] = "rmb"
+		defaultControls["reload"] = "r-key"
+		defaultControls["cock"] = "t-key"
+		defaultControls["boltrelease"] = "f-key"
+
+		defaultControls["interact"] = "e-key"
+		
+		defaultControls["menu"] = "tab-key"
+		
+		# Explorer Manipulation Mode
+		defaultControls["remove-entity"] = "r-key"
+		defaultControls["add-entity"] = "lmb"
+		defaultControls["rotate-entity"] = "rmb"
+		defaultControls["select-spawnpoint"] = "one-key"
+		defaultControls["select-box"] = "two-key"
+		
+		self.defaultSettings = defaultSettings
+		self.defaultControls = defaultControls
+		
+		#######################
+		#######################
+		#######################
 		
 		self.load()
 		print("  Interface/Options' smiling.")
@@ -32,55 +91,8 @@ class Class:
 		Sets all controls and settings to default, then saves them all to the options file.
 		"""
 		try:
-			settings = {}
-			controls = {}
-			
-			# SETTINGS
-			settings["mxsens"] = 5.0
-			settings["mysens"] = 5.0
-			settings["inverty"] = 0
-			settings["invertx"] = 0
-			settings["filter-hdr"] = 0
-			settings["lens"] = 15.0
-			settings["crouch"] = "hold"
-			settings["username"] = "-NoName-"
-			
-			# CONTROLS
-			controls["spawn"] = "space-key"
-			controls["suicide"] = "del-key"
-			
-			controls["forward"] = "w-key"
-			controls["backward"] = "s-key"
-			controls["left"] = "a-key"
-			controls["right"] = "d-key"
-			
-			controls["jump"] = "space-key"
-			controls["sprint"] = "leftshift-key"
-			controls["crouch"] = "leftctrl-key"
-			
-			controls["rise"] = "e-key"
-			controls["sink"] = "q-key"
-		
-			controls["use"] = "lmb"
-			controls["aim"] = "rmb"
-			controls["reload"] = "r-key"
-			controls["cock"] = "t-key"
-			controls["boltrelease"] = "f-key"
-		
-			controls["interact"] = "e-key"
-			
-			controls["menu"] = "tab-key"
-			
-			# Explorer Manipulation Mode
-			controls["remove-entity"] = "r-key"
-			controls["add-entity"] = "lmb"
-			controls["rotate-entity"] = "rmb"
-			controls["select-spawnpoint"] = "one-key"
-			controls["select-box"] = "two-key"
-			
-			
-			self.settings = settings
-			self.controls = controls
+			self.settings = self.defaultSettings.copy()
+			self.controls = self.defaultControls.copy()
 			
 			# Requesting a SAVE operation
 			result = self.save()
@@ -108,6 +120,15 @@ class Class:
 		if key in self.settings:
 			return self.settings[key]
 		return None
+	
+	def defaultSetting(self, key):
+		key = key.lower()
+		if key in self.defaultSettings:
+			self.settings[key] = self.defaultSettings[key]
+			r = self.save()
+			return r
+		else:
+			return -1
 
 	def setControl(self, key, value):
 		"""
@@ -123,6 +144,15 @@ class Class:
 		if key in self.controls:
 			return self.controls[key]
 		return None
+		
+	def defaultControl(self, key):
+		key = key.lower()
+		if key in self.defaultControls:
+			self.controls[key] = self.defaultControls[key]
+			r = self.save()
+			return r
+		else:
+			return -1
 
 	def save(self):
 		"""
@@ -192,6 +222,7 @@ class Class:
 					value = parts[1].strip()
 					statements[name] = eval(value)
 			self.settings = statements
+			self.checkSettings()
 			
 			# Controls
 			lines = controlsfile.split("\n")
@@ -203,6 +234,7 @@ class Class:
 					value = parts[1].strip()
 					statements[name] = eval(value)
 			self.controls = statements
+			self.checkControls()
 			
 			self.Inputs.Controller.setControls(self.controls)
 			
@@ -214,4 +246,13 @@ class Class:
 			if result:
 				return 2 # This means the load failed, but the saving of defaults worked.
 			return 0
+	
+	def checkSettings(self):
+		for setting in self.defaultSettings:
+			if not setting in self.settings:
+				self.settings[setting] = self.defaultSettings[setting]
 
+	def checkControls(self):
+		for control in self.defaultControls:
+			if not control in self.controls:
+				self.controls[control] = self.defaultControls[control]

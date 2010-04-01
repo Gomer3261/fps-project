@@ -164,7 +164,7 @@ Precede your input with "/" to designate it as a python command or it will be se
 	# Option Commands
 	# -----------------
 
-	def defaultOptions(self):
+	def restoreDefaults(self):
 		"""
 		Usage: defaultOptions()
 			Resets the games options to the default values.
@@ -189,6 +189,15 @@ Precede your input with "/" to designate it as a python command or it will be se
 		"""
 		options = self.slab.Interface.Options
 		self.output("Setting %s is set to %s" % (key, options.settings[key]))
+		
+	def defaultSetting(self, key):
+		"""
+		Usage: defaultSetting(setting)
+			resets the value of the requested setting to default.
+		"""
+		options = self.slab.Interface.Options
+		r = options.defaultSetting(key)
+		self.output("Success value: %s"%(r))
 
 	def setControl(self, key, value):
 		"""
@@ -206,6 +215,15 @@ Precede your input with "/" to designate it as a python command or it will be se
 		"""
 		options = self.slab.Interface.Options
 		self.output("Control %s is set to %s" % (key, options.controls[key]))
+		
+	def defaultControl(self, key):
+		"""
+		Usage: defaultControl(control)
+			resets the value of the requested control to default.
+		"""
+		options = self.slab.Interface.Options
+		r = options.defaultControl(key)
+		self.output("Success value: %s"%(r))
 
 	def loadOptions(self):
 		"""
