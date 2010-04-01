@@ -20,7 +20,7 @@ Remember:
    Precede all python commands with a slash (/), otherwise it is regarded as a text message.
 
 Important functions:
-	/defaultOptions() # Use this whenever things seem to be not working.
+	/restoreDefaults() # Use this whenever things seem to be not working.
 	/setSetting("username", "Stewart Walton") # Set your username.
 	/endServer()
 	/spawn() # Spawns an Explorer/Manipulator entity.
@@ -47,7 +47,7 @@ Explorer/Manipulator Entity Instructions:
 		self.wraplen = 100
 		self.maxlines = 60
 		
-		print("Terminal's prepared.")
+		print("  Terminal's prepared.")
 		
 		
 
