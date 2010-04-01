@@ -321,8 +321,13 @@ class UDP_SERVER:
 	def __init__(self, address):
 		self.active = False
 		
+		import comms; self.comms = comms
+		
 		self.sentBytes = 0
 		self.receivedBytes = 0
+		
+		outbuffer = ""
+		instream = comms.STREAM()
 		
 		self.address = address
 		import socket
@@ -345,19 +350,21 @@ class UDP_SERVER:
 		self.receivedBytes = 0
 	
 	def run(self):
-		basket = self.catch()
-		return basket
+		baskets = self.catch()
+		return baskets
 	
 	def catch(self, max=10):
 		# Returns a number of baskets
 		baskets = []
 		for i in range(max):
 			try:
-				package, addr = self.sock.recvfrom(4096)
-				if package:
-					self.receivedBytes += len(package)
-					import comms
-					parcel = comms.unpack(package)
+				data, addr = self.sock.recvfrom(4096)
+				if data:
+					self.receivedBytes += len(data)
+					self.instream.add(data)
+				packages = self.instream.extract()
+				for package in packages:
+					parcel = self.comms.unpack(package)
 					basket = (parcel, addr)
 					baskets.append(basket)
 				else:
@@ -369,6 +376,7 @@ class UDP_SERVER:
 	def throw(self, item, addr):
 		import comms
 		package = comms.packUDP(item)
+		#self.outbuffer += package
 		self.sock.sendto(package, addr)
 		self.sentBytes += len(package)
 	

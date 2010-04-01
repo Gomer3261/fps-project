@@ -4,11 +4,19 @@ class Class():
 		self.slab = slab
 		print("Terminal admin commands look good.")
 
-	def gs(self):
+	def fullgs(self):
 		"""
 		Outputs the current gamestate information to the terminal.
 		"""
-		self.slab.Interface.out( str(self.slab.GameState.contents), 1, 0 )
+		self.slab.Interface.out( str(self.slab.GameState.contents), console=True )
+	
+	def gs(self):
+		for EID in self.slab.GameState.contents['E']:
+			self.slab.Interface.out( str(EID), console=True )
+	
+	def lg(self):
+		for EID in self.slab.LocalGame.entities:
+			self.slab.Interface.out( str(EID), console=True )
 	
 	def sessions(self):
 		self.slab.Interface.out( str(self.slab.Network.GPS.tcpServer.sessionStorage.sessions) )

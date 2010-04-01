@@ -46,6 +46,22 @@ class Class:
 				self.removeGameStateUsersWithNoConnection(GameState, Admin)
 			
 			if self.GPS:
+				for ticket in self.GPS.sessions:
+					session = self.GPS.sessions[ticket]
+					
+					if not session.greeted: # performs greeting
+						session.send( ("TICKET", ticket) )
+					
+					tcpItems = session.recv()
+					udpItems = session.catch()
+					items = tcpItems
+					for item in udpItems: items.append(item)
+					
+					for item in items:
+						flag, data = item
+						if flag == 'CHK': session.send( item ) # echo
+						
+				
 				self.gameStateDistro(GameState)
 				parcels = self.GPS.run(Admin, GameState, Interface, self)
 				bundles = self.convertParcelsToBundles(parcels)
@@ -73,8 +89,8 @@ class Class:
 		If we're running a server, then we will distribute the GameState (full, and in changes) to each client.
 		"""
 		if self.GPS:
-			if self.gameStateFullDistroClock.get() > 0.5:
-				self.GPS.throwToAll( ('GS', ('FD', GameState.contents)) )
+			if self.gameStateFullDistroClock.get() > 2.0:
+				self.GPS.sendToAll( ('GS', ('FD', GameState.contents)) )
 				self.gameStateFullDistroClock.reset()
 			#if self.gameStateShoutDistroClock.get() > 0.1:
 			if GameState.RequestHandler.shouts:
