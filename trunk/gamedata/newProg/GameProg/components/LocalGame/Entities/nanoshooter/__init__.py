@@ -27,8 +27,9 @@ class Class(base_entity.Class):
 		try: ARGS = self.getOD()['ARGS']
 		except: ARGS = {}
 		
-		self.fireRate = 2.0 # Shots per second...
-		self.damage = 51 # Damage per shot...
+		self.fireRate = 20.0 # Shots per second...
+		self.damage = 26 # Damage per shot...
+		self.shotColor = [1.0, 0.0, 0.0]
 		
 		self.updateClock = self.CLOCK()
 		self.fireRateClock = self.CLOCK()
@@ -192,9 +193,9 @@ class Class(base_entity.Class):
 		projectedPoint = self.getProjectedPoint(range)
 		obj, point, normal = self.gameObject.rayCast(projectedPoint, self.gameObject.position)
 		if point:
-			Rasterizer.drawLine(self.gameObject.position, point, [1.0, 0.5, 0.0])
+			Rasterizer.drawLine(self.gameObject.position, point, self.shotColor)
 		else:
-			Rasterizer.drawLine(self.gameObject.position, projectedPoint, [1.0, 0.5, 0.0])
+			Rasterizer.drawLine(self.gameObject.position, projectedPoint, self.shotColor)
 	
 	def shoot(self, range=500.0, damage=10):
 		import Rasterizer
