@@ -86,13 +86,16 @@ class Class(base_entity.Class):
 				if memoFlag == 'SE':
 					entityType, UIDs, args = memoData
 					owner, controller = UIDs
-					entitiesOfThatType = self.GameState.getEIDsByType(entityType)
-					entitiesOfThatTypeThatThisGuyControls = 0
-					for EID in entitiesOfThatType:
-						entity = self.LocalGame.getEntity(EID)
-						if entity.getController() == controller: entitiesOfThatTypeThatThisGuyControls += 1
-					if entitiesOfThatTypeThatThisGuyControls == 0:
-						self.Network.send( ('GS', ('AR', ('SE', (entityType, UIDs, args)))) )
+					if entityType in self.LocalGame.EntityModule.entityClasses:
+						entitiesOfThatType = self.GameState.getEIDsByType(entityType)
+						entitiesOfThatTypeThatThisGuyControls = 0
+						for EID in entitiesOfThatType:
+							entity = self.LocalGame.getEntity(EID)
+							if entity.getController() == controller: entitiesOfThatTypeThatThisGuyControls += 1
+						if entitiesOfThatTypeThatThisGuyControls == 0:
+							self.Network.send( ('GS', ('AR', ('SE', (entityType, UIDs, args)))) )
+					else:
+						print("Error: No class exists for entity type: " + entityType)
 				
 				if memoFlag == 'RE':
 					EID = memoData

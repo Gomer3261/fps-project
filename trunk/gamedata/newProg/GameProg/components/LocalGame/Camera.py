@@ -8,16 +8,16 @@ class Class:
 	
 	def __init__(self):
 		# Spawning the eCam (Emergency Camera)
-		import GameLogic as gl
-		own = gl.getCurrentController().owner
-		self.eCam = gl.getCurrentScene().addObject("eCam", own)
+		import bge
+		own = bge.logic.getCurrentController().owner
+		self.eCam = bge.logic.getCurrentScene().addObject("eCam", own)
 		self.eCam.position = [0.0, 0.0, 50.0]
-		gl.getCurrentScene().active_camera = self.eCam
+		bge.logic.getCurrentScene().active_camera = self.eCam
 		print("  Camera's happy.")
 	
 	def set(self, cam=None):
-		import GameLogic as gl
-		scene = gl.getCurrentScene()
+		import bge
+		scene = bge.logic.getCurrentScene()
 		
 		# If no cam is specified, we use the emergencyCamera.
 		if not cam:
@@ -36,8 +36,8 @@ class Class:
 				print("New Camera Set!")
 	
 	def forceSet(self, cam=None):
-		import GameLogic as gl
-		scene = gl.getCurrentScene()
+		import bge
+		scene = bge.logic.getCurrentScene()
 		if not cam:
 			cam = self.eCam
 
@@ -48,7 +48,7 @@ class Class:
 		scene.active_camera = cam
 	
 	def clear(self):
-		import GameLogic as gl
-		scene = gl.getCurrentScene()
+		import bge
+		scene = bge.logic.getCurrentScene()
 		cam = self.eCam
 		scene.active_camera = cam

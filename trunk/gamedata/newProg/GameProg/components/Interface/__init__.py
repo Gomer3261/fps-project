@@ -43,7 +43,7 @@ class Class:
 	
 	def out(self, text, terminal=True, note=False, console=False):
 		"""
-		Basic output method. Outputs to the terminal, and to notifications by default.
+		Basic output method. Outputs to the terminal by default.
 		"""
 		if terminal:
 			self.Terminal.output(text)

@@ -21,8 +21,8 @@ class Class:
 	
 	
 	def getGameInfo(self):
-		import GameLogic
-		return GameLogic.globalDict['gameInfo']
+		import bge
+		return bge.logic.globalDict['gameInfo']
 	
 	def weAreHost(self):
 		GI = self.getGameInfo()
@@ -39,9 +39,9 @@ class Class:
 	
 	
 	
-	def initiationLoop(self, GameLogic, Network, GameState, Interface):
+	def initiationLoop(self, Logic, Network, GameState, Interface):
 		"""
-		Gets initiation information from the menus (via GameLogic.globalDict)
+		Gets initiation information from the menus (via bge.logic.globalDict)
 		and sets up the game with it.
 		
 		First, it sets up the game by determining the host and server values,
@@ -65,8 +65,8 @@ class Class:
 			GameState.reset()
 			
 			# GameInfo was found saved to the globalDict
-			if "gameInfo" in GameLogic.globalDict:
-				gameInfo = GameLogic.globalDict["gameInfo"]
+			if "gameInfo" in Logic.globalDict:
+				gameInfo = Logic.globalDict["gameInfo"]
 				
 				### ================================================
 				### Setting up the Game

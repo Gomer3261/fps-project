@@ -13,9 +13,9 @@ class Class(base_entity.Class):
 		
 		if self.weAreController():
 			# Initiating the gameObject
-			import GameLogic as gl
-			own = gl.getCurrentController().owner
-			self.gameObject = gl.getCurrentScene().addObject("explorer", own)
+			import bge
+			own = bge.logic.getCurrentController().owner
+			self.gameObject = bge.logic.getCurrentScene().addObject("explorer", own)
 			
 			self.aimEnd = self.gameObject.controllers[0].actuators["aimEnd"].owner
 			
@@ -96,8 +96,8 @@ class Class(base_entity.Class):
 	def handleGhostDisplay(self, aimpoint):
 		if self.selectedEntityType:
 			if not self.selectedEntityGhost:
-				import GameLogic as gl
-				self.selectedEntityGhost = gl.getCurrentScene().addObject(self.selectedEntityType+"_ghost", gl.getCurrentController().owner)
+				import bge
+				self.selectedEntityGhost = bge.logic.getCurrentScene().addObject(self.selectedEntityType+"_ghost", bge.logic.getCurrentController().owner)
 				self.selectedEntityGhost.position = self.getEntitySpawnHeight(aimpoint)
 				self.selectedEntityGhost.alignAxisToVect(self.entityRotationAngles[self.entityRotationStep], 1)
 				self.selectedEntityGhost.alignAxisToVect([0.0, 0.0, 1.0], 2)
@@ -131,7 +131,7 @@ class Class(base_entity.Class):
 	def getAimpoint(self):
 		start = self.gameObject.position
 		target = self.aimEnd.position
-		#import Rasterizer; Rasterizer.drawLine(start, target, [1.0, 0.0, 0.0])
+		#import bge; bge.render.drawLine(start, target, [1.0, 0.0, 0.0])
 		obj, point, normal = self.gameObject.rayCast(target, start)
 		if point: target = point
 		return target
@@ -139,7 +139,7 @@ class Class(base_entity.Class):
 	def getHitEID(self):
 		start = self.gameObject.position
 		target = self.aimEnd.position
-		#import Rasterizer; Rasterizer.drawLine(start, target, [1.0, 0.0, 0.0])
+		#import bge; bge.render.drawLine(start, target, [1.0, 0.0, 0.0])
 		obj, point, normal = self.gameObject.rayCast(target, start)
 		if obj:
 			if "EID" in obj:
