@@ -19,12 +19,10 @@ class Class:
 
 	def __init__(self):
 		# Adding the Notes scene.
-		import GameLogic as gl
-		con = gl.getCurrentController()
+		import bge
+		con = bge.logic.getCurrentController()
 		
-		openNotes = con.actuators["ADDOVERLAY"]
-		openNotes.scene = "Notes"
-		con.activate(openNotes)
+		bge.logic.addScene("Notes", 1)
 		
 		# A note looks like (text, time)
 		self.notes = []
@@ -61,8 +59,8 @@ class Class:
 		Runs the notification object on the notes scene.
 		"""
 		import time
-		import GameLogic as gl
-		con = gl.getCurrentController()
+		import bge
+		con = bge.logic.getCurrentController()
 		
 		# If the notifier is not active, and is ready for the next note...
 		if not self.active:

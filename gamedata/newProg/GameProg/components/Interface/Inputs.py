@@ -1,4 +1,4 @@
-############################
+ ############################
 ### ------ inputs ------ ###
 ############################
 ### Copyright 2009 Chase Moskal
@@ -11,9 +11,9 @@ class Class:
 		"""Init the module."""
 		
 		#creating the inputs object (for sensors)
-		import GameLogic as gl
-		BaseObject = gl.getCurrentController().owner
-		self.inputsObject = gl.getCurrentScene().addObject("GP_Inputs", BaseObject)
+		import bge
+		BaseObject = bge.logic.getCurrentController().owner
+		self.inputsObject = bge.logic.getCurrentScene().addObject("GP_Inputs", BaseObject)
 		con = self.inputsObject.controllers[0]
 		
 		self.Controller = None
@@ -36,46 +36,46 @@ class Class:
 		The Mouse class contains a set of functions that make working with the mouse easier.
 		"""
 		import math
-		import Rasterizer
+		import bge
 
 		def __init__(self, cont):
 			self.cont = cont
 			self.mousemove = cont.sensors["mousemove"]
 
-			self.width = self.Rasterizer.getWindowWidth()
-			self.height = self.Rasterizer.getWindowHeight()
+			self.width = self.bge.render.getWindowWidth()
+			self.height = self.bge.render.getWindowHeight()
 
-			self.centerX = self.width/2
-			self.centerY = self.height/2
+			self.centerX = self.width//2
+			self.centerY = self.height//2
 
 
 		def reset(self):
 			"""
 			sets the mouse position to the center of the screen.
 			"""
-			self.Rasterizer.setMousePosition(self.centerX, self.centerY)
+			self.bge.logic.mouse.position = (0.5, 0.5)
 
 
 		def show(self, vis=1):
 			"""
 			makes the mouse visible.
 			"""
-			self.Rasterizer.showMouse(vis)
+			self.bge.logic.mouse.visible = vis
 
 		def hide(self, vis=0):
 			"""
 			hides the mouse from view.
 			"""
-			self.Rasterizer.showMouse(vis)
+			self.bge.logic.mouse.visible = vis
 
 		def getPosition(self):
 			"""
 			returns the position of the mouse. X, Y
 			"""
-			position = self.mousemove.position
+			position = self.bge.logic.mouse.position
 
-			X = position[0]
-			Y = position[1]
+			X = position[0]*self.width
+			Y = position[1]*self.height
 
 			return X, Y
 
@@ -208,7 +208,7 @@ class Class:
 
 			def getValue(self, value=None):
 				"""
-				converts the options value to a GameKeys value.
+				converts the options value to a bge.events value.
 				"""
 				if not value:
 					if control not in self.controller.controls:
@@ -250,8 +250,8 @@ class Class:
 				
 				else:
 					self.kind = "key"
-					import GameKeys
-					status = self.controller.keyboard.getKeyStatus(getattr(GameKeys, self.value))
+					import bge
+					status = self.controller.keyboard.getKeyStatus(getattr(bge.events, self.value))
 					return status
 
 				
@@ -312,10 +312,10 @@ class Class:
 			self.events = {}
 			
 			self.controls = controls
-			print "Interface/Inputs/Controller: Controls Set."
+			print("Interface/Inputs/Controller: Controls Set.")
 
 			for control in self.controls:
 				value = self.controls[control]
 				event = self.EVENT(self, control, value)
 				self.events[control] = event
-			#print "Events set."
+			#print("Events set.")

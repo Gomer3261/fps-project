@@ -29,11 +29,11 @@ def initiate(cont):
 		if not hasattr(slab, "Resources"): slab.Resources = components.Resources.Class(slab)
 		
 		# Initiating Game Information #
-		import GameLogic
+		import bge
 		
 		GI = {}
 		
-		GI['host'] = False
+		GI['host'] = True
 		GI['server'] = False
 		
 		address = "chasemoskal.dyndns.org"
@@ -46,7 +46,7 @@ def initiate(cont):
 		if username: GI['username'] = username
 		else: GI['username'] = "-NoName-"
 		
-		GameLogic.globalDict['gameInfo'] = GI
+		bge.logic.globalDict['gameInfo'] = GI
 		
 		###
 		### INIT Completed.
@@ -59,7 +59,7 @@ def initiate(cont):
 
 def run(cont):
 	try:
-		import GameLogic
+		import bge
 		
 		### ================================================
 		### Initiations
@@ -80,7 +80,7 @@ def run(cont):
 		### The Game Loop
 		### ================================================
 		
-		Admin.initiationLoop(GameLogic, Network, GameState, Interface) # Setting up the game
+		Admin.initiationLoop(bge.logic, Network, GameState, Interface) # Setting up the game
 		
 		Network.run(Admin, GameState, Interface) # Maintaining connections and stuff, and also receiving data to inBundles.
 		

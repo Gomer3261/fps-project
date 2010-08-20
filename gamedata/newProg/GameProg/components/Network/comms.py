@@ -2,7 +2,7 @@
 ### ------ COMMUNICATION FUNCTIONS ------ ###
 #############################################
 
-import cPickle as pickle
+import pickle
 
 packsep = "\x11" # DC1
 ########## Useless, but still cool

@@ -23,9 +23,9 @@ class Class(base_entity.Class):
 		ARGS = self.getOD()['ARGS']
 		
 		# Initiate gameObject
-		import GameLogic as gl
-		own = gl.getCurrentController().owner
-		self.gameObject = gl.getCurrentScene().addObject("spawnpoint", own)
+		import bge
+		own = bge.logic.getCurrentController().owner
+		self.gameObject = bge.logic.getCurrentScene().addObject("spawnpoint", own)
 		self.gameObject["EID"] = self.EID
 		self.gameObject.position = ARGS['P']
 		self.gameObject.alignAxisToVect(ARGS['R'], 1)

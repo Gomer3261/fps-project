@@ -46,11 +46,11 @@ class Class(base_entity.Class):
 		self.lastHP = self.HP
 		self.lastDamageFrom = 0 # UID responsible for last damage
 		
-		import GameLogic as gl
-		own = gl.getCurrentController().owner
+		import bge
+		own = bge.logic.getCurrentController().owner
 		
 		# Initiating the gameObject
-		self.gameObject = gl.getCurrentScene().addObject("nanoshooter", own)
+		self.gameObject = bge.logic.getCurrentScene().addObject("nanoshooter", own)
 		self.gameObject['EID'] = self.EID
 		self.gameObject['damageable'] = True
 		
@@ -59,7 +59,7 @@ class Class(base_entity.Class):
 			self.gameObject.position = ARGS['P']
 		
 		# Initiating the Aimpoint
-		self.aimPoint = gl.getCurrentScene().addObject("ns_aimPoint", own)
+		self.aimPoint = bge.logic.getCurrentScene().addObject("ns_aimPoint", own)
 		
 		# If we are not the controller, the aimpoint is not visible.
 		if not self.weAreController():
@@ -189,16 +189,15 @@ class Class(base_entity.Class):
 	################################################
 	
 	def fireForEffect(self, range=500.0):
-		import Rasterizer
+		import bge
 		projectedPoint = self.getProjectedPoint(range)
 		obj, point, normal = self.gameObject.rayCast(projectedPoint, self.gameObject.position)
 		if point:
-			Rasterizer.drawLine(self.gameObject.position, point, self.shotColor)
+			bge.render.drawLine(self.gameObject.position, point, self.shotColor)
 		else:
-			Rasterizer.drawLine(self.gameObject.position, projectedPoint, self.shotColor)
+			bge.render.drawLine(self.gameObject.position, projectedPoint, self.shotColor)
 	
 	def shoot(self, range=500.0, damage=10):
-		import Rasterizer
 		projectedPoint = self.getProjectedPoint(range)
 		obj, point, normal = self.gameObject.rayCast(projectedPoint, self.gameObject.position)
 		if obj:
@@ -209,7 +208,7 @@ class Class(base_entity.Class):
 	
 	def getProjectedPoint(self, distance):
 		o = self.gameObject.orientation
-		Yp = [ o[0][1], o[1][1], o[2][1] ]
+		Yp = [ o[1][0], o[1][1], o[1][2] ]
 		return self.multiplyPosition(Yp, distance)
 	
 	def multiplyPosition(self, p, x):
@@ -277,7 +276,7 @@ class Class(base_entity.Class):
 		return X, Y, Z
 	
 	def trackTo(self, point):
-		import Mathutils
+		import mathutils
 		
 		# Getting the offset (position of point relative to gameObject)
 		oX = point[0] - self.gameObject.position[0]
@@ -285,19 +284,19 @@ class Class(base_entity.Class):
 		oZ = point[2] - self.gameObject.position[2]
 		
 		# Getting the Y Vector of our Orientation Matrix
-		Y = Mathutils.Vector([oX, oY, oZ])
+		Y = mathutils.Vector([oX, oY, oZ])
 		Y.normalize()
 		
 		# Creating the Z Vector (facing up)
-		Z = Mathutils.Vector([0.0, 0.0, 1.0])
+		Z = mathutils.Vector([0.0, 0.0, 1.0])
 		
 		# Generating the X Vector (cross product of Y and Z)
 		X = Y.cross(Z)
 		
 		# Creating our Orientation
-		ori1 = [X[0], Y[0], Z[0]]
-		ori2 = [X[1], Y[1], Z[1]]
-		ori3 = [X[2], Y[2], Z[2]]
+		ori1 = [X[0], X[1], X[2]]
+		ori2 = [Y[0], Y[1], Y[2]]
+		ori3 = [Z[0], Z[1], Z[2]]
 		
 		ori = [ori1, ori2, ori3]
 		

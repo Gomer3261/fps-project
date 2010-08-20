@@ -201,7 +201,8 @@ Explorer/Manipulator Entity Instructions:
 			try:
 				exec(s, namespace)
 			except:
-				error = traceback.format_exception_only(sys.exc_type, sys.exc_value)
+				exc_type, exc_value, exc_traceback = sys.exc_info()
+				error = traceback.format_exception_only(exc_type, exc_value)
 				error = error[len(error)-1]
 				self.output(error)
 				traceback.print_exc()
@@ -251,17 +252,17 @@ Explorer/Manipulator Entity Instructions:
 		"""
 		
 		if self.active:
-			import GameLogic as gl
+			import bge
 			
-			con = gl.getCurrentController()
+			con = bge.logic.getCurrentController()
 			
 			returnKey = con.sensors["RETURN"]
 			upKey = con.sensors["UP"]
 			downKey = con.sensors["DOWN"]
 			deleteKey = con.sensors["DELETE"]
 		
-			inTextObj = gl.getCurrentScene().objects["OBTerminal-inText"]
-			outTextObj = gl.getCurrentScene().objects["OBTerminal-outText"]
+			inTextObj = bge.logic.getCurrentScene().objects["Terminal-inText"]
+			outTextObj = bge.logic.getCurrentScene().objects["Terminal-outText"]
 
 
 			### INPUT HANDLING ###
@@ -307,27 +308,25 @@ Explorer/Manipulator Entity Instructions:
 	def handleOpenClose(self):
 		"""
 		This function handles opening and closing the terminal.
-		Its called externally by a script running in the terminal scene.
+		Its called externally by a script running in the main scene.
 		"""
 		
-		import GameLogic as gl
-		con = gl.getCurrentController()
+		import bge
 		
-		termkey = con.sensors["TERMKEY"]
+		if (bge.events.ACCENTGRAVEKEY, bge.logic.KX_INPUT_JUST_ACTIVATED) in bge.logic.keyboard.events:
+			termkey = 1
+		else:
+			termkey = 0
 
-		if termkey.positive and (not self.termkeyLast):
+		if termkey and (not self.termkeyLast):
 			if self.active:
-				closeTerminal = con.actuators["REMOVESCENE"]
-				closeTerminal.scene = "Terminal"
-				con.activate(closeTerminal)
+				bge.logic.getSceneList()[2].end()
 				
 				self.active = 0
 			else:
-				openTerminal = con.actuators["ADDOVERLAY"]
-				openTerminal.scene = "Terminal"
-				con.activate(openTerminal)
+				bge.logic.addScene("Terminal", 1)
 				
 				self.active = 1
 				self.oldcontents = []
 
-		self.termkeyLast = termkey.positive
+		self.termkeyLast = termkey

@@ -4,6 +4,7 @@ class Class:
 	def __init__(self, slab):
 		import Camera as CameraMod; self.Camera = CameraMod.Class()
 		import RequestHandler as RequestHandlerMod; self.RequestHandler = RequestHandlerMod.Class()
+		import Entities; self.EntityModule = Entities
 		
 		self.entities = {}
 		print("LocalGame's good to go.")
@@ -25,11 +26,11 @@ class Class:
 	def giveMemo(self, EID, memoData):
 		try:
 			if EID:
-				if not EID in self.entities: raise Exception, "Memo Error: EID not in LocalGame.entities?"
+				if not EID in self.entities: raise(Exception, "Memo Error: EID not in LocalGame.entities?")
 				entity = self.entities[EID]
 				entity.memos.append(memoData)
 			else:
-				raise Exception, "Memo Error: no EID given."
+				raise(Exception, "Memo Error: no EID given.")
 		except: import traceback; traceback.print_exc()
 	
 	
@@ -58,13 +59,11 @@ class Class:
 	
 	# Creating Entities
 	def createEntity(self, EID):
-		import Entities
 		type = self.GameState.getEntity(EID)['T']
-		self.entities[EID] = Entities.getEntityClass(type)(EID, self)
+		self.entities[EID] = self.EntityModule.getEntityClass(type)(EID, self)
 	
 	def getEntityClass(self, type):
-		import Entities
-		return Entities.getEntityClass(type)
+		return self.EntityModule.getEntityClass(type)
 	
 	def getEntity(self, EID):
 		if EID in self.entities: return self.entities[EID]
