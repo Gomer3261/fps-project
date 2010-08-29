@@ -225,13 +225,13 @@ class GPC:
 
 
 
-
+# For running the Master Server (does this belong here?)
 class MS_SERVER:
 	pass
 
 
 
-
+# For connecting to the Master Server (this totally belongs here)
 class MS_CLIENT:
 	pass
 

@@ -121,6 +121,8 @@ class GAMEPLAYSERVER:
 			except: pass
 		
 		def catch(self):
+			# We don't actually recieve from the UDP socket from here, because of the way UDP works.
+			# but we pretend that we do, just for the sake of... consistency?
 			items = self.udpInItems
 			self.udpInItems = []
 			return items
@@ -182,6 +184,7 @@ class GAMEPLAYSERVER:
 		for ticket in self.sessions: self.sessions[ticket].run()
 	
 	def getSession(self, ticket):
+		# is this function kinda stupid?
 		if ticket in self.sessions:
 			session = self.sessions[ticket]
 			return session
