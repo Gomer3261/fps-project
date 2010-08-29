@@ -60,7 +60,7 @@ def makeAddressString(address=('IPADDR', 1001, 1001)):
 
 
 
-
+# Simple timer object. Does this belong here?
 class TIMER:
     def __init__(self):
         import time
@@ -76,7 +76,8 @@ class TIMER:
 
 class STREAM:
     """
-    A kind of buffer.
+    A kind of buffer. Used for extracting packages from an ongoing stream of information.
+	TCP anyone?
     """
     def __init__(self):
         self.content = ""

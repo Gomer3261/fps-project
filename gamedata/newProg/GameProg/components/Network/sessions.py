@@ -1,6 +1,9 @@
 class SESSIONSTORAGE:
 	"""
-	Stores sessions.
+	A Network thing.
+	Stores sessions, which allows a dropped player to quickly rejoin 
+	the game without having to totally reconnect and crap, easily 
+	maintaining the same UID and stuff.
 	"""
 	
 	################################################

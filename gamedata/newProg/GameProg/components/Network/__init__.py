@@ -12,7 +12,7 @@ class Class:
 	"""
 	import comms
 	import classes
-	import core
+	import core # so we need to finish and switch to newcore when we can?
 	
 	def __init__(self, slab):
 		self.slab = slab
