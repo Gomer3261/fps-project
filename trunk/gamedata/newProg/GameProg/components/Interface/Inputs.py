@@ -19,7 +19,7 @@ class Class:
 		self.Controller = None
 		self.Controller = self.CONTROLLER(con)
 		
-		self.Mouse = self.MOUSE(con)
+		self.Mouse = self.MOUSE()
 		
 		print("  Interface/Input's happy.")
 	
@@ -38,9 +38,9 @@ class Class:
 		import math
 		import bge
 
-		def __init__(self, cont):
-			self.cont = cont
-			self.mousemove = cont.sensors["mousemove"]
+		def __init__(self):
+			
+			self.previousPosition = (0, 0)
 
 			self.width = self.bge.render.getWindowWidth()
 			self.height = self.bge.render.getWindowHeight()
@@ -111,9 +111,11 @@ class Class:
 			"""
 			True if mouse has moved.
 			"""
-			if self.mousemove.positive:
+			if self.bge.logic.mouse.position != self.previousPosition:
+				self.previousPosition = self.bge.logic.mouse.position
 				return 1
 			else:
+				self.previousPosition = self.bge.logic.mouse.position
 				return 0
 
 		def getMovement(self):
@@ -152,40 +154,33 @@ class Class:
 
 		keyboard = None
 		
-		other = {}
+		mouse = None
 		
-		other["LMB"] = None
-		other["RMB"] = None
-		other["MMB"] = None
-
-		other["MWU"] = None
-		other["MWD"] = None
+		other = []
 
 		
 
 		def __init__(self, con):
+			import bge
 
 			#finding sensors
-			KEYBOARD = con.sensors["KEYBOARD"]
+			KEYBOARD = bge.logic.keyboard
 			
-			LMB = con.sensors["LMB"]
-			RMB = con.sensors["RMB"]
-			MMB = con.sensors["MMB"]
-
-			MWU = con.sensors["MWU"]
-			MWD = con.sensors["MWD"]
+			MOUSE = bge.logic.mouse
 			
 			###
 
 			#setting variables.=
 			self.keyboard = KEYBOARD
 			
-			self.other["LMB"] = LMB
-			self.other["RMB"] = RMB
-			self.other["MMB"] = MMB
+			self.mouse = MOUSE
+			
+			self.other.append("LMB")
+			self.other.append("RMB")
+			self.other.append("MMB")
 
-			self.other["MWU"] = MWU
-			self.other["MWD"] = MWD
+			self.other.append("MWU")
+			self.other.append("MWD")
 
 
 
@@ -203,8 +198,28 @@ class Class:
 				
 				self.kind = ""
 				self.lastpositive = 0
-
 				
+			def convertMouseControl(self, control):
+				"""
+				converts a special mouse options value to a bge.events value.
+				"""
+				newControl = ""
+				
+				if control[1:] == "MB":
+					if control[0] == "L":
+						newControl += "LEFT"
+					elif control[0] == "R":
+						newControl += "RIGHT"
+					else:
+						newControl += "MIDDLE"
+				else:
+					if control == "MWU":
+						newControl += "WHEELUP"
+					else:
+						newControl += "WHEELDOWN"
+					
+				newControl += "MOUSE"
+				return newControl
 
 			def getValue(self, value=None):
 				"""
@@ -217,9 +232,12 @@ class Class:
 					
 				value = value.replace("-", "")
 				value = value.upper()
-
+				
+				if value in self.controller.other:
+					value = self.convertMouseControl(value)
+					
 				self.value = value
-
+					
 				return value
 
 			
@@ -228,30 +246,16 @@ class Class:
 				"""
 				figures out the status of the event. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
 				"""
-				if self.value in self.controller.other:
+				import bge
+				if "MOUSE" in self.value:
 					self.kind = "other"
-					positive = self.controller.other[self.value].positive
 
-					status = 0
-					
-					if positive:
-						if self.lastpositive:
-							status = 2 # being held
-						else:
-							status = 1 # just pressed
-					else:
-						if self.lastpositive:
-							status = 3 # just released
-						else:
-							status = 0 # nothing
-
-					self.lastpositive = positive
+					status = self.controller.mouse.events[getattr(bge.events, self.value)]
 					return status
 				
 				else:
 					self.kind = "key"
-					import bge
-					status = self.controller.keyboard.getKeyStatus(getattr(bge.events, self.value))
+					status = self.controller.keyboard.events[getattr(bge.events, self.value)]
 					return status
 
 				
