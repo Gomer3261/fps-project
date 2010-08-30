@@ -12,12 +12,9 @@ class Class:
 		
 		#creating the inputs object (for sensors)
 		import bge
-		BaseObject = bge.logic.getCurrentController().owner
-		self.inputsObject = bge.logic.getCurrentScene().addObject("GP_Inputs", BaseObject)
-		con = self.inputsObject.controllers[0]
 		
 		self.Controller = None
-		self.Controller = self.CONTROLLER(con)
+		self.Controller = self.CONTROLLER()
 		
 		self.Mouse = self.MOUSE()
 		
@@ -160,7 +157,7 @@ class Class:
 
 		
 
-		def __init__(self, con):
+		def __init__(self):
 			import bge
 
 			#finding sensors
