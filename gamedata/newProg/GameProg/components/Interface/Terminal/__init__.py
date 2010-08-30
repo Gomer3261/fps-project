@@ -313,7 +313,7 @@ Explorer/Manipulator Entity Instructions:
 		
 		import bge
 		
-		if (bge.events.ACCENTGRAVEKEY, bge.logic.KX_INPUT_JUST_ACTIVATED) in bge.logic.keyboard.events:
+		if bge.logic.keyboard.events[bge.events.ACCENTGRAVEKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED:
 			termkey = 1
 		else:
 			termkey = 0
