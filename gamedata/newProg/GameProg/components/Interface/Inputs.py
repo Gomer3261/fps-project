@@ -36,8 +36,6 @@ class Class:
 		import bge
 
 		def __init__(self):
-			
-			self.previousPosition = (0, 0)
 
 			self.width = self.bge.render.getWindowWidth()
 			self.height = self.bge.render.getWindowHeight()
@@ -108,11 +106,9 @@ class Class:
 			"""
 			True if mouse has moved.
 			"""
-			if self.bge.logic.mouse.position != self.previousPosition:
-				self.previousPosition = self.bge.logic.mouse.position
+			if self.bge.logic.mouse.events[self.bge.events.MOUSEX] or self.bge.logic.mouse.events[self.bge.events.MOUSEY]:
 				return 1
 			else:
-				self.previousPosition = self.bge.logic.mouse.position
 				return 0
 
 		def getMovement(self):
