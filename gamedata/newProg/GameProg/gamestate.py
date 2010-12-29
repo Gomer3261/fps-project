@@ -1,4 +1,4 @@
-class initializeGamestate:
+class initializeGameState:
 	def __init__(self, net=0, host=1):
 		self.data = {}
 		self.delta = {}
@@ -7,7 +7,7 @@ class initializeGamestate:
 		self.host = host
 		self.mode = None
 		
-		nextID = 0
+		nextID = 1
 		
 	#Managerial functions
 	
@@ -56,7 +56,14 @@ class initializeGamestate:
 	
 	#Reading Gamestate
 		
-	
+	def getByID(id):
+		if id in self.data['U']:
+			return self.data['U'][i]
+		elif id in self.data['E']:
+			return self.data['E'][i]
+		else:
+			return None
+		
 	
 	
 	
