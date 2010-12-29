@@ -13,6 +13,8 @@ class initiateServer:
 		self.sock.bind(('',port))
 		
 		connections = {} # Dictionary of connections
+		
+		inBuffer=[]
 
 	class makeConnection:
 		def __init__(self,addr,username):
@@ -22,7 +24,8 @@ class initiateServer:
 			self.nextThrowOutSeq = 0
 		def getThrowOutSeq(self): s=self.nextThrowOutSeq; self.nextThrowOutSeq+=1; return s
 	
-	def lowLevelStuff(self):
+	
+	def acceptNewConnection(self):
 		import netfuncs
 		data,addr = self.sock.recvfrom(self.buf)
 		if data:
