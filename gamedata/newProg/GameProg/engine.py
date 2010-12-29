@@ -18,9 +18,9 @@ def MainLoop():
 	# Server exclusive routines.
 	if GameState.mode == "server":
 		if not Network.Server:
-			Network.initiateServer(Network.port) # Server initiation.
+			Network.Server = Network.initiateServer(Network.port) # Server initiation.
 		else:
-			newUsers = Network.acceptConnections() # Asyncronously accepts new connections after giving them the GameState and UID.
+			newUsers = Network.lowLevelStuff() # Asyncronously accepts new connections after giving them the GameState and UID.
 			GameState.addUsers( newUsers ) # Adds any new users to the GameState.
 			Network.send( GameState.data, 5.0 ) # Sends out a full gamestate package (sends are reliable UDP)
 			Network.throw( GameState.deltaData, 0.1 ) # Throws (unreliably transfers over UDP) changes in the GameState to clients.
@@ -28,7 +28,7 @@ def MainLoop():
 	# Client exclusive routines
 	if GameState.mode == "client":
 		if not Network.Client:
-			Network.initiateClient( Network.addr,Network.port )
+			Network.Client = Network.initiateClient( Network.addr,Network.port )
 	
 	if GameState.mode=="client" or GameState.mode=="server":
 		messages = Network.catchMessages()
