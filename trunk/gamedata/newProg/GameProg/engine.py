@@ -16,29 +16,24 @@ Network.port = 3205
 def MainLoop():
 	
 	# Server routines.
-	if GameState.mode == "server":
-		if not Network.Server:
-			Network.Server = Network.initiateServer(Network.port) # Server initiation.
-		else:
-			packets = Network.getIncoming()
-			newUsers = Network.handleNetPackets(packets)
-			GameState.deltaUsers( newUsers, departedUsers ) # Adds or removes users.
-			GameState.interpret( Network.handleThrownPackets(packets) )
-			GameState.interpret( Network.handleSentPackets(packets) )
-			Network.send( GameState.data, 3.0 ) # Reliably sends out a full copy of the GameState.
-			Network.throw( GameState.deltaData, 0.1 ) # Unreliably throws changes in the GameState to clients.
-	
-	# Client routines
-	if GameState.mode == "client":
-		if not Network.Client:
-			Network.Client = Network.initiateClient( Network.addr,Network.port )
-		else:
-			packets = Network.getIncoming()
-			if not Network.Client.connected: Network.Client.attemptConnection(packets)
-			GameState.interpret( Network.handleThrownPackets(packets) )
-			GameState.interpret( Network.handleSentPackets(packets) )
-			Network.throw( GameState.deltaData, 0.1 ) # Unreliably throws requested GameState changes to the server.
-	
+	if GameState.mode=="server" and not Network.Connection:
+		Network.Connection = Network.initiateServer( Network.port ) # Server initiation.
+	elif GameState.mode=="client" and not Network.Connection:
+		Network.Connection = Network.initiateClient( ('',Network.port), "Cartman" ) # Client initiation.
+		
+	else:
+		if GameState.mode="client":
+			Network.Connection.throw( GameState.delta )
+			GameState.delta.clear()
+		Network.Connection.mainloop( GameState ) # Network uses gamestate to sync user id's.
+		for item in Network.Connection.inBuffer:
+			GameState.mergeDelta( item )
+		if GameState.mode=="server": 
+			Network.Connection.throwToAll( GameState.delta )
+			Network.Connection.interval( Network.Connection.throwToAll, GameState.data, 2.0 )
+		GameState.applyDelta()
+		GameState.delta.clear()
+
 	
 	### UNIVERSAL ROUTINES
 	# These apply to server, client, and local modes.
@@ -48,6 +43,6 @@ def MainLoop():
 	for entity in LocalGame.entities: # We loop through every entity.
 		entity.conform( GameState ) # Each entity conforms to the GameState as it sees fit.
 		if entity.getMode() == "control": # Only control entities send info to the gamestate (to request changes)
-			deltaData, memos = entity.run() # Running controlled entities.
+			deltaData, memos = entity.run( GameState ) # Running controlled entities.
 			if deltaData: GameState.mergeDelta(deltaData)
 			if memos: Network.send(memos)
