@@ -1,12 +1,14 @@
 
+def makeSeq(integer):
+	return "%010d"%integer
 
-def makeNetPacket(type, payload):
-	p="\x11"
-
-
-def makeThrowPacket(type, seq, payload):
-	p="\x12"
+def makeNetPacket(data):
+	return "\x11" + data
 
 
-def makeSendPacket(type, seq, payload):
-	p="\x13"
+def makeThrowPacket(seqInt, data):
+	return "\x12" + makeSeq(seqInt) + data
+
+
+def makeSendPacket(seqInt, data):
+	return "\x13" + makeSeqInt(seqInt) + data
