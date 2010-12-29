@@ -28,11 +28,17 @@ class initiateServer:
 		import netfuncs
 		data,addr = self.sock.recvfrom(self.buf)
 		if data:
-			if data[0]=="\x11": # It's a network message.
+			if data[0]=="\x11": # It's a network packet.
 				if data[1] == "c": # they want to initiate a connection.
 					self.connections[addr] = self.makeConnection(addr)
-					packet = netfuncs.makeNetPacket('a', newTicket, payload):
+					packet = netfuncs.makeNetPacket('a', payload):
 					self.sock.sendto(packet,addr)
+					
+			if data[0]=="\x12": # It's a throw packet.
+				pass
+			
+			if data[0]=="\x13": # It's a send packet.
+				pass
 
 
 
