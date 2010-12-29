@@ -22,8 +22,8 @@ def MainLoop():
 		else:
 			newUsers = Network.acceptConnections() # Asyncronously accepts new connections after giving them the GameState and UID.
 			GameState.addUsers( newUsers ) # Adds any new users to the GameState.
-			Network.sendFullGameState( GameState.data, 5.0 ) # Sends out a full gamestate package (sends are reliable UDP)
-			Network.throwDeltaGameState( GameState.deltaData, 0.1 ) # Throws (unreliably transfers over UDP) changes in the GameState to clients.
+			Network.send( GameState.data, 5.0 ) # Sends out a full gamestate package (sends are reliable UDP)
+			Network.throw( GameState.deltaData, 0.1 ) # Throws (unreliably transfers over UDP) changes in the GameState to clients.
 	
 	# Client exclusive routines
 	if GameState.mode == "client":
@@ -44,9 +44,6 @@ def MainLoop():
 	for entity in LocalGame.entities: # We loop through every entity.
 		entity.conform( GameState.data ) # Each entity conforms to the GameState as it sees fit.
 		if entity.getMode() == "control": # Only control entities send info to the gamestate (to request changes)
-			messages, reliable = entity.run() # Running controlled entities.
-			if GameState.host:
-				Network.addToInBuffer(messages) # Running a control entity generates data output, which we send to the GameState via Network, as always. In this case, we inject the output messages directly to the network's input stream, so GameState will get it next tick, with Network.feedback().
-			else:
-				if reliable: Network.send(messages)
-				else: Network.throw(messages)
+			deltaData, memos = entity.run() # Running controlled entities.
+			if deltaData: GameState.delta.merge(deltaData)
+			if memos: Network.send(memos)
