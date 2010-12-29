@@ -1,3 +1,7 @@
+host=None
+net=None
+
+
 class initializeGameState:
 	def __init__(self, net=0, host=1):
 		self.data = {}
