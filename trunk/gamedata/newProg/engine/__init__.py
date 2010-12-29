@@ -1,27 +1,16 @@
-host=True
-net=False
-
-init=False
-
-import Network
 import GameState
+import Network
 
-def run():
-	if not init:
-		GameState.host=False # Designates if we are the host.
-		GameState.net=True # Designates if this will take place over internet/lan.
+GameState.host=False # Designates if we are the host.
+GameState.net=True # Designates if this will take place over internet/lan.
 
-		if GameState.host and GameState.net: GameState.mode="server"
-		if (not GameState.host) and GameState.net: GameState.mode="client"
-		if GameState.host and (not GameState.net): GameState.mode="local"
-		if (not GameState.host) and (not GameState.net): GameState.mode="replay"
+if GameState.host and GameState.net: GameState.mode="server"
+if (not GameState.host) and GameState.net: GameState.mode="client"
+if GameState.host and (not GameState.net): GameState.mode="local"
+if (not GameState.host) and (not GameState.net): GameState.mode="replay"
 
-		Network.addr = "96.54.129.113"
-		Network.port = 3205
-	else:
-		mainloop()
-
-
+Network.addr = "96.54.129.113"
+Network.port = 3205
 
 def mainloop():
 	
@@ -32,7 +21,7 @@ def mainloop():
 		Network.Connection = Network.initiateClient( ('',Network.port), "Cartman" ) # Client initiation.
 		
 	else:
-		if GameState.mode="client":
+		if GameState.mode=="client":
 			Network.Connection.throw( GameState.delta )
 			GameState.delta.clear()
 		Network.Connection.mainloop( GameState ) # Network uses gamestate to sync user id's.
