@@ -39,11 +39,11 @@ def MainLoop():
 	
 	GameState.interpret( Network.inBuffer ) # The GameState interprets incoming messages.
 	
-	LocalGame.conform( GameState.data ) # LocalGame emulates the GameState by adding objects or removing them based on what the GameState says.
+	LocalGame.conform( GameState ) # LocalGame emulates the GameState by adding objects or removing them based on what the GameState says.
 	
 	for entity in LocalGame.entities: # We loop through every entity.
-		entity.conform( GameState.data ) # Each entity conforms to the GameState as it sees fit.
+		entity.conform( GameState ) # Each entity conforms to the GameState as it sees fit.
 		if entity.getMode() == "control": # Only control entities send info to the gamestate (to request changes)
 			deltaData, memos = entity.run() # Running controlled entities.
-			if deltaData: GameState.delta.merge(deltaData)
+			if deltaData: GameState.mergeDelta(deltaData)
 			if memos: Network.send(memos)
