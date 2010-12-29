@@ -1,19 +1,29 @@
-# Our Game Engine Within A Game Engine.
+host=True
+net=False
 
-GameState.host=False # Designates if we are the host.
-GameState.net=True # Designates if this will take place over internet/lan.
+init=False
 
-if GameState.host and GameState.net: GameState.mode="server"
-if (not GameState.host) and GameState.net: GameState.mode="client"
-if GameState.host and (not GameState.net): GameState.mode="local"
-if (not GameState.host) and (not GameState.net): GameState.mode="replay"
+import Network
+import GameState
 
-Network.addr = "96.54.129.113"
-Network.port = 3205
+def run():
+	if not init:
+		GameState.host=False # Designates if we are the host.
+		GameState.net=True # Designates if this will take place over internet/lan.
+
+		if GameState.host and GameState.net: GameState.mode="server"
+		if (not GameState.host) and GameState.net: GameState.mode="client"
+		if GameState.host and (not GameState.net): GameState.mode="local"
+		if (not GameState.host) and (not GameState.net): GameState.mode="replay"
+
+		Network.addr = "96.54.129.113"
+		Network.port = 3205
+	else:
+		mainloop()
 
 
 
-def MainLoop():
+def mainloop():
 	
 	# Server routines.
 	if GameState.mode=="server" and not Network.Connection:
