@@ -15,29 +15,33 @@ Network.port = 3205
 
 def MainLoop():
 	
-	# Server exclusive routines.
+	# Server routines.
 	if GameState.mode == "server":
 		if not Network.Server:
 			Network.Server = Network.initiateServer(Network.port) # Server initiation.
 		else:
-			newUsers = Network.lowLevelStuff() # Asyncronously accepts new connections after giving them the GameState and UID.
-			GameState.addUsers( newUsers ) # Adds any new users to the GameState.
-			Network.send( GameState.data, 5.0 ) # Sends out a full gamestate package (sends are reliable UDP)
-			Network.throw( GameState.deltaData, 0.1 ) # Throws (unreliably transfers over UDP) changes in the GameState to clients.
+			packets = Network.getIncoming()
+			newUsers, departedUsers = Network.handleNetPackets()
+			GameState.deltaUsers( newUsers, departedUsers ) # Adds or removes users.
+			GameState.interpret( Network.handleThrowPackets() )
+			GameState.interpret( Network.handleSendPackets() )
+			Network.send( GameState.data, 3.0 ) # Reliably sends out a full copy of the GameState.
+			Network.throw( GameState.deltaData, 0.1 ) # Unreliably throws changes in the GameState to clients.
 	
-	# Client exclusive routines
+	# Client routines
 	if GameState.mode == "client":
 		if not Network.Client:
 			Network.Client = Network.initiateClient( Network.addr,Network.port )
+		else:
+			if not Network.Client.connected: Network.Client.attemptConnection()
+			packets = Network.getIncoming()
+			GameState.interpret( Network.handleThrowPackets )
+			GameState.interpret( Network.handleSendPackets )
+			Network.throw( GameState.deltaData, 0.1 ) # Unreliably throws requested GameState changes to the server.
 	
-	if GameState.mode=="client" or GameState.mode=="server":
-		messages = Network.catchMessages()
-		if messages: Network.addToInBuffer(messages)
 	
 	### UNIVERSAL ROUTINES
 	# These apply to server, client, and local modes.
-	
-	GameState.interpret( Network.inBuffer ) # The GameState interprets incoming messages.
 	
 	LocalGame.conform( GameState ) # LocalGame emulates the GameState by adding objects or removing them based on what the GameState says.
 	
