@@ -21,10 +21,10 @@ def MainLoop():
 			Network.Server = Network.initiateServer(Network.port) # Server initiation.
 		else:
 			packets = Network.getIncoming()
-			newUsers, departedUsers = Network.handleNetPackets()
+			newUsers = Network.handleNetPackets(packets)
 			GameState.deltaUsers( newUsers, departedUsers ) # Adds or removes users.
-			GameState.interpret( Network.handleThrowPackets() )
-			GameState.interpret( Network.handleSendPackets() )
+			GameState.interpret( Network.handleThrownPackets(packets) )
+			GameState.interpret( Network.handleSentPackets(packets) )
 			Network.send( GameState.data, 3.0 ) # Reliably sends out a full copy of the GameState.
 			Network.throw( GameState.deltaData, 0.1 ) # Unreliably throws changes in the GameState to clients.
 	
@@ -33,10 +33,10 @@ def MainLoop():
 		if not Network.Client:
 			Network.Client = Network.initiateClient( Network.addr,Network.port )
 		else:
-			if not Network.Client.connected: Network.Client.attemptConnection()
 			packets = Network.getIncoming()
-			GameState.interpret( Network.handleThrowPackets )
-			GameState.interpret( Network.handleSendPackets )
+			if not Network.Client.connected: Network.Client.attemptConnection(packets)
+			GameState.interpret( Network.handleThrownPackets(packets) )
+			GameState.interpret( Network.handleSentPackets(packets) )
 			Network.throw( GameState.deltaData, 0.1 ) # Unreliably throws requested GameState changes to the server.
 	
 	
