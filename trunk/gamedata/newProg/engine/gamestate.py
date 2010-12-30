@@ -1,4 +1,4 @@
-class initiateGameState:
+class initiateGamestate:
 	def __init__(self, host=1, net=0):
 		self.data = {}
 		self.delta = {}
