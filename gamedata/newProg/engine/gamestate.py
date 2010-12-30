@@ -33,9 +33,10 @@ class initializeGamestate:
 	def updateRecursively(self, value1, value2):
 		for i in value2:
 			if i in value1 and (type(value1[i]) == type({})) and (type(value2[i]) == type({})):
-				self.updateRecursively(value1[i], value2[i])
+				value1[i] = self.updateRecursively(value1[i], value2[i])
 			else:
 				value1[i] = value2[i]
+		return value1
 				
 	def applyDelta(self):
 		self.deleteNullities(self.delta, self.data)
@@ -43,7 +44,7 @@ class initializeGamestate:
 		
 	def mergeDelta(self, deltaData):
 		#Possiblity of loss in null values. Propery Nullity handling may be necessary
-		self.updateRecursively(self.delta, deltaData)
+		self.delta = self.updateRecursively(self.delta, deltaData)
 	
 	def addUsers(self, newUsers):
 		pass
