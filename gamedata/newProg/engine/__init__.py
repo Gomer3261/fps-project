@@ -3,13 +3,14 @@ import engine.network
 import engine.entities
 
 gamestate=None
-entityController = entities.initiateEntityController()
+entityController=None
 
 INIT = False
 
 def initialize(host=1, net=0):
-	global gamestate, gamestateModule, network, INIT
+	global gamestate, gamestateModule, network, entities, entityController, INIT
 	gamestate = gamestateModule.initiateGamestate(host, net)
+	entityController = entities.initiateEntityController()
 	network.addr = "96.54.129.113"
 	network.port = 3205
 	INIT = True
@@ -19,7 +20,7 @@ def initialize(host=1, net=0):
 	print('='*50)
 
 def mainloop():
-	global gamestate, gamestateModule, network, INIT
+	global gamestate, gamestateModule, network, entities, entityController, INIT
 	if not INIT: initialize()
 	
 	# Server routines.
