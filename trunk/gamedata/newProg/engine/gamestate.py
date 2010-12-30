@@ -1,5 +1,5 @@
 class initiateGamestate:
-	def __init__(self, host=1, net=0):
+	def __init__(self, host=1, net=0, id=1):
 		self.data = {}
 		self.data["U"] = {}
 		self.data["E"] = {}
@@ -8,6 +8,7 @@ class initiateGamestate:
 		
 		self.host = host
 		self.net = net
+		self.id=id
 		
 		if self.host and self.net: self.mode="server"
 		if (not self.host) and self.net: self.mode="client"
@@ -60,13 +61,18 @@ class initiateGamestate:
 	
 	#Reading Gamestate
 		
-	def getById(id):
+	def getById(self, id):
 		if id in self.data['U']:
 			return self.data['U'][i]
 		elif id in self.data['E']:
 			return self.data['E'][i]
 		else:
 			return None
+	
+	def hasControl(self, id):
+		ourId = self.id
+		entity = self.data['E'][id]
+		return (entity['c']==ourId)
 		
 	
 	
