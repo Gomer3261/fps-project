@@ -2,20 +2,23 @@ class initializeClient:
 	def __init__(self, addr, username):
 		self.addr=addr; self.username=username
 		
+		# We use engine to communicate current id
+		import engine; self.engine=engine
+		
 		import socket
 		self.buf=1024
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.sock.setblocking(0)
 		
-		import engine.network.netcom; self.netcom = netcom
+		import engine.network.netcom; self.netcom = engine.network.netcom
 		
 		import time; self.time=time
 		self.lastConnectionAttempt = 0.0
 		self.connectionAttemptPeriod = 0.5 # will attempt every 0.5 seconds.
 		self.connectionAttempts=0
-		self.id=None # When connected, this is an ID integer.
+		self.connection = False
 		
-		self.lastIntervalExecution = 0.0
+		self.lastInterval = 0.0
 		
 		self.lastThrowSeq = 0
 		self.nextThrowSeq = 1
@@ -27,7 +30,8 @@ class initializeClient:
 		
 		if flag == "a":
 			id = int(data)
-			self.id = id
+			self.engine.id = id
+			self.connection = True
 			print('handshake success, id: '+data)
 	
 	
@@ -45,18 +49,19 @@ class initializeClient:
 	
 	
 	def throw(self, data):
-		packet=self.netcom.clientBuildThrowPacket(self.nextThrowSeq, self.id, data)
+		packet=self.netcom.clientBuildThrowPacket(self.nextThrowSeq, self.engine.id, data)
 		self.sock.sendto(packet, self.addr)
 		self.nextThrowSeq+=1
 	
 	
 	def interval(self, function, argument, period):
-		if self.time.time() - self.lastIntervalExecution > period:
+		if self.time.time() - self.lastInterval > period:
 			function( argument )
-			self.lastIntervalExecution = self.time.time()
+			self.lastInterval = self.time.time()
 	
 	
 	def mainloop(self, gamestate):
+		inDeltas = []
 		for bundle in self.recvBundles():
 			packet, addr = bundle
 			if packet: print('packet: '+packet)
@@ -69,17 +74,20 @@ class initializeClient:
 				if data and seq > self.lastThrowSeq:
 					self.lastThrowSeq = seq
 					print("throw in: "+data)
+					inDeltas.append(data)
 			
 			if packet[0] == self.netcom.codes['stream']:
 				pass
 		
-		if not self.id:
+		if not self.connection:
 			if self.time.time()-self.lastConnectionAttempt > self.connectionAttemptPeriod:
 				print("attempting handshake...")
-				request = self.netcom.codes['net'] + 'c' + self.username
+				request = self.netcom.codes['net'] + b'c' + bytes(self.username, "utf-8")
 				self.sock.sendto(request, self.addr)
 				self.lastConnectionAttempt = self.time.time()
 				self.connectionAttempts+=1
+		
+		return inDeltas
 
 
 

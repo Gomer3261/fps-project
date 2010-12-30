@@ -7,9 +7,10 @@ import engine.interface
 gamestate=None
 entityController=None
 
-host=1
-net=0
+host=0
+net=1
 id=1
+username="Cartman"
 
 # defining mode
 if host and net: mode="server"
@@ -21,22 +22,22 @@ INIT = False
 
 ### Globals above this line.
 
-network.addr = "96.54.129.113"
-network.port = 3205
+network.addr = "192.168.1.101"
+network.port = 3201
 
 def initialize():
 	global gamestateModule, network, entities, interface
 	global gamestate, entityController
-	global host, net, id, mode
+	global host, net, id, username, mode
 	global INIT
 	
 	gamestate = gamestateModule.initializeGamestate()
 	entityController = entities.initializeEntityController()
 	interface = interface.initializeInterface()
 	
-	gamestate.mergeDelta( {'E':{gamestate.getNextId():{'t':'cube','c':engine.id}}} )
-	#self.data["E"][self.getNextId()] = {"c":engine.id, "t":"cube"}
-	
+	if host:
+		gamestate.mergeDelta( {'E':{gamestate.getNextId():{'t':'director','c':engine.id}}} )
+		
 	INIT = True
 	
 	print('='*50)
@@ -45,9 +46,9 @@ def initialize():
 	print('='*50)
 
 def mainloop():
-	global gamestateModule, network, entities
-	global gamestate, entityController, interface
-	global host, net, id, mode
+	global gamestateModule, network, entities, interface
+	global gamestate, entityController
+	global host, net, id, username, mode
 	global INIT
 	
 	if not INIT: initialize()
@@ -56,15 +57,14 @@ def mainloop():
 	if mode=="server" and not network.connection:
 		network.connection = network.server.initializeServer( network.port ) # Server initiation.
 	elif mode=="client" and not network.connection:
-		network.connection = network.client.initializeClient( ('',network.port), "Cartman" ) # Client initiation.
+		network.connection = network.client.initializeClient( ('',network.port), username ) # Client initiation.
 	else:
 		if net:
 			if not host:
 				network.connection.throw( gamestate.delta )
 				gamestate.delta.clear()
-			network.connection.mainloop( gamestate ) # network uses gamestate to sync user id's.
-			for item in network.connection.inBuffer:
-				gamestate.mergeDelta( item )
+			deltas = network.connection.mainloop( gamestate ) # network uses gamestate to sync user id's.
+			for delta in deltas: gamestate.mergeDelta( delta )
 			if host:
 				network.connection.throwToAll( gamestate.delta )
 				network.connection.interval( network.connection.throwToAll, gamestate.data, 2.0 )

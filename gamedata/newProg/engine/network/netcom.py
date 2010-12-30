@@ -1,20 +1,16 @@
+import pickle
+
 codes = {}
-codes['net'] = '\x11'
-codes['throw'] = '\x12'
-codes['stream'] = '\x13'
-codes['sep'] = '\x14'
-
-def makeSeqStr(integer):
-	return "%010d"%integer
-
-def makeIdStr(integer):
-	return "%05d"%integer
+codes['net'] = b'\x11'
+codes['throw'] = b'\x12'
+codes['stream'] = b'\x13'
+codes['sep'] = b'\x14'
 
 
 def serverBuildThrowPacket(seq, payload):
 	packet = codes['throw']
-	packet+= str(seq) + codes['sep']
-	packet+= payload
+	packet+= bytes(seq) + codes['sep']
+	packet+= pickle.dumps( payload )
 	return packet
 
 
@@ -23,14 +19,14 @@ def serverParseThrowPacket(packet):
 	maindata = packet[1:]
 	seqStr, idStr, payload = maindata.split( codes['sep'] )
 	seq=int(seqStr); id=int(idStr)
-	return seq, id, payload
+	return seq, id, pickle.loads( payload )
 
 
 def clientBuildThrowPacket(seq, id, payload):
 	packet = codes['throw']
-	packet+= str(seq) + codes['sep']
-	packet+= str(id) + codes['sep']
-	packet+= payload
+	packet+= bytes(seq) + codes['sep']
+	packet+= bytes(id) + codes['sep']
+	packet+= pickle.dumps( payload )
 	return packet
 
 
@@ -39,7 +35,7 @@ def clientParseThrowPacket(packet):
 	maindata = packet[1:]
 	seqStr, payload = maindata.split( codes['sep'] )
 	seq=int(seqStr)
-	return seq, payload
+	return seq, pickle.loads( payload )
 
 
 

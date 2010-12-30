@@ -1,58 +1,51 @@
-# Director Class
+# Base Entity
+import engine.entities.baseEntity as baseEntity
+class Class(baseEntity.Class):
 
-class Class:
-	def __init__(self, id, gamestate, entityController):
-		import engine
-		self.engine = engine
-		self.id = id
-		self.entityController = entityController
-		
-		if gamestate.hasControl(self.id): self.initiateGamestateData( gamestate )
-		
-		self.initiate( gamestate )
-		
-	def initiateGamestateData(self, gamestate):
-		data = {}
-		data['count'] = 0
-		delta = {'E':{self.id:data}}
-		gamestate.mergeDelta(delta)
+	def initializeGamestateData(self, gamestate):
+		data = {'key':'value'}
+		#delta = {'E':{self.id:data}} # Putting it in gamestate.delta form
+		#gamestate.mergeDelta(delta) # merging it with gamestate's delta
 	
-	def initiate(self, gamestate):
-		import bge
-		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
-		self.count = 0
-		#Create game objects and such here. Remember to you import bge
+	def initialize(self, gamestate):
+		"""
+		Custom initialization for this entity object.
+		Often involves creating a bge object.
+		"""
+		pass
+		#import bge
+		#self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
 		
 	def end(self):
-		self.object.endObject()
-		#Remove game objects and handle any deconstruction methods/issues
+		"""
+		Mandatory end method, often involves deleting bge object.
+		"""
+		pass
+		#self.object.endObject()
 	
-	def run(self, gamestate):
-		if gamestate.hasControl(self.id):
-			self.controllerDataSimulate(gamestate)
-		else:
-			self.controllerDataReplicate(gamestate)
-		
-		if self.engine.host:
-			self.serverDataSimulate(gamestate)
-		else:
-			self.serverDataReplicate(gamestate)
-		return None, None
-		
 	def serverDataSimulate(self, gamestate):
-		self.count+=1
-		data = {}
-		data['count'] = self.count
-		delta = {'E':{self.id:data}}
-		if self.count >= 100:
-			delta['E'][self.id] = None
-		gamestate.mergeDelta(delta)
+		"""
+		Simulates stuff, and returns gamestate delta data to the
+		mainloop, where it is merged with the gamestate delta.
+		"""
+		import engine
+		import bge
+		keyboard = bge.logic.keyboard
+
+		if keyboard.events[bge.events.QKEY] == 3:
+			return {'E':{gamestate.getNextId():{'t':'cube','c':engine.id}}}
+		
+		return None # Return delta data to be merged with gamestate.delta
 	
 	def serverDataReplicate(self, gamestate):
 		pass
 	
 	def controllerDataSimulate(self, gamestate):
-		pass
+		"""
+		Simulates stuff, and returns gamestate delta data to the
+		mainloop, where it is merged with the gamestate delta.
+		"""
+		return None # Return delta data to be merged with gamestate.delta
 	
 	def controllerDataReplicate(self, gamestate):
 		pass
