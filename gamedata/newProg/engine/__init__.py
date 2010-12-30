@@ -7,10 +7,10 @@ import engine.interface
 gamestate=None
 entityController=None
 
-host=1
-net=0
+host=0
+net=1
 id=None # We get our id from gamestate.addUser
-username="Johnny"
+username="Geoff"
 
 # defining mode
 if host and net: mode="server"
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3208
+network.port = 3209
 
 def initialize():
 	global gamestateModule, network, entities, interface
@@ -85,3 +85,15 @@ def mainloop():
 		
 	#interface.runDisplays() #not available until proper bgui implementation
 	#gamestate.clear() # just for giggles
+	
+	import bge
+	keyboard = bge.logic.keyboard
+	if keyboard.events[bge.events.IKEY] == 3:
+		print("\n\nINFO")
+		print("engine.id: ", engine.id)
+		print("gamestate.data: ", gamestate.data)
+		print("gamestate.delta: ", gamestate.delta)
+		print("\n\n")
+
+
+
