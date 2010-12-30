@@ -2,6 +2,8 @@
 
 class initializeInterface:
 	def __init__(self):
+	
+		import engine.interface.bgui
 		
 		import engine.interface.inputs as inputsModule
 		self.inputs = inputsModule.initializeInputs()
