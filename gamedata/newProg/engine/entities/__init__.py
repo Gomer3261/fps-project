@@ -11,7 +11,7 @@ class initializeEntityController:
 	def conform(self, gamestate ):
 		delete = []
 		for id in self.entities:
-			if id not in gamestate["E"]:
+			if not id in gamestate["E"]:
 				self.entities[id].end()
 				delete.append(id)
 				

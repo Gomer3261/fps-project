@@ -21,8 +21,8 @@ class Class:
 		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
 		#Create game objects and such here. Remember to you import bge
 		
-	def end():
-		self.object.end()
+	def end(self):
+		self.object.endObject()
 		#Remove game objects and handle any deconstruction methods/issues
 	
 	def run(self, gamestate):
