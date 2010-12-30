@@ -6,7 +6,7 @@ class initializeGamestate:
 		self.delta = {}
 		self.clear()
 		
-		self.nextId = 2
+		self.nextId = 1
 		
 	#Managerial functions
 	
