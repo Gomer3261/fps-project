@@ -29,11 +29,9 @@ class Class(baseEntity.Class):
 		mainloop, where it is merged with the gamestate delta.
 		"""
 		self.count+=1
-		data = {}
-		data['count'] = self.count
-		delta = {'E':{self.id:data}}
+		delta=None
 		if self.count >= 100:
-			delta['E'][self.id] = None
+			delta={'E':{self.id:None}}
 		return delta # Return delta data to be merged with gamestate.delta
 	
 	def controllerDataSimulate(self, gamestate):

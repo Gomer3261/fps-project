@@ -8,7 +8,7 @@ gamestate=None
 entityController=None
 
 host=1
-net=1
+net=0
 id=1
 username="Johnny"
 
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3206
+network.port = 3208
 
 def initialize():
 	global gamestateModule, network, entities, interface
