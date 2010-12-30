@@ -7,10 +7,10 @@ import engine.interface
 gamestate=None
 entityController=None
 
-host=1
+host=0
 net=1
 id=1
-username="Chase"
+username="Cartman"
 
 # defining mode
 if host and net: mode="server"
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3202
+network.port = 3203
 
 def initialize():
 	global gamestateModule, network, entities, interface
@@ -57,7 +57,7 @@ def mainloop():
 	if mode=="server" and not network.connection:
 		network.connection = network.server.initializeServer( network.port ) # Server initiation.
 	elif mode=="client" and not network.connection:
-		network.connection = network.client.initializeClient( ('',network.port), username ) # Client initiation.
+		network.connection = network.client.initializeClient( (network.addr,network.port), username ) # Client initiation.
 	else:
 		if net:
 			if not host:
