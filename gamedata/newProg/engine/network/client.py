@@ -3,20 +3,24 @@ class initializeClient:
 		self.addr=addr; self.username=username
 		
 		# We use engine to communicate current id
-		import engine; self.engine=engine
+		#import engine; self.engine=engine
+		class ENGINE:
+			def __init__(self): self.id=1
+		self.engine=ENGINE()
 		
 		import socket
 		self.buf=1024
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.sock.setblocking(0)
 		
-		import engine.network.netcom; self.netcom = engine.network.netcom
+		#from . import netcom; self.netcom = netcom
+		import netcom; self.netcom = netcom
 		
 		import time; self.time=time
 		self.lastConnectionAttempt = 0.0
 		self.connectionAttemptPeriod = 0.5 # will attempt every 0.5 seconds.
 		self.connectionAttempts=0
-		self.connection = False
+		self.connected = False
 		
 		self.lastInterval = 0.0
 		
@@ -31,7 +35,7 @@ class initializeClient:
 		if flag == "a":
 			id = int(data)
 			self.engine.id = id
-			self.connection = True
+			self.connected = True
 			print('handshake success, id: '+data)
 	
 	
@@ -79,10 +83,10 @@ class initializeClient:
 			if packet[0] == self.netcom.codes['stream']:
 				pass
 		
-		if not self.connection:
+		if not self.connected:
 			if self.time.time()-self.lastConnectionAttempt > self.connectionAttemptPeriod:
 				print("attempting handshake...")
-				request = self.netcom.codes['net'] + b'c' + bytes(self.username, "utf-8")
+				request = self.netcom.codes['net'] + b'c' + bytes(self.username)
 				self.sock.sendto(request, self.addr)
 				self.lastConnectionAttempt = self.time.time()
 				self.connectionAttempts+=1
@@ -91,16 +95,13 @@ class initializeClient:
 
 
 
-#Client = initializeClient( ('localhost', 3205), "Jimmy" )
-#print("Client initiated and running.")
-#import time
-#lastThrow = 0.0
-#while True:
-#	Client.mainloop()
-#	if Client.id:
-#		if time.time()-lastThrow > 1.0:
-#			Client.throw("HELLO THIS IS A THROW MOW FOW!")
-#			lastThrow = time.time()
-	
-	
-	
+Client = initializeClient( ('192.168.1.101', 3203), "Jimmy" )
+print("Client initiated and running.")
+import time
+lastThrow = 0.0
+while True:
+	Client.mainloop(None)
+	if Client.connected:
+		if time.time()-lastThrow > 1.0:
+			Client.throw("OLIOLIO!")
+			lastThrow = time.time()
