@@ -1,11 +1,12 @@
 # Entities
 
-class initiateEntityController:
+class initializeEntityController:
 	def __init__(self):
 		self.entities = {}
 		self.entityClasses = {}
 		
 		import engine.entities.base_entity; self.entityClasses["base_entity"] = base_entity.Class
+		import engine.entities.cube; self.entityClasses["cube"] = cube.Class
 
 	def conform(self, gamestate ):
 		delete = []
@@ -22,4 +23,4 @@ class initiateEntityController:
 				self.entities[id] = self.createEntity( id, gamestate )
 				
 	def createEntity(self, id, gamestate):
-		return self.entityClasses[gamestate["E"][id]["type"]]( id, gamestate, self )
+		return self.entityClasses[gamestate["E"][id]["t"]]( id, gamestate, self )

@@ -1,20 +1,23 @@
-class initiateGamestate:
-	def __init__(self, host=1, net=0, id=1):
+class initializeGamestate:
+	def __init__(self):
+		import engine
+		self.engine = engine
+	
 		self.data = {}
 		self.data["U"] = {}
 		self.data["E"] = {}
 		self.data["G"] = {}
 		self.delta = {}
 		
-		self.host = host
-		self.net = net
-		self.id=id
-		
 		self.nextId = 1
+		
+		# temporary test init
+		
+		self.data["E"][self.getNextId()] = {"c":engine.id, "t":"cube"}
 		
 	#Managerial functions
 	
-	def getNextId():
+	def getNextId(self):
 		id = self.nextId
 		self.nextId += 1
 		return self.nextId
@@ -65,9 +68,8 @@ class initiateGamestate:
 			return None
 	
 	def hasControl(self, id):
-		ourId = self.id
 		entity = self.data['E'][id]
-		return (entity['c']==ourId)
+		return (entity['c']==self.engine.id)
 		
 	
 	
