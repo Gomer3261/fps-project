@@ -74,10 +74,10 @@ class initializeClient:
 			
 			if type == 1: # THROW PACKET
 				print("throw packet")
-				seq, data = self.netcom.clientParseThrowPacket(packet)
-				if data and seq > self.lastThrowSeq:
+				type, seq, payload = data
+				if payload and seq > self.lastThrowSeq:
 					self.lastThrowSeq = seq
-					inDeltas.append(data)
+					inDeltas.append(payload)
 			
 			if type == 2: # STREAM PACKET
 				pass
