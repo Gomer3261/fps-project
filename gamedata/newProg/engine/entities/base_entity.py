@@ -9,7 +9,7 @@ class Class:
 		
 		self.initiate( gamestate )
 		
-	def initiateGamestateData(self, gamestate)
+	def initiateGamestateData(self, gamestate):
 		data = {}
 		delta = {'E':{self.id:data}}
 		gamestate.mergeDelta(delta)
