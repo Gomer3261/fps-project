@@ -1,4 +1,4 @@
-class initiateClient:
+class initializeClient:
 	def __init__(self, addr, username):
 		self.addr=addr; self.username=username
 		
@@ -83,7 +83,7 @@ class initiateClient:
 
 
 
-#Client = initiateClient( ('localhost', 3205), "Jimmy" )
+#Client = initializeClient( ('localhost', 3205), "Jimmy" )
 #print("Client initiated and running.")
 #import time
 #lastThrow = 0.0
