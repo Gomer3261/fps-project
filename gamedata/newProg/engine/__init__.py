@@ -10,7 +10,7 @@ entityController=None
 host=0
 net=1
 id=1
-username="Cartman"
+username="CaptainKirk"
 
 # defining mode
 if host and net: mode="server"
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3203
+network.port = 3205
 
 def initialize():
 	global gamestateModule, network, entities, interface

@@ -21,21 +21,17 @@ class initializeServer:
 		self.nextId=1
 	def getId(self): id=self.nextId; self.nextId+=1; return id
 		
-	def handleNetBundle(self, bundle):
-		packet, addr = bundle
-		flag = packet[1]
-		data = packet[2:]
-		
-		if flag == "c": # Connection Request.
-			username = data
+	def handleNetBundle(self, flag, payload, addr):
+		if flag == 1: # Connection Request.
+			username = payload
 			id = self.getId()
-			self.sock.sendto(self.netcom.codes['net']+b'a'+bytes(id),addr) # Acknowledged/Accepted!
+			self.sock.sendto( self.netcom.pack((0,1,id)), addr ) # Acknowledged/Accepted!
 			self.connections[id] = {} #{'username':username, 'addr':addr}
 			self.connections[id]['addr'] = addr
 			self.connections[id]['username'] = username
 			self.connections[id]['lastThrowSeq'] = 0
 			self.connections[id]['nextThrowSeq'] = 1
-			print("user connected: "+username+", id: "+str(id))
+			print("USER CONNECTED: "+username+", given id: "+str(id))
 	
 	
 	def recvBundles(self, max=10):
@@ -47,17 +43,14 @@ class initializeServer:
 			except: break
 		return bundles
 	
-	def throw(self, data, id):
-		packet=self.netcom.serverBuildThrowPacket(self.connections[id]['nextThrowSeq'], data)
-		self.sock.sendto(packet, self.connections[id]['addr'])
+	def throw(self, payload, id):
+		seq = self.connections[id]['nextThrowSeq']
+		self.sock.sendto( self.netcom.pack((1,seq,payload)), self.connections[id]['addr'] )
 		self.connections[id]['nextThrowSeq']+=1
 	
-	def throwToAll(self, data):
+	def throwToAll(self, payload):
 		for id in self.connections:
-			addr = self.connections[id]['addr']
-			packet=self.netcom.serverBuildThrowPacket(self.connections[id]['nextThrowSeq'], data)
-			self.sock.sendto(packet, addr)
-			self.connections[id]['nextThrowSeq']+=1
+			self.throw(payload, id)
 	
 	def interval(self, function, argument, period):
 		if self.time.time() - self.lastInterval > period:
@@ -68,19 +61,26 @@ class initializeServer:
 		inDeltas = []
 		for bundle in self.recvBundles():
 			packet, addr = bundle
-			if packet: print('packet: '+packet)
+			data = self.netcom.unpack(packet)
+			type=data[0]
 			
-			if packet[0] == self.netcom.codes['net']:
-				self.handleNetBundle(bundle)
+			print("DATA IN:")
+			print(data)
+			print(addr)
 			
-			if packet[0] == self.netcom.codes['throw']:
-				seq, id, data = self.netcom.serverParseThrowPacket(packet)
-				if data and seq > self.connections[id]['lastThrowSeq']:
+			if type == 0: # NET PACKET
+				print("net packet")
+				type, flag, payload = data
+				self.handleNetBundle(flag, payload, addr)
+			
+			if type == 1: # THROW PACKET
+				print("throw packet")
+				type, seq, id, payload = data
+				if payload and seq > self.connections[id]['lastThrowSeq']:
 					self.connections[id]['lastThrowSeq'] = seq
-					print("throw in: "+data)
-					inDeltas.append(data)
+					inDeltas.append(payload)
 			
-			if packet[0] == self.netcom.codes['stream']:
+			if type == 2: # STREAM PACKET
 				pass
 		
 		return inDeltas

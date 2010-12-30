@@ -1,18 +1,23 @@
 import pickle
 
-codes = {}
-codes['net'] = b'\x11'
-codes['throw'] = b'\x12'
-codes['stream'] = b'\x13'
-codes['sep'] = b'\x14'
+def pack(data):
+	return pickle.dumps( data )
+
+def unpack(packet):
+	return pickle.loads( packet )
 
 
+
+
+
+
+
+#######
 def serverBuildThrowPacket(seq, payload):
 	packet = codes['throw']
 	packet+= bytes(seq) + codes['sep']
 	packet+= pickle.dumps( payload )
 	return packet
-
 
 def serverParseThrowPacket(packet):
 	flag = packet[0]
