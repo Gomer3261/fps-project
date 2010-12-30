@@ -31,9 +31,9 @@ def mainloop():
 	### UNIVERSAL ROUTINES
 	# These apply to server, client, and local modes.
 	
-	LocalGame.conform( GameState ) # LocalGame emulates the GameState by adding objects or removing them based on what the GameState says.
+	Replicator.conform( GameState ) # Replicator emulates the GameState by adding objects or removing them based on what the GameState says.
 	
-	for entity in LocalGame.entities: # We loop through every entity.
+	for entity in Replicator.entities: # We loop through every entity.
 		entity.conform( GameState ) # Each entity conforms to the GameState as it sees fit.
 		if entity.getMode() == "control": # Only control entities send info to the gamestate (to request changes)
 			deltaData, memos = entity.run( GameState ) # Running controlled entities.
