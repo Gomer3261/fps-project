@@ -10,11 +10,6 @@ class initiateGamestate:
 		self.net = net
 		self.id=id
 		
-		if self.host and self.net: self.mode="server"
-		if (not self.host) and self.net: self.mode="client"
-		if self.host and (not self.net): self.mode="local"
-		if (not self.host) and (not self.net): self.mode="replay"
-		
 		self.nextId = 1
 		
 	#Managerial functions
