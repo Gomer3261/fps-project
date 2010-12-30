@@ -1,6 +1,7 @@
+import engine
 import engine.gamestate as gamestateModule
-import engine.network
-import engine.entities
+import engine.network as network
+import engine.entities as entities
 
 gamestate=None
 entityController=None
@@ -75,8 +76,8 @@ def mainloop():
 	
 	for id in entityController.entities: # We loop through every entity.
 		entity = entityController.entities[id]
-		deltaData, memos = entity.run( gamestate ) # Running controlled entities.
-		if deltaData: gamestate.mergeDelta(deltaData)
-		#if memos: network.send(memos)
+		deltaDataList = entity.run( gamestate ) # Running controlled entities.
+		for deltaData in deltaDataList:
+			if deltaData: gamestate.mergeDelta(deltaData)
 		
 	#gamestate.clear() # just for giggles

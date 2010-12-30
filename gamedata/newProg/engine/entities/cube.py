@@ -1,58 +1,44 @@
-# Entities
+# Cube Entity
+import engine.entities.baseEntity as baseEntity
+class Class(baseEntity.Class):
 
-class Class:
-	def __init__(self, id, gamestate, entityController):
-		import engine
-		self.engine = engine
-		self.id = id
-		self.entityController = entityController
-		
-		if gamestate.hasControl(self.id): self.initiateGamestateData( gamestate )
-		
-		self.initiate( gamestate )
-		
-	def initiateGamestateData(self, gamestate):
+	def initializeGamestateData(self, gamestate):
 		data = {}
 		data['count'] = 0
 		delta = {'E':{self.id:data}}
 		gamestate.mergeDelta(delta)
 	
-	def initiate(self, gamestate):
+	def initialize(self, gamestate):
+		"""
+		Custom initialization for this entity object.
+		Often involves creating a bge object.
+		"""
 		import bge
 		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
 		self.count = 0
-		#Create game objects and such here. Remember to you import bge
 		
 	def end(self):
+		"""
+		Mandatory end method, often involves deleting bge object.
+		"""
 		self.object.endObject()
-		#Remove game objects and handle any deconstruction methods/issues
 	
-	def run(self, gamestate):
-		if gamestate.hasControl(self.id):
-			self.controllerDataSimulate(gamestate)
-		else:
-			self.controllerDataReplicate(gamestate)
-		
-		if self.engine.host:
-			self.serverDataSimulate(gamestate)
-		else:
-			self.serverDataReplicate(gamestate)
-		return None, None
-		
 	def serverDataSimulate(self, gamestate):
+		"""
+		Simulates stuff, and returns gamestate delta data to the
+		mainloop, where it is merged with the gamestate delta.
+		"""
 		self.count+=1
 		data = {}
 		data['count'] = self.count
 		delta = {'E':{self.id:data}}
 		if self.count >= 100:
 			delta['E'][self.id] = None
-		gamestate.mergeDelta(delta)
-	
-	def serverDataReplicate(self, gamestate):
-		pass
+		return delta # Return delta data to be merged with gamestate.delta
 	
 	def controllerDataSimulate(self, gamestate):
-		pass
-	
-	def controllerDataReplicate(self, gamestate):
-		pass
+		"""
+		Simulates stuff, and returns gamestate delta data to the
+		mainloop, where it is merged with the gamestate delta.
+		"""
+		return None # Return delta data to be merged with gamestate.delta
