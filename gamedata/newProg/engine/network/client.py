@@ -15,6 +15,8 @@ class initiateClient:
 		self.connectionAttempts=0
 		self.id=None # When connected, this is an ID integer.
 		
+		self.lastIntervalExecution = 0.0
+		
 		self.lastThrowSeq = 0
 		self.nextThrowSeq = 1
 	
@@ -48,7 +50,13 @@ class initiateClient:
 		self.nextThrowSeq+=1
 	
 	
-	def mainloop(self):
+	def interval(self, function, argument, period):
+		if self.time.time() - self.lastIntervalExecution > period:
+			function( argument )
+			self.lastIntervalExecution = self.time.time()
+	
+	
+	def mainloop(self, gamestate):
 		for bundle in self.recvBundles():
 			packet, addr = bundle
 			if packet: print('packet: '+packet)
@@ -75,16 +83,16 @@ class initiateClient:
 
 
 
-Client = initiateClient( ('localhost', 3205), "Jimmy" )
-print("Client initiated and running.")
-import time
-lastThrow = 0.0
-while True:
-	Client.mainloop()
-	if Client.id:
-		if time.time()-lastThrow > 1.0:
-			Client.throw("HELLO THIS IS A THROW MOW FOW!")
-			lastThrow = time.time()
+#Client = initiateClient( ('localhost', 3205), "Jimmy" )
+#print("Client initiated and running.")
+#import time
+#lastThrow = 0.0
+#while True:
+#	Client.mainloop()
+#	if Client.id:
+#		if time.time()-lastThrow > 1.0:
+#			Client.throw("HELLO THIS IS A THROW MOW FOW!")
+#			lastThrow = time.time()
 	
 	
 	

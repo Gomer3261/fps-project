@@ -10,9 +10,9 @@ def mainloop():
 	
 	# Server routines.
 	if gamestate.mode=="server" and not network.connection:
-		network.connection = network.initiateServer( network.port ) # Server initiation.
+		network.connection = network.server.initiateServer( network.port ) # Server initiation.
 	elif gamestate.mode=="client" and not network.connection:
-		network.connection = network.initiateClient( ('',network.port), "Cartman" ) # Client initiation.
+		network.connection = network.client.initiateClient( ('',network.port), "Cartman" ) # Client initiation.
 	else:
 		if gamestate.net:
 			if not gamestate.host:

@@ -11,6 +11,10 @@ class initiateServer:
 		import netcom; self.netcom = netcom
 		
 		self.connections = {} # Dictionary of connections
+		
+		import time; self.time=time
+		self.lastIntervalExecution = 0.0
+		
 		self.nextId=1
 	def getId(self): id=self.nextId; self.nextId+=1; return id
 		
@@ -45,7 +49,18 @@ class initiateServer:
 		self.sock.sendto(packet, self.connections[id]['addr'])
 		self.connections[id]['nextThrowSeq']+=1
 	
-	def mainloop(self):
+	def throwToAll(self, data):
+		for id in self.connections:
+			addr = self.connections[id]['addr']
+			self.sock.sendto(packet, addr)
+			self.connections[id]['nextThrowSeq']+=1
+	
+	def interval(self, function, argument, period):
+		if self.time.time() - self.lastIntervalExecution > period:
+			function( argument )
+			self.lastIntervalExecution = self.time.time()
+	
+	def mainloop(self, gamestate):
 		for bundle in self.recvBundles():
 			packet, addr = bundle
 			if packet: print('packet: '+packet)
@@ -70,7 +85,7 @@ class initiateServer:
 
 
 
-Server = initiateServer(3205)
-print("Server initiated and running.")
-while True:
-	Server.mainloop()
+#Server = initiateServer(3205)
+#print("Server initiated and running.")
+#while True:
+#	Server.mainloop()
