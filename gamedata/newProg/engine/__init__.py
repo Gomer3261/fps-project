@@ -2,6 +2,7 @@ import engine
 import engine.gamestate as gamestateModule
 import engine.network as network
 import engine.entities as entities
+import engine.interface
 
 gamestate=None
 entityController=None
@@ -24,13 +25,14 @@ network.addr = "96.54.129.113"
 network.port = 3205
 
 def initialize():
-	global gamestateModule, network, entities
+	global gamestateModule, network, entities, interface
 	global gamestate, entityController
 	global host, net, id, mode
 	global INIT
 	
 	gamestate = gamestateModule.initializeGamestate()
 	entityController = entities.initializeEntityController()
+	interface = interface.initializeInterface()
 	
 	gamestate.mergeDelta( {'E':{gamestate.getNextId():{'t':'cube','c':engine.id}}} )
 	#self.data["E"][self.getNextId()] = {"c":engine.id, "t":"cube"}
@@ -44,7 +46,7 @@ def initialize():
 
 def mainloop():
 	global gamestateModule, network, entities
-	global gamestate, entityController
+	global gamestate, entityController, interface
 	global host, net, id, mode
 	global INIT
 	
@@ -80,4 +82,5 @@ def mainloop():
 		for deltaData in deltaDataList:
 			if deltaData: gamestate.mergeDelta(deltaData)
 		
+	#interface.runDisplays() #not available until proper bgui implementation
 	#gamestate.clear() # just for giggles
