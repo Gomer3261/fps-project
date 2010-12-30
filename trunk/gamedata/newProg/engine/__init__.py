@@ -68,7 +68,6 @@ def mainloop():
 	
 	### UNIVERSAL ROUTINES
 	# These apply to server, client, and local modes.
-	
 	entityController.conform( gamestate ) # replicator emulates the gamestate by adding objects or removing them based on what the gamestate says.
 	
 	for id in entityController.entities: # We loop through every entity.
@@ -76,3 +75,5 @@ def mainloop():
 		deltaData, memos = entity.run( gamestate ) # Running controlled entities.
 		if deltaData: gamestate.mergeDelta(deltaData)
 		#if memos: network.send(memos)
+		
+	gamestate.clear()

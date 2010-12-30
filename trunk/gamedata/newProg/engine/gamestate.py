@@ -2,12 +2,9 @@ class initializeGamestate:
 	def __init__(self):
 		import engine
 		self.engine = engine
-	
-		self.data = {}
-		self.data["U"] = {}
-		self.data["E"] = {}
-		self.data["G"] = {}
+		
 		self.delta = {}
+		self.clear()
 		
 		self.nextId = 1
 		
@@ -102,7 +99,11 @@ class initializeGamestate:
 		return self.data.get(key, default)
 		
 	def clear(self):
-		self.data.clear()
+		self.data = {}
+		self.data["U"] = {}
+		self.data["E"] = {}
+		self.data["G"] = {}
+		self.delta.clear()
 		
 	def setdefault(self, key, default=None):
 		self.data.setdefault(key, default)
