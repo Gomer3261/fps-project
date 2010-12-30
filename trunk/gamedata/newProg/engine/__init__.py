@@ -25,6 +25,13 @@ INIT = False
 network.addr = "192.168.1.101"
 network.port = 3209
 
+def DEBUG(title):
+	print("\n\nDEBUG: ", title)
+	print("engine.id: ", engine.id)
+	print("gamestate.data: ", gamestate.data)
+	print("gamestate.delta: ", gamestate.delta)
+	print("\n\n")
+
 def initialize():
 	global gamestateModule, network, entities, interface
 	global gamestate, entityController
@@ -53,7 +60,7 @@ def mainloop():
 	global INIT
 	
 	if not INIT: initialize()
-	
+		
 	# Server routines.
 	if mode=="server" and not network.connection:
 		network.connection = network.server.initializeServer( network.port ) # Server initiation.
@@ -77,23 +84,20 @@ def mainloop():
 	# These apply to server, client, and local modes.
 	entityController.conform( gamestate ) # replicator emulates the gamestate by adding objects or removing them based on what the gamestate says.
 	
-	for id in entityController.entities: # We loop through every entity.
-		entity = entityController.entities[id]
+	for idloop in entityController.entities: # We loop through every entity.
+		entity = entityController.entities[idloop]
 		deltaDataList = entity.run( gamestate ) # Running controlled entities.
 		for deltaData in deltaDataList:
 			if deltaData: gamestate.mergeDelta(deltaData)
-		
+					
 	#interface.runDisplays() #not available until proper bgui implementation
 	#gamestate.clear() # just for giggles
 	
 	import bge
 	keyboard = bge.logic.keyboard
-	if keyboard.events[bge.events.IKEY] == 3:
-		print("\n\nINFO")
-		print("engine.id: ", engine.id)
-		print("gamestate.data: ", gamestate.data)
-		print("gamestate.delta: ", gamestate.delta)
-		print("\n\n")
+	if keyboard.events[bge.events.DKEY] == 3:
+		DEBUG("KEYPRESS")
+		
 
 
 
