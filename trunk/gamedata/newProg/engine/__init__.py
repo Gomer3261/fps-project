@@ -7,10 +7,10 @@ import engine.interface
 gamestate=None
 entityController=None
 
-host=0
-net=1
+host=1
+net=0
 id=None # We get our id from gamestate.addUser
-username="Geoff"
+username="Cartman"
 
 # defining mode
 if host and net: mode="server"
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3209
+network.port = 3210
 
 def DEBUG(title):
 	print("\n\nDEBUG: ", title)
