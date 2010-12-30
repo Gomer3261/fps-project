@@ -46,17 +46,24 @@ class initializeGamestate:
 		#Possiblity of loss in null values. Propery Nullity handling may be necessary
 		self.delta = self.updateRecursively(self.delta, deltaData)
 	
-	def addUsers(self, newUsers):
-		pass
-		#Do stuff!
+	def addUser(self, username):
+		if self.engine.host:
+			newId = self.getNextId()
+			self.mergeDelta( {'U':{newId:{'n':username}}} )
+			return newId
+		else:
+			print("Gamestate error: client gamestate cannot produce unique object id. No user was created.")
 		
+						
 	def addEntity(self, type, controller=None):
 		if controller == None:
 			controller = self.engine.id
 		if self.engine.host:
-			self.mergeDelta( {'E':{self.getNextId():{'t':type,'c':controller}}} )
+			newId = self.getNextId()
+			self.mergeDelta( {'E':{newId:{'t':type,'c':controller}}} )
+			return newId
 		else:
-			print("Gamestate error: client gamestate cannot produce unique object id.")
+			print("Gamestate error: client gamestate cannot produce unique object id. No entity was created.")
 	
 	
 	#Reading Gamestate
