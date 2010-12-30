@@ -13,12 +13,10 @@ class initializeInputs:
 		#creating the inputs object (for sensors)
 		import bge
 		
-		self.Controller = None
-		self.Controller = self.CONTROLLER()
+		self.controller = None
+		self.controller = self.CONTROLLER()
 		
-		self.Mouse = self.MOUSE()
-		
-		print("  Interface/Input's happy.")
+		self.mouse = self.MOUSE()
 	
 	
 	
@@ -309,10 +307,8 @@ class initializeInputs:
 			self.events = {}
 			
 			self.controls = controls
-			print("Interface/Inputs/Controller: Controls Set.")
 
 			for control in self.controls:
 				value = self.controls[control]
 				event = self.EVENT(self, control, value)
 				self.events[control] = event
-			#print("Events set.")

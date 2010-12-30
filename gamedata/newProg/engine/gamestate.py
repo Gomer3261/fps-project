@@ -49,6 +49,14 @@ class initializeGamestate:
 	def addUsers(self, newUsers):
 		pass
 		#Do stuff!
+		
+	def addEntity(self, type, controller=None):
+		if controller == None:
+			controller = self.engine.id
+		if self.engine.host:
+			self.mergeDelta( {'E':{self.getNextId():{'t':type,'c':controller}}} )
+		else:
+			print("Gamestate error: client gamestate cannot produce unique object id.")
 	
 	
 	#Reading Gamestate

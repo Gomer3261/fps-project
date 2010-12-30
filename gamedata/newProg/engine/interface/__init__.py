@@ -16,7 +16,36 @@ class initializeInterface:
 #		self.Notes = NotesModule.Class()
 #		
 #		print("Interface -- check.")
-#	
+
+	#Quick input detection
+	def checkControl(self, control):
+		return self.inputs.controller.isPositive(control)
+		
+	def controlStatus(self, control):
+		return self.inputs.controller.getStatus(control)
+		
+	#Quick option access
+	def defaultOptions(self):
+		return self.options.saveDefaults()
+		
+	def setSetting(self, setting, value):
+		return self.options.setSetting(self, setting, value)
+		
+	def getSetting(self, setting):
+		return self.options.getSetting(self, setting)
+		
+	def resetSetting(self, setting):
+		return self.options.defaultSetting(setting)
+		
+	def setControl(self, control, value):
+		return self.options.setSetting(self, control, value)
+		
+	def getControl(self, control):
+		return self.options.getSetting(self, control)
+		
+	def resetControl(self, control):
+		return self.options.defaultControl(control)
+
 #	def run(self, Network, GameState):
 #		"""
 #		handles controlling the terminal scene.
