@@ -1,4 +1,4 @@
-class initiateServer:
+class initializeServer:
 	def __init__(self, port):
 		self.port=port
 		
@@ -85,7 +85,7 @@ class initiateServer:
 
 
 
-#Server = initiateServer(3205)
+#Server = initializeServer(3205)
 #print("Server initiated and running.")
 #while True:
 #	Server.mainloop()

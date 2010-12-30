@@ -28,8 +28,8 @@ def initialize():
 	global host, net, id, mode
 	global INIT
 	
-	gamestate = gamestateModule.initiateGamestate()
-	entityController = entities.initiateEntityController()
+	gamestate = gamestateModule.initializeGamestate()
+	entityController = entities.initializeEntityController()
 	
 	INIT = True
 	
@@ -48,9 +48,9 @@ def mainloop():
 	
 	# Server routines.
 	if mode=="server" and not network.connection:
-		network.connection = network.server.initiateServer( network.port ) # Server initiation.
+		network.connection = network.server.initializeServer( network.port ) # Server initiation.
 	elif mode=="client" and not network.connection:
-		network.connection = network.client.initiateClient( ('',network.port), "Cartman" ) # Client initiation.
+		network.connection = network.client.initializeClient( ('',network.port), "Cartman" ) # Client initiation.
 	else:
 		if gamestate.net:
 			if not gamestate.host:
