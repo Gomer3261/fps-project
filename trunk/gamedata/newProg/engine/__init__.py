@@ -1,7 +1,9 @@
 import engine.gamestate
 import engine.network
+import engine.entities
 
 gamestate = gamestate.initiateGamestate()
+entityController = entities.initiateEntityController()
 
 network.addr = "96.54.129.113"
 network.port = 3205
@@ -31,9 +33,10 @@ def mainloop():
 	### UNIVERSAL ROUTINES
 	# These apply to server, client, and local modes.
 	
-	replicator.conform( gamestate ) # replicator emulates the gamestate by adding objects or removing them based on what the gamestate says.
+	entityController.conform( gamestate ) # replicator emulates the gamestate by adding objects or removing them based on what the gamestate says.
 	
-	for entity in replicator.entities: # We loop through every entity.
+	for id in entityController.entities: # We loop through every entity.
+		entity = entityController.entities[id]
 		entity.conform( gamestate ) # Each entity conforms to the gamestate as it sees fit.
 		if entity.getMode() == "control": # Only control entities send info to the gamestate (to request changes)
 			deltaData, memos = entity.run( gamestate ) # Running controlled entities.
