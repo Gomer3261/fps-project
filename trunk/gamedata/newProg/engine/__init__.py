@@ -31,6 +31,9 @@ def initialize():
 	gamestate = gamestateModule.initializeGamestate()
 	entityController = entities.initializeEntityController()
 	
+	gamestate.mergeDelta( {'E':{gamestate.getNextId():{'t':'cube','c':engine.id}}} )
+	#self.data["E"][self.getNextId()] = {"c":engine.id, "t":"cube"}
+	
 	INIT = True
 	
 	print('='*50)
@@ -76,4 +79,4 @@ def mainloop():
 		if deltaData: gamestate.mergeDelta(deltaData)
 		#if memos: network.send(memos)
 		
-	gamestate.clear()
+	#gamestate.clear() # just for giggles
