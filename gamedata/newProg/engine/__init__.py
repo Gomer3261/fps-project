@@ -5,28 +5,51 @@ import engine.entities
 gamestate=None
 entityController=None
 
+host=1
+net=0
+id=1
+
+# defining mode
+if host and net: mode="server"
+if (not host) and net: mode="client"
+if host and (not net): mode="local"
+if (not host) and (not net): mode="replay"
+
 INIT = False
 
-def initialize(host=1, net=0):
-	global gamestate, gamestateModule, network, entities, entityController, INIT
-	gamestate = gamestateModule.initiateGamestate(host, net)
+### Globals above this line.
+
+network.addr = "96.54.129.113"
+network.port = 3205
+
+def initialize():
+	global gamestateModule, network, entities
+	global gamestate, entityController
+	global host, net, id, mode
+	global INIT
+	
+	gamestate = gamestateModule.initiateGamestate()
 	entityController = entities.initiateEntityController()
-	network.addr = "96.54.129.113"
-	network.port = 3205
+	
 	INIT = True
+	
 	print('='*50)
 	print("GAME INITIALIZED")
-	print("    mode: "+gamestate.mode)
+	print("    mode: "+mode)
 	print('='*50)
 
 def mainloop():
-	global gamestate, gamestateModule, network, entities, entityController, INIT
+	global gamestateModule, network, entities
+	global gamestate, entityController
+	global host, net, id, mode
+	global INIT
+	
 	if not INIT: initialize()
 	
 	# Server routines.
-	if gamestate.mode=="server" and not network.connection:
+	if mode=="server" and not network.connection:
 		network.connection = network.server.initiateServer( network.port ) # Server initiation.
-	elif gamestate.mode=="client" and not network.connection:
+	elif mode=="client" and not network.connection:
 		network.connection = network.client.initiateClient( ('',network.port), "Cartman" ) # Client initiation.
 	else:
 		if gamestate.net:
