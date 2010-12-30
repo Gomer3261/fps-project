@@ -8,10 +8,6 @@ class initializeGamestate:
 		
 		self.nextId = 1
 		
-		# temporary test init
-		
-		self.data["E"][self.getNextId()] = {"c":engine.id, "t":"cube"}
-		
 	#Managerial functions
 	
 	def getNextId(self):

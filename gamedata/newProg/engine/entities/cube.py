@@ -13,12 +13,14 @@ class Class:
 		
 	def initiateGamestateData(self, gamestate):
 		data = {}
+		data['count'] = 0
 		delta = {'E':{self.id:data}}
 		gamestate.mergeDelta(delta)
 	
 	def initiate(self, gamestate):
 		import bge
 		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
+		self.count = 0
 		#Create game objects and such here. Remember to you import bge
 		
 	def end(self):
@@ -27,24 +29,30 @@ class Class:
 	
 	def run(self, gamestate):
 		if gamestate.hasControl(self.id):
-			self.controllerDataSimulate()
+			self.controllerDataSimulate(gamestate)
 		else:
-			self.controllerDataReplicate()
+			self.controllerDataReplicate(gamestate)
 		
 		if self.engine.host:
-			self.serverDataSimulate()
+			self.serverDataSimulate(gamestate)
 		else:
-			self.serverDataReplicate()
+			self.serverDataReplicate(gamestate)
 		return None, None
 		
-	def serverDataSimulate(self):
+	def serverDataSimulate(self, gamestate):
+		self.count+=1
+		data = {}
+		data['count'] = self.count
+		delta = {'E':{self.id:data}}
+		if self.count >= 100:
+			delta['E'][self.id] = None
+		gamestate.mergeDelta(delta)
+	
+	def serverDataReplicate(self, gamestate):
 		pass
 	
-	def serverDataReplicate(self):
+	def controllerDataSimulate(self, gamestate):
 		pass
 	
-	def controllerDataSimulate(self):
-		pass
-	
-	def controllerDataReplicate(self):
+	def controllerDataReplicate(self, gamestate):
 		pass
