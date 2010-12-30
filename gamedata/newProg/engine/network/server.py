@@ -10,8 +10,8 @@ class initializeServer:
 		
 		print("SERVER RUNNING ON PORT "+str(port))
 		
-		#from . import netcom; self.netcom = netcom
-		import netcom; self.netcom=netcom
+		from . import netcom; self.netcom = netcom
+		#import netcom; self.netcom=netcom
 		
 		self.connections = {} # Dictionary of connections
 		
@@ -93,7 +93,7 @@ class initializeServer:
 
 
 
-Server = initializeServer(3203)
-print("Server initiated and running.")
-while True:
-	Server.mainloop(None)
+#Server = initializeServer(3203)
+#print("Server initiated and running.")
+#while True:
+#	Server.mainloop(None)
