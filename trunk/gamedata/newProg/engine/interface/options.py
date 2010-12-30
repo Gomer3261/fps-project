@@ -13,14 +13,14 @@ class initializeOptions:
 
 
 	#the init function. Most modules have this.
-	def __init__(self, Inputs):
+	def __init__(self, inputs):
 		"""Init the module."""
 		self.sepchar = "\n=------ Settings Above / Controls Below ------=\n\n" #this can actually be anything, it's just more eye pleasing if you open the file directly.
-		self.path = "FPS_options.txt" #the path for the options file (change it to something more game relative later?)
+		self.path = "delta_options.txt" #the path for the options file (change it to something more game relative later?)
 		self.settings = {}
 		self.controls = {}
 		
-		self.Inputs = Inputs
+		self.inputs = inputs
 		
 		#####################
 		### Defaults ########
@@ -80,7 +80,6 @@ class initializeOptions:
 		#######################
 		
 		self.load()
-		print("  Interface/Options' smiling.")
 
 	####################################
 	### ------ OPTIONS SYSTEM ------ ###
@@ -179,10 +178,8 @@ class initializeOptions:
 			f.write(newfile)
 			f.close()
 
-			print("Interface/Options: Save operation completed.")
-
 			# Making changed options effect the game
-			self.Inputs.Controller.setControls(self.controls)
+			self.inputs.controller.setControls(self.controls)
 
 			return 1
 		except:
@@ -236,11 +233,11 @@ class initializeOptions:
 			self.controls = statements
 			self.checkControls()
 			
-			self.Inputs.Controller.setControls(self.controls)
+			self.inputs.controller.setControls(self.controls)
 			
 			return 1
 		except:
-			self.traceback.print_exc()
+			#self.traceback.print_exc()
 			print("Interface/Options: Error loading; will attempt to save defaults and use those.")
 			result = self.saveDefaults()
 			if result:
