@@ -8,7 +8,7 @@ class initiateServer:
 		self.sock.setblocking(0)
 		self.sock.bind(('',port))
 		
-		import netcom; self.netcom = netcom
+		import engine.network.netcom; self.netcom = netcom
 		
 		self.connections = {} # Dictionary of connections
 		
