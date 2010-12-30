@@ -5,15 +5,17 @@ class initializeServer:
 		import socket
 		self.buf=1024
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self.sock.setblocking(0)
 		self.sock.bind(('',port))
+		self.sock.setblocking(0)
 		
-		import engine.network.netcom; self.netcom = netcom
+		print("SERVER RUNNING ON PORT "+str(port))
+		
+		import engine.network.netcom; self.netcom = engine.network.netcom
 		
 		self.connections = {} # Dictionary of connections
 		
 		import time; self.time=time
-		self.lastIntervalExecution = 0.0
+		self.lastInterval = 0.0
 		
 		self.nextId=1
 	def getId(self): id=self.nextId; self.nextId+=1; return id
@@ -26,7 +28,7 @@ class initializeServer:
 		if flag == "c": # Connection Request.
 			username = data
 			id = self.getId()
-			self.sock.sendto(self.netcom.codes['net']+'a'+str(id),addr) # Acknowledged/Accepted!
+			self.sock.sendto(self.netcom.codes['net']+b'a'+bytes(id),addr) # Acknowledged/Accepted!
 			self.connections[id] = {} #{'username':username, 'addr':addr}
 			self.connections[id]['addr'] = addr
 			self.connections[id]['username'] = username
@@ -52,15 +54,17 @@ class initializeServer:
 	def throwToAll(self, data):
 		for id in self.connections:
 			addr = self.connections[id]['addr']
+			packet=self.netcom.serverBuildThrowPacket(self.connections[id]['nextThrowSeq'], data)
 			self.sock.sendto(packet, addr)
 			self.connections[id]['nextThrowSeq']+=1
 	
 	def interval(self, function, argument, period):
-		if self.time.time() - self.lastIntervalExecution > period:
+		if self.time.time() - self.lastInterval > period:
 			function( argument )
-			self.lastIntervalExecution = self.time.time()
+			self.lastInterval = self.time.time()
 	
 	def mainloop(self, gamestate):
+		inDeltas = []
 		for bundle in self.recvBundles():
 			packet, addr = bundle
 			if packet: print('packet: '+packet)
@@ -73,9 +77,12 @@ class initializeServer:
 				if data and seq > self.connections[id]['lastThrowSeq']:
 					self.connections[id]['lastThrowSeq'] = seq
 					print("throw in: "+data)
+					inDeltas.append(data)
 			
 			if packet[0] == self.netcom.codes['stream']:
 				pass
+		
+		return inDeltas
 			
 
 

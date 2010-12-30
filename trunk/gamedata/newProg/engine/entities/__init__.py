@@ -7,6 +7,7 @@ class initializeEntityController:
 		
 		import engine.entities.baseEntity; self.entityClasses["baseEntity"] = baseEntity.Class
 		import engine.entities.cube; self.entityClasses["cube"] = cube.Class
+		import engine.entities.director; self.entityClasses["director"] = director.Class
 
 	def conform(self, gamestate ):
 		delete = []

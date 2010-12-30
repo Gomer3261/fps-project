@@ -6,14 +6,14 @@ class initializeGamestate:
 		self.delta = {}
 		self.clear()
 		
-		self.nextId = 1
+		self.nextId = 2
 		
 	#Managerial functions
 	
 	def getNextId(self):
 		id = self.nextId
 		self.nextId += 1
-		return self.nextId
+		return id
 	
 	#Editing gamestate
 	
