@@ -1,2 +1,2 @@
 # !
-Connection = None
+connection = None
