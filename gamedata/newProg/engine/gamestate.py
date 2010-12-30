@@ -1,6 +1,9 @@
 class initiateGamestate:
 	def __init__(self, host=1, net=0):
 		self.data = {}
+		self.data["U"] = {}
+		self.data["E"] = {}
+		self.data["G"] = {}
 		self.delta = {}
 		
 		self.host = host
@@ -49,10 +52,6 @@ class initiateGamestate:
 	def mergeDelta(self, deltaData):
 		#Possiblity of loss in null values. Propery Nullity handling may be necessary
 		self.updateRecursively(self.delta, deltaData)
-	
-	def interpret(self, buffer):
-		pass
-		#Do stuff!
 	
 	def addUsers(self, newUsers):
 		pass
