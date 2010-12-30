@@ -15,16 +15,19 @@ class initializeServer:
 		
 		self.connections = {} # Dictionary of connections
 		
+		self.gamestate=None
+		
 		import time; self.time=time
 		self.lastInterval = 0.0
 		
 		self.nextId=1
-	def getId(self): id=self.nextId; self.nextId+=1; return id
+	def getId(self):
+		id=self.nextId; self.nextId+=1; return id
 		
 	def handleNetBundle(self, flag, payload, addr):
 		if flag == 1: # Connection Request.
 			username = payload
-			id = self.getId()
+			id = self.gamestate.addUser( username )
 			self.sock.sendto( self.netcom.pack((0,1,id)), addr ) # Acknowledged/Accepted!
 			self.connections[id] = {} #{'username':username, 'addr':addr}
 			self.connections[id]['addr'] = addr
@@ -58,6 +61,8 @@ class initializeServer:
 			self.lastInterval = self.time.time()
 	
 	def mainloop(self, gamestate):
+		if not self.gamestate: self.gamestate=gamestate # used by handleNetBundle
+		
 		inDeltas = []
 		for bundle in self.recvBundles():
 			packet, addr = bundle

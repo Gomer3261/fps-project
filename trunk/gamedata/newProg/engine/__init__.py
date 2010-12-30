@@ -9,7 +9,7 @@ entityController=None
 
 host=1
 net=0
-id=1
+id=None # We get our id from gamestate.addUser
 username="Johnny"
 
 # defining mode
@@ -36,7 +36,8 @@ def initialize():
 	interface = interface.initializeInterface()
 	
 	if host:
-		gamestate.mergeDelta( {'E':{gamestate.getNextId():{'t':'director','c':engine.id}}} )
+		engine.id = gamestate.addUser( username )
+		gamestate.addEntity( 'director' )
 		
 	INIT = True
 	
