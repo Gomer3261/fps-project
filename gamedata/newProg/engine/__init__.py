@@ -1,14 +1,26 @@
-import engine.gamestate
+import engine.gamestate as gamestateModule
 import engine.network
 import engine.entities
 
-gamestate = gamestate.initiateGamestate()
+gamestate=None
 entityController = entities.initiateEntityController()
 
-network.addr = "96.54.129.113"
-network.port = 3205
+INIT = False
+
+def initialize(host=1, net=0):
+	global gamestate, gamestateModule, network, INIT
+	gamestate = gamestateModule.initiateGamestate(host, net)
+	network.addr = "96.54.129.113"
+	network.port = 3205
+	INIT = True
+	print('='*50)
+	print("GAME INITIALIZED")
+	print("    mode: "+gamestate.mode)
+	print('='*50)
 
 def mainloop():
+	global gamestate, gamestateModule, network, INIT
+	if not INIT: initialize()
 	
 	# Server routines.
 	if gamestate.mode=="server" and not network.connection:

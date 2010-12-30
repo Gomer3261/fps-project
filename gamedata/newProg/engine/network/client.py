@@ -7,7 +7,7 @@ class initiateClient:
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.sock.setblocking(0)
 		
-		import netcom; self.netcom = netcom
+		import engine.network.netcom; self.netcom = netcom
 		
 		import time; self.time=time
 		self.lastConnectionAttempt = 0.0
