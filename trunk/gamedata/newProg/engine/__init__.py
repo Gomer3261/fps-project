@@ -7,10 +7,10 @@ import engine.interface
 gamestate=None
 entityController=None
 
-host=0
+host=1
 net=1
 id=1
-username="Cartman"
+username="Chase"
 
 # defining mode
 if host and net: mode="server"
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3201
+network.port = 3202
 
 def initialize():
 	global gamestateModule, network, entities, interface
