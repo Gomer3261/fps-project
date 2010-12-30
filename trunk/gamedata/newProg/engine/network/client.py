@@ -24,16 +24,11 @@ class initializeClient:
 		self.lastThrowSeq = 0
 		self.nextThrowSeq = 1
 	
-	def handleNetBundle(self, bundle):
-		packet, addr = bundle
-		flag = packet[1]
-		data = packet[2:]
-		
-		if flag == "a":
-			id = int(data)
-			self.engine.id = id
+	def handleNetBundle(self, flag, payload, addr):
+		if flag == 1: # CONNECTION ACCEPTED!
+			self.engine.id = payload
 			self.connected = True
-			print('handshake success, id: '+data)
+			print('HANDSHAKE SUCCESS, given id: ',payload)
 	
 	
 	
@@ -49,8 +44,8 @@ class initializeClient:
 	
 	
 	
-	def throw(self, data):
-		packet=self.netcom.clientBuildThrowPacket(self.nextThrowSeq, self.engine.id, data)
+	def throw(self, payload):
+		packet = self.netcom.pack( (1,self.nextThrowSeq,self.engine.id,payload) )
 		self.sock.sendto(packet, self.addr)
 		self.nextThrowSeq+=1
 	
@@ -65,26 +60,32 @@ class initializeClient:
 		inDeltas = []
 		for bundle in self.recvBundles():
 			packet, addr = bundle
-			if packet: print('packet: '+packet)
+			data = self.netcom.unpack(packet)
+			type=data[0]
 			
-			if packet[0] == self.netcom.codes['net']:
-				self.handleNetBundle(bundle)
+			print("DATA IN:")
+			print(data)
+			print(addr)
 			
-			if packet[0] == self.netcom.codes['throw']:
+			if type == 0: # NET PACKET
+				print("net packet")
+				type, flag, payload = data
+				self.handleNetBundle(flag, payload, addr)
+			
+			if type == 1: # THROW PACKET
+				print("throw packet")
 				seq, data = self.netcom.clientParseThrowPacket(packet)
 				if data and seq > self.lastThrowSeq:
 					self.lastThrowSeq = seq
-					print("throw in: "+data)
 					inDeltas.append(data)
 			
-			if packet[0] == self.netcom.codes['stream']:
+			if type == 2: # STREAM PACKET
 				pass
 		
 		if not self.connected:
 			if self.time.time()-self.lastConnectionAttempt > self.connectionAttemptPeriod:
 				print("attempting handshake...")
-				request = self.netcom.codes['net'] + b'c' + bytes(self.username, 'utf-8')
-				print("request: ", request, " to: ",self.addr)
+				request = self.netcom.pack( (0, 1, self.username) )
 				self.sock.sendto(request, self.addr)
 				self.lastConnectionAttempt = self.time.time()
 				self.connectionAttempts+=1
