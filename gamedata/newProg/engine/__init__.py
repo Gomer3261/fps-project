@@ -52,14 +52,14 @@ def mainloop():
 	elif mode=="client" and not network.connection:
 		network.connection = network.client.initializeClient( ('',network.port), "Cartman" ) # Client initiation.
 	else:
-		if gamestate.net:
-			if not gamestate.host:
+		if net:
+			if not host:
 				network.connection.throw( gamestate.delta )
 				gamestate.delta.clear()
 			network.connection.mainloop( gamestate ) # network uses gamestate to sync user id's.
 			for item in network.connection.inBuffer:
 				gamestate.mergeDelta( item )
-			if gamestate.host:
+			if host:
 				network.connection.throwToAll( gamestate.delta )
 				network.connection.interval( network.connection.throwToAll, gamestate.data, 2.0 )
 		gamestate.applyDelta()
@@ -73,8 +73,6 @@ def mainloop():
 	
 	for id in entityController.entities: # We loop through every entity.
 		entity = entityController.entities[id]
-		entity.conform( gamestate ) # Each entity conforms to the gamestate as it sees fit.
-		if entity.getMode() == "control": # Only control entities send info to the gamestate (to request changes)
-			deltaData, memos = entity.run( gamestate ) # Running controlled entities.
-			if deltaData: gamestate.mergeDelta(deltaData)
-			if memos: network.send(memos)
+		deltaData, memos = entity.run( gamestate ) # Running controlled entities.
+		if deltaData: gamestate.mergeDelta(deltaData)
+		#if memos: network.send(memos)
