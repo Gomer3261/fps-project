@@ -5,7 +5,7 @@ class initializeEntityController:
 		self.entities = {}
 		self.entityClasses = {}
 		
-		import engine.entities.base_entity; self.entityClasses["base_entity"] = base_entity.Class
+		import engine.entities.baseEntity; self.entityClasses["baseEntity"] = baseEntity.Class
 		import engine.entities.cube; self.entityClasses["cube"] = cube.Class
 
 	def conform(self, gamestate ):
