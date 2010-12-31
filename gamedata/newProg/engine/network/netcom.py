@@ -8,6 +8,8 @@ class createConnection:
 		self.addr=addr
 		self.id=id
 		self.username=username
+		import engine; self.engine=engine
+		import pickle; self.pickle=pickle
 		import time; self.time=time
 		self.lastThrowSeq = 0 # for incoming
 		self.nextThrowSeq = 1 # for outgoing
@@ -22,6 +24,13 @@ class createConnection:
 		else: return False
 	
 	
+	def throw(self, item):
+		seq = self.nextThrowSeq; self.nextThrowSeq+=1
+		payload = self.pickle.dumps(item)
+		packet = self.pickle.dumps( (seq,None,self.engine.id,payload) )
+		self.parent.sock.sendto( packet, self.addr )
+	
+	
 	
 	
 	def handleThrowPacket(self, seq, label, id, payload):		
@@ -30,7 +39,7 @@ class createConnection:
 			item = self.chainExtract() # Potentially returns a chain that this packet completed.
 		else:
 			item = self.pickle.loads(payload)
-		self.chainTimeoutLoop() # Kills any old chains
+		#self.chainTimeoutLoop() # Kills any old chains
 		return item
 	
 	def chunkifyData(self, data, max):
