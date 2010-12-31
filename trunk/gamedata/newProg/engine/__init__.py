@@ -90,7 +90,7 @@ def mainloop():
 		for deltaData in deltaDataList:
 			if deltaData: gamestate.mergeDelta(deltaData)
 					
-	#interface.runDisplays() #not available until proper bgui implementation
+	interface.main() #not available until proper bgui implementation
 	#gamestate.clear() # just for giggles
 	
 	import bge

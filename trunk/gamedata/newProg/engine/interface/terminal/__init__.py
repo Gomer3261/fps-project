@@ -4,12 +4,14 @@
 # This is the terminal module.
 # It handles terminal input and output.
 
-class Class:
-	"""
-	The Terminal class represents the programming side of the in game terminal.
-	"""
-	def __init__(self, slab):
-		self.slab = slab
+class initializeTerminal:
+	
+	import engine.interface.bgui as bgui
+	
+	def __init__(self, bgui):
+		
+		self.bgui = bgui
+	
 		# Terminal access activitiy.
 		self.active = 0
 
@@ -22,13 +24,6 @@ Remember:
 Important functions:
 	/restoreDefaults() # Use this whenever things seem to be not working.
 	/setSetting("username", "Stewart Walton") # Set your username.
-	/endServer()
-	/spawn() # Spawns an Explorer/Manipulator entity.
-
-Explorer/Manipulator Entity Instructions:
-	Press number buttons like 1 and 2 to select different items.
-	Click to place items.
-	Look at an item and press R to remove it.
 
 ================================================================"""
 
@@ -36,28 +31,57 @@ Explorer/Manipulator Entity Instructions:
 		self.contents = self.openingText.split("\n")
 		self.oldcontents = []
 
-
 		#History Object
-		self.History = self.History()
-
-
-		# For opening and closing the terminal (detects single presses)
-		self.termkeyLast = 0
+		self.History = self.initializeHistory()
 
 		self.wraplen = 100
 		self.maxlines = 60
 		
-		print("  Terminal's prepared.")
-		
-		
-
-
-
+		self.gui = self.initializeGui(self.bgui)
+		self.gui.display.text = '\n'.join(self.contents)
+	
+	##################################
+	### ------ TERMINAL GUI ------ ###
+	##################################
+	
+	class initializeGui(bgui.System):
+		"""
+		A bgui object created to display the terminal
+		"""
+		def __init__(self, bgui):
+			bgui.System.__init__(self)
+			
+			self.frame = bgui.Frame(self, 'terminal', border=0)
+			self.frame.colors = [(1, 1, 1, .5) for i in range(4)]
+			
+			self.display = bgui.TextBlock(self.frame, 'textblock', text="Error: empty text widget", pt_size=24, size=[0.95, 0.95], pos=[0, 0], options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
+			
+			self.input = bgui.TextInput(self.frame, 'input', text="Input goes here!", pt_size=24, size=[0.95, 0.05], pos=[.025, .05], options = bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
+			
+			import bge
+			self.keymap = {getattr(bge.events, val): getattr(bgui, val) for val in dir(bge.events) if val.endswith('KEY') or val.startswith('PAD')}
+			
+		def main(self):
+			"""Method to be ran every frame"""
+			import bge
+			# Handle the keyboard
+			keyboard = bge.logic.keyboard
+			
+			key_events = keyboard.events
+			is_shifted = key_events[bge.events.LEFTSHIFTKEY] == bge.logic.KX_INPUT_ACTIVE or \
+						key_events[bge.events.RIGHTSHIFTKEY] == bge.logic.KX_INPUT_ACTIVE
+						
+			for key, state in keyboard.events.items():
+				if state == bge.logic.KX_INPUT_JUST_ACTIVATED:
+					self.update_keyboard(self.keymap[key], is_shifted)
+					
+			bge.logic.getCurrentScene().post_draw = [self.render]
+	
 	######################################
 	### ------ TERMINAL HISTORY ------ ###
 	######################################
 	
-	class History:
+	class initializeHistory:
 		"""
 		Used to save and browse a list of strings without losing current data.
 		The list is limited a certain number of strings, which can be changed.
@@ -118,9 +142,7 @@ Explorer/Manipulator Entity Instructions:
 				return self.current_input
 			
 			return self.history[self.slot]
-		
-		
-
+			
 
 
 
@@ -172,7 +194,7 @@ Explorer/Manipulator Entity Instructions:
 	### ------ TERMINAL FUNCTIONS ------ ###
 	########################################
 
-	def input(self, s, slab=None):
+	def input(self, s):
 		"""
 		runs input commands (maybe rename to run, or command?)
 		"""
@@ -241,9 +263,35 @@ Explorer/Manipulator Entity Instructions:
 
 
 
-	######################################
-	### ------ TERMINAL HANDLER ------ ###
-	######################################
+	###################################
+	### ------ TERMINAL MAIN ------ ###
+	###################################
+	
+	def main(self):
+		import bge
+		self.handleOpenClose()
+		if self.active:
+			self.gui.main()
+			
+	def handleOpenClose(self):
+		"""
+		This function handles opening and closing the terminal.
+		Its called externally by a script running in the main scene.
+		"""
+		
+		import bge
+
+		if bge.logic.keyboard.events[bge.events.ACCENTGRAVEKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED:
+			if self.active:
+				self.gui.frame.visible = 0
+				self.active = 0
+				
+			else:
+				self.gui.frame.visible = 1
+				self.active = 1
+				self.oldcontents = []
+
+
 
 	def runHandler(self, slab):
 		"""
@@ -305,28 +353,3 @@ Explorer/Manipulator Entity Instructions:
 
 
 
-	def handleOpenClose(self):
-		"""
-		This function handles opening and closing the terminal.
-		Its called externally by a script running in the main scene.
-		"""
-		
-		import bge
-		
-		if bge.logic.keyboard.events[bge.events.ACCENTGRAVEKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED:
-			termkey = 1
-		else:
-			termkey = 0
-
-		if termkey and (not self.termkeyLast):
-			if self.active:
-				bge.logic.getSceneList()[2].end()
-				
-				self.active = 0
-			else:
-				bge.logic.addScene("Terminal", 1)
-				
-				self.active = 1
-				self.oldcontents = []
-
-		self.termkeyLast = termkey
