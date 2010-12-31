@@ -4,6 +4,7 @@ class initializeInterface:
 	def __init__(self):
 	
 		import engine.interface.bgui
+		self.bgui = bgui
 		
 		import engine.interface.inputs as inputsModule
 		self.inputs = inputsModule.initializeInputs()
@@ -11,13 +12,14 @@ class initializeInterface:
 		import engine.interface.options as optionsModule
 		self.options = optionsModule.initializeOptions(self.inputs)
 		
-#		import terminal as terminalModule
-#		self.terminal = terminalModule.initializeTerminal()
-#		
+		import engine.interface.terminal as terminalModule
+		self.terminal = terminalModule.initializeTerminal(self.bgui)
+
 #		import Notes as NotesModule
 #		self.Notes = NotesModule.Class()
-#		
-#		print("Interface -- check.")
+
+	def main(self):
+		self.terminal.main()
 
 	#Quick input detection
 	def checkControl(self, control):
