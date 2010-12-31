@@ -15,25 +15,27 @@ class initializeServer:
 		
 		self.connections = {} # Dictionary of connections
 		
+		self.timeout = 5.0
+		
 		self.gamestate=None
 		
 		import time; self.time=time
 		self.lastInterval = 0.0
+	
+	def isConnected(self):
+		return (len(self.connections) > 0)
 		
-		self.nextId=1
-	def getId(self):
-		id=self.nextId; self.nextId+=1; return id
-		
-	def handleNetBundle(self, flag, payload, addr):
+	def handleNetBundle(self, flag, payload, addr, gamestate):
 		if flag == 1: # Connection Request.
 			username = payload
-			id = self.gamestate.addUser( username )
+			id = gamestate.addUser( username ) # Adding user to gamestate, and getting their id.
 			self.sock.sendto( self.netcom.pack((0,1,id)), addr ) # Acknowledged/Accepted!
 			self.connections[id] = {} #{'username':username, 'addr':addr}
 			self.connections[id]['addr'] = addr
 			self.connections[id]['username'] = username
 			self.connections[id]['lastThrowSeq'] = 0
 			self.connections[id]['nextThrowSeq'] = 1
+			self.connections[id]['lastContact'] = self.time.time()
 			print("USER CONNECTED: "+username+", given id: "+str(id))
 	
 	
@@ -41,8 +43,8 @@ class initializeServer:
 		bundles = []
 		for i in range(max):
 			try:
-				bundle = self.sock.recvfrom(self.buf)
-				bundles.append(bundle)
+				packet, addr = self.sock.recvfrom(self.buf)
+				if packet: bundles.append( (packet, addr) )
 			except: break
 		return bundles
 	
@@ -60,8 +62,20 @@ class initializeServer:
 			function( argument )
 			self.lastInterval = self.time.time()
 	
+	def timeoutLoop(self, gamestate):
+		toRemove = []
+		for id in self.connections:
+			c = self.connections[id]
+			if self.time.time() - c['lastContact'] > self.timeout:
+				toRemove.append(id)
+		for id in toRemove:
+			del self.connections[id]
+			gamestate.removeUser(id) # Removing user from the GameState.
+			print("User "+str(id)+" timed out and is being removed.")
+				
+	
 	def mainloop(self, gamestate):
-		if not self.gamestate: self.gamestate=gamestate # used by handleNetBundle
+		self.timeoutLoop(gamestate) # Removes connections who have stuck around for too long.
 		
 		inDeltas = []
 		for bundle in self.recvBundles():
@@ -76,11 +90,12 @@ class initializeServer:
 			if type == 0: # NET PACKET
 				print("net packet")
 				type, flag, payload = data
-				self.handleNetBundle(flag, payload, addr)
+				self.handleNetBundle(flag, payload, addr, gamestate)
 			
 			if type == 1: # THROW PACKET
 				print("throw packet")
 				type, seq, id, payload = data
+				self.connections[id]['lastContact'] = self.time.time() # refreshing the lastContact to keep client from timing out.
 				if payload and seq > self.connections[id]['lastThrowSeq']:
 					self.connections[id]['lastThrowSeq'] = seq
 					inDeltas.append(payload)

@@ -54,6 +54,11 @@ class initializeGamestate:
 		else:
 			print("Gamestate error: client gamestate cannot produce unique object id. No user was created.")
 		
+	def removeUser(self, id):
+		if self.engine.host:
+			self.mergeDelta( {'U':{id:None}} )
+		else:
+			print("Gamestate error: client gamestate cannot remove users. No action was taken.")
 						
 	def addEntity(self, type, controller=None):
 		if controller == None:
@@ -64,6 +69,13 @@ class initializeGamestate:
 			return newId
 		else:
 			print("Gamestate error: client gamestate cannot produce unique object id. No entity was created.")
+			
+	def removeEntity(self, id):
+		self.mergeDelta( {'E':{id:None}} ) # Anyone can remove entities.
+		#if self.engine.host:
+		#	self.mergeDelta( {'E':{id:None}} )
+		#else:
+		#	print("Gamestate error: client gamestate cannot remove entities. No action was taken.")
 	
 	
 	#Reading Gamestate
