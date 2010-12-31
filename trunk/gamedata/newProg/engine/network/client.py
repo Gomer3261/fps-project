@@ -46,7 +46,7 @@ class initializeClient:
 				self.engine.id = payload
 				self.connected = True
 				self.lastContact = self.time.time()
-				print('MISSED CONNECTION PACKET, INDIRECTLY CONNECTED VIA KEEP ALIVE PACKET O_O, given id: ',payload)
+				print('MISSED CONNECTION PACKET, INDIRECTLY CONNECTED VIA KEEP ALIVE PACKET, given id: ',payload)
 	
 	
 	
@@ -83,17 +83,15 @@ class initializeClient:
 			data = self.netcom.unpack(packet)
 			type=data[0]
 			
-			print("DATA IN:")
-			print(data)
-			print(addr)
+			#print("DATA IN:")
+			#print(data)
+			#print(addr)
 			
 			if type == 0: # NET PACKET
-				print("got net packet")
 				type, flag, payload = data
 				self.handleNetBundle(flag, payload, addr)
 			
 			if type == 1: # THROW PACKET
-				print("got throw packet")
 				type, seq, payload = data
 				if payload and seq > self.lastThrowSeq:
 					self.lastThrowSeq = seq
@@ -120,7 +118,6 @@ class initializeClient:
 					# One second before half the time it takes to timeout, we send a keepalive thingy.
 					self.sock.sendto( self.netcom.pack((0, 2, self.engine.id)), self.addr )
 					self.lastKeepAlive = self.time.time()
-					print('netout: keepalive')
 		
 		return inDeltas
 
