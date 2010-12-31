@@ -1,30 +1,48 @@
-import engine
-import engine.gamestate as gamestateModule
-import engine.network
-import engine.entities
-import engine.interface
-import engine.camera
+##########################################################
+######## USER SETTING BOX OF FUN					######
+##########################################################								####################
+host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
+net			= 1 # local:0, client:1, server:1			##								####################
+username	= 'Jesus' # you'd better pick a cool name	##
+ip			= '192.168.1.101' # the server address		##
+port		= 3205 # the conneciton port				##
+##########################################################
 
-gamestate=None
-entityController=None
 
-host=1
-net=0
-id=None # We get our id from gamestate.addUser
-username="Jesus"
 
+
+id=None
+addr = (ip, port)
 # defining mode
 if host and net: mode="server"
 if (not host) and net: mode="client"
 if host and (not net): mode="local"
 if (not host) and (not net): mode="replay"
 
+
+###
+import engine
+import engine.gamestate as gamestateModule
+import engine.network
+import engine.entities
+import engine.interface
+import engine.camera
+###
+
+gamestate=None
+entityController=None
+
+# Master INIT
 INIT = False
 
-### Globals above this line.
 
-network.addr = "192.168.1.101"
-network.port = 3202
+
+
+### Globals above this line ###
+
+
+
+
 
 # Debug function prints out important game info.
 def DEBUG(title="unspecified"):
@@ -35,10 +53,9 @@ def DEBUG(title="unspecified"):
 	print("\n\n")
 
 def initialize():
-	global gamestateModule, network, entities, interface
-	global gamestate, entityController
-	global host, net, id, username, mode
-	global INIT
+	global host, net, username, ip, port; global id, addr, mode
+	global engine, gamestateModule, network, entities, interface, camera
+	global gamestate, entityController; global INIT
 	
 	gamestate = gamestateModule.initializeGamestate()
 	entityController = entities.initializeEntityController()
@@ -56,27 +73,29 @@ def initialize():
 	print('='*50)
 
 def mainloop():
-	global gamestateModule, network, entities, interface
-	global gamestate, entityController
-	global host, net, id, username, mode
-	global INIT
+	global host, net, username, ip, port; global id, addr, mode
+	global engine, gamestateModule, network, entities, interface, camera
+	global gamestate, entityController; global INIT
 	
 	if not INIT: initialize()
 	
-	if mode=="server" and not network.connection:
-		network.connection = network.server.initializeServer( network.port ) # Server initiation.
-	elif mode=="client" and not network.connection:
-		network.connection = network.client.initializeClient( (network.addr,network.port), username ) # Client initiation.
+	if mode=="server" and not network.remoteHandler:
+		try: network.remoteHandler = network.createServer( addr ) # Server initiation.
+		except: print("Network error: Address is already in use >:(")
+	elif mode=="client" and not network.remoteHandler:
+		network.remoteHandler = network.createClient( addr ) # Client initiation.
 	else:
 		if net:
 			if not host:
-				if gamestate.delta and network.connection.isConnected(): network.connection.throw( gamestate.delta )
+				if gamestate.delta and network.remoteHandler.connection: network.remoteHandler.throw( gamestate.delta )
 				gamestate.delta.clear()
-			deltas = network.connection.mainloop( gamestate ) # network uses gamestate to sync user id's.
+			deltas = network.remoteHandler.main( gamestate ) # network uses gamestate to sync user id's.
 			for delta in deltas: gamestate.mergeDelta( delta )
 			if host:
-				if gamestate.delta and network.connection.isConnected(): network.connection.throwToAll( gamestate.delta )
-				if network.connection.isConnected(): network.connection.interval( network.connection.throwToAll, gamestate.data, 2.0 )
+				if gamestate.delta: network.remoteHandler.throwToAll( gamestate.delta )
+				if network.time.time()-network.lastGamestateDataSend > 2.0:
+					network.remoteHandler.throwToAll(gamestate.data)
+					network.lastGamestateDataSend=network.time.time()
 		gamestate.applyDelta()
 		gamestate.delta.clear()
 
