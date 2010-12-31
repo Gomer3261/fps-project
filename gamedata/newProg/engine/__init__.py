@@ -7,10 +7,10 @@ import engine.interface
 gamestate=None
 entityController=None
 
-host=0
+host=1
 net=1
 id=None # We get our id from gamestate.addUser
-username="Ozzy"
+username="Sharon"
 
 # defining mode
 if host and net: mode="server"

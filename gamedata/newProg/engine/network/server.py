@@ -41,7 +41,6 @@ class initializeServer:
 		if flag == 2: # Keep Alive packet
 			id = payload
 			self.connections[id]['lastContact'] = self.time.time()
-			print('netin: keepalive')
 	
 	def recvBundles(self, max=10):
 		bundles = []
@@ -75,7 +74,7 @@ class initializeServer:
 		for id in toRemove:
 			del self.connections[id]
 			gamestate.removeUser(id) # Removing user from the GameState.
-			print("User "+str(id)+" timed out and is being removed.")
+			print("USER "+str(id)+" DISCONNECTED. They timed out.")
 	
 	def keepAliveLoop(self):
 		# We haven't lost connection.
@@ -84,9 +83,7 @@ class initializeServer:
 			for id in self.connections:
 				addr = self.connections[id]['addr']
 				self.sock.sendto( self.netcom.pack((0, 2, id)), addr )
-				self.lastKeepAlive = self.time.time()
-				print('netout: keepalive')
-				
+				self.lastKeepAlive = self.time.time()				
 	
 	def mainloop(self, gamestate):
 		self.timeoutLoop(gamestate) # Removes connections who have stuck around for too long.
@@ -98,17 +95,15 @@ class initializeServer:
 			data = self.netcom.unpack(packet)
 			type=data[0]
 			
-			print("DATA IN:")
-			print(data)
-			print(addr)
+			#print("DATA IN:")
+			#print(data)
+			#print(addr)
 			
 			if type == 0: # NET PACKET
-				print("net packet")
 				type, flag, payload = data
 				self.handleNetBundle(flag, payload, addr, gamestate)
 			
 			if type == 1: # THROW PACKET
-				print("throw packet")
 				type, seq, id, payload = data
 				self.connections[id]['lastContact'] = self.time.time() # refreshing the lastContact to keep client from timing out.
 				if payload and seq > self.connections[id]['lastThrowSeq']:
