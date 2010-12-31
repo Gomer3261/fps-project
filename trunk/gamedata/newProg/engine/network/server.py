@@ -15,12 +15,12 @@ class initializeServer:
 		
 		self.connections = {} # Dictionary of connections
 		
-		self.timeout = 5.0
-		
 		self.gamestate=None
 		
 		import time; self.time=time
 		self.lastInterval = 0.0
+		self.timeout = 5.0
+		self.lastKeepAlive = self.time.time()
 	
 	def isConnected(self):
 		return (len(self.connections) > 0)
@@ -37,7 +37,11 @@ class initializeServer:
 			self.connections[id]['nextThrowSeq'] = 1
 			self.connections[id]['lastContact'] = self.time.time()
 			print("USER CONNECTED: "+username+", given id: "+str(id))
-	
+		
+		if flag == 2: # Keep Alive packet
+			id = payload
+			self.connections[id]['lastContact'] = self.time.time()
+			print('netin: keepalive')
 	
 	def recvBundles(self, max=10):
 		bundles = []
@@ -72,10 +76,20 @@ class initializeServer:
 			del self.connections[id]
 			gamestate.removeUser(id) # Removing user from the GameState.
 			print("User "+str(id)+" timed out and is being removed.")
+	
+	def keepAliveLoop(self):
+		# We haven't lost connection.
+		if self.time.time() - self.lastKeepAlive > ((self.timeout/2)-1.0):
+			# One second before half the time it takes to timeout, we send a keepalive thingy.
+			for id in self.connections:
+				addr = self.connections[id]['addr']
+				self.sock.sendto( self.netcom.pack((0, 2, id)), addr )
+				print('netout: keepalive')
 				
 	
 	def mainloop(self, gamestate):
 		self.timeoutLoop(gamestate) # Removes connections who have stuck around for too long.
+		self.keepAliveLoop()
 		
 		inDeltas = []
 		for bundle in self.recvBundles():

@@ -19,8 +19,9 @@ class initializeClient:
 		self.connectionAttempts=0
 		self.connected = False
 		
-		self.timeout = 5.0
+		self.timeout = 5.0 # must be greater than 3 seconds
 		self.lastContact = self.time.time()
+		self.lastKeepAlive = self.time.time()
 		
 		self.lastInterval = 0.0
 		
@@ -36,6 +37,16 @@ class initializeClient:
 			self.connected = True
 			self.lastContact = self.time.time()
 			print('HANDSHAKE SUCCESS, given id: ',payload)
+		
+		if flag == 2: # Keep Alive Packet
+			print('netin: keepalive')
+			if self.connected:
+				self.lastContact = self.time.time()
+			else:
+				self.engine.id = payload
+				self.connected = True
+				self.lastContact = self.time.time()
+				print('MISSED CONNECTION PACKET, INDIRECTLY CONNECTED VIA KEEP ALIVE PACKET O_O, given id: ',payload)
 	
 	
 	
@@ -103,6 +114,12 @@ class initializeClient:
 				# We've lost connection.
 				self.connectionAttempts=0
 				self.connected = False
+			else:
+				# We haven't lost connection.
+				if self.time.time() - self.lastKeepAlive > ((self.timeout/2)-1.0):
+					# One second before half the time it takes to timeout, we send a keepalive thingy.
+					self.sock.sendto( self.netcom.pack((0, 2, self.engine.id)), self.addr )
+					print('netout: keepalive')
 		
 		return inDeltas
 
