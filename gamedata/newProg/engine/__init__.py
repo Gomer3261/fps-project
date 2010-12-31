@@ -8,9 +8,9 @@ gamestate=None
 entityController=None
 
 host=1
-net=1
+net=0
 id=None # We get our id from gamestate.addUser
-username="Sharon"
+username="Jesus"
 
 # defining mode
 if host and net: mode="server"
