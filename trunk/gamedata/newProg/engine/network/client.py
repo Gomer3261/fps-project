@@ -119,6 +119,7 @@ class initializeClient:
 				if self.time.time() - self.lastKeepAlive > ((self.timeout/2)-1.0):
 					# One second before half the time it takes to timeout, we send a keepalive thingy.
 					self.sock.sendto( self.netcom.pack((0, 2, self.engine.id)), self.addr )
+					self.lastKeepAlive = self.time.time()
 					print('netout: keepalive')
 		
 		return inDeltas
