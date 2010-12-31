@@ -27,7 +27,7 @@ class createConnection:
 	def throw(self, item):
 		seq = self.nextThrowSeq; self.nextThrowSeq+=1
 		payload = self.pickle.dumps(item)
-		packet = self.pickle.dumps( (seq,None,self.engine.id,payload) )
+		packet = self.pickle.dumps( (1,seq,None,self.engine.id,payload) )
 		self.parent.sock.sendto( packet, self.addr )
 	
 	
