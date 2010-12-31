@@ -1,3 +1,6 @@
+import time;
+lastGamestateDataSend = 0.0
+
 remoteHandler=None
 class REMOTE_HANDLER:
 	def __init__(self, addr):
@@ -25,9 +28,9 @@ class createServer(REMOTE_HANDLER):
 	def initialize(self):
 		import socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self.sock.bind(self.addr)
+		self.sock.bind( ('',self.addr[1]) )
 		self.sock.setblocking(0)
-		print("SERVER RUNNING ", self.addr)
+		print("SERVER RUNNING:", self.addr)
 		self.connections = {}
 	
 	def throw(self, item, id):
@@ -37,7 +40,7 @@ class createServer(REMOTE_HANDLER):
 			self.connections[id].throw(item)
 	
 	def main(self, gamestate):
-		self.timeoutLoop(gamestate)
+		self.timeoutLoop(gamestate) # Gamestate users are removed on timeouts.
 		self.keepAliveLoop()
 		
 		inItems = []
@@ -48,7 +51,7 @@ class createServer(REMOTE_HANDLER):
 			
 			if type==0: # NET Packet
 				type, flag, payload = data
-				self.handleNetPacket(flag, payload, addr, gamestate)
+				gamestateUsersToAdd = self.handleNetPacket(flag, payload, addr, gamestate)
 			if type==1: # THROW Packet
 				type, seq, label, id, payload = data
 				connection = self.connections[id]; connection.contact()
@@ -76,7 +79,7 @@ class createServer(REMOTE_HANDLER):
 				self.sock.sendto( self.netcom.pack(item), c.addr )
 				self.lastKeepAlive = self.time.time()
 	
-	def timeoutLoop(self):
+	def timeoutLoop(self, gamestate):
 		toRemove = []
 		for id in self.connections:
 			connection = self.connections[id]
@@ -104,7 +107,7 @@ class createClient(REMOTE_HANDLER):
 	def throw(self, item):
 		self.connection.throw(item)
 	
-	def main(self):
+	def main(self, gamestate): # we don't actually use gamestate, it's because the server's main needs it.
 		if not self.connection: self.attemptConnection()
 		else:
 			self.keepAliveLoop()
@@ -139,13 +142,13 @@ class createClient(REMOTE_HANDLER):
 		if flag == 1: # Connection Accepted
 			self.engine.id = payload
 			self.connection = self.netcom.createConnection(self, self.addr)
-			print("CONNECTION SUCCESS, given id: ", payload)
+			print("CONNECTION SUCCESS, given id:", payload)
 		elif flag == 2: # Keep Alive Packet
 			if self.connection: self.connection.contact()
 			else:
 				self.engine.id=payload
 				self.connection=self.netcom.createConnection(self, self.addr)
-				print("INDIRECTLY CONNECTED VIA KEEP ALIVE PACKET, given id: ", payload)
+				print("INDIRECTLY CONNECTED VIA KEEP ALIVE PACKET, given id:", payload)
 	
 	def attemptConnection(self):
 		if self.time.time()-self.lastConnectionAttempt > self.connectionAttemptPeriod:
