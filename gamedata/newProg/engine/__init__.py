@@ -10,7 +10,7 @@ entityController=None
 host=0
 net=1
 id=None # We get our id from gamestate.addUser
-username="LiamNeeson"
+username="Ozzy"
 
 # defining mode
 if host and net: mode="server"
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3201
+network.port = 3202
 
 def DEBUG(title):
 	print("\n\nDEBUG: ", title)

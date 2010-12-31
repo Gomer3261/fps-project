@@ -84,6 +84,7 @@ class initializeServer:
 			for id in self.connections:
 				addr = self.connections[id]['addr']
 				self.sock.sendto( self.netcom.pack((0, 2, id)), addr )
+				self.lastKeepAlive = self.time.time()
 				print('netout: keepalive')
 				
 	
