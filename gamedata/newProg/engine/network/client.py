@@ -19,15 +19,22 @@ class initializeClient:
 		self.connectionAttempts=0
 		self.connected = False
 		
+		self.timeout = 5.0
+		self.lastContact = self.time.time()
+		
 		self.lastInterval = 0.0
 		
 		self.lastThrowSeq = 0
 		self.nextThrowSeq = 1
 	
+	def isConnected(self):
+		return self.connected
+	
 	def handleNetBundle(self, flag, payload, addr):
 		if flag == 1: # CONNECTION ACCEPTED!
 			self.engine.id = payload
 			self.connected = True
+			self.lastContact = self.time.time()
 			print('HANDSHAKE SUCCESS, given id: ',payload)
 	
 	
@@ -36,8 +43,8 @@ class initializeClient:
 		bundles = []
 		for i in range(max):
 			try:
-				bundle = self.sock.recvfrom(self.buf)
-				bundles.append(bundle)
+				packet, addr = self.sock.recvfrom(self.buf)
+				if packet: bundles.append( (packet, addr) )
 			except: break
 		return bundles
 	
@@ -58,7 +65,9 @@ class initializeClient:
 	
 	def mainloop(self, gamestate):
 		inDeltas = []
+		
 		for bundle in self.recvBundles():
+			self.lastContact = self.time.time()
 			packet, addr = bundle
 			data = self.netcom.unpack(packet)
 			type=data[0]
@@ -68,12 +77,12 @@ class initializeClient:
 			print(addr)
 			
 			if type == 0: # NET PACKET
-				print("net packet")
+				print("got net packet")
 				type, flag, payload = data
 				self.handleNetBundle(flag, payload, addr)
 			
 			if type == 1: # THROW PACKET
-				print("throw packet")
+				print("got throw packet")
 				type, seq, payload = data
 				if payload and seq > self.lastThrowSeq:
 					self.lastThrowSeq = seq
@@ -89,6 +98,11 @@ class initializeClient:
 				self.sock.sendto(request, self.addr)
 				self.lastConnectionAttempt = self.time.time()
 				self.connectionAttempts+=1
+		else: # We are connected.
+			if self.time.time() - self.lastContact > self.timeout:
+				# We've lost connection.
+				self.connectionAttempts=0
+				self.connected = False
 		
 		return inDeltas
 

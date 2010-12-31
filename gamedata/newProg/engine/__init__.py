@@ -7,10 +7,10 @@ import engine.interface
 gamestate=None
 entityController=None
 
-host=1
-net=0
+host=0
+net=1
 id=None # We get our id from gamestate.addUser
-username="Cartman"
+username="Jesus"
 
 # defining mode
 if host and net: mode="server"
@@ -23,7 +23,7 @@ INIT = False
 ### Globals above this line.
 
 network.addr = "192.168.1.101"
-network.port = 3210
+network.port = 3200
 
 def DEBUG(title):
 	print("\n\nDEBUG: ", title)
@@ -69,13 +69,13 @@ def mainloop():
 	else:
 		if net:
 			if not host:
-				if gamestate.delta: network.connection.throw( gamestate.delta )
+				if gamestate.delta and network.connection.isConnected(): network.connection.throw( gamestate.delta )
 				gamestate.delta.clear()
 			deltas = network.connection.mainloop( gamestate ) # network uses gamestate to sync user id's.
 			for delta in deltas: gamestate.mergeDelta( delta )
 			if host:
-				if gamestate.delta: network.connection.throwToAll( gamestate.delta )
-				network.connection.interval( network.connection.throwToAll, gamestate.data, 2.0 )
+				if gamestate.delta and network.connection.isConnected(): network.connection.throwToAll( gamestate.delta )
+				if network.connection.isConnected(): network.connection.interval( network.connection.throwToAll, gamestate.data, 2.0 )
 		gamestate.applyDelta()
 		gamestate.delta.clear()
 
