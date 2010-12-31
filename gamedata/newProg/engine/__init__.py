@@ -1,8 +1,9 @@
 import engine
 import engine.gamestate as gamestateModule
-import engine.network as network
-import engine.entities as entities
+import engine.network
+import engine.entities
 import engine.interface
+import engine.camera
 
 gamestate=None
 entityController=None
@@ -25,7 +26,8 @@ INIT = False
 network.addr = "192.168.1.101"
 network.port = 3202
 
-def DEBUG(title):
+# Debug function prints out important game info.
+def DEBUG(title="unspecified"):
 	print("\n\nDEBUG: ", title)
 	print("engine.id: ", engine.id)
 	print("gamestate.data: ", gamestate.data)
@@ -60,8 +62,7 @@ def mainloop():
 	global INIT
 	
 	if not INIT: initialize()
-		
-	# Server routines.
+	
 	if mode=="server" and not network.connection:
 		network.connection = network.server.initializeServer( network.port ) # Server initiation.
 	elif mode=="client" and not network.connection:
@@ -80,8 +81,7 @@ def mainloop():
 		gamestate.delta.clear()
 
 	
-	### UNIVERSAL ROUTINES
-	# These apply to server, client, and local modes.
+	### UNIVERSAL ROUTINES: These apply to server, client, and local modes.
 	entityController.conform( gamestate ) # replicator emulates the gamestate by adding objects or removing them based on what the gamestate says.
 	
 	for idloop in entityController.entities: # We loop through every entity.
@@ -91,13 +91,15 @@ def mainloop():
 			if deltaData: gamestate.mergeDelta(deltaData)
 					
 	interface.main() #not available until proper bgui implementation
-	#gamestate.clear() # just for giggles
 	
+	engine.camera.resetPriority() # Clearing the priority so that the cameras next frame can compete with each other.
+	
+	# Debug on keypress of the asterisk * key on the numpad.
 	import bge
 	keyboard = bge.logic.keyboard
-	if keyboard.events[bge.events.DKEY] == 3:
+	if keyboard.events[bge.events.PADASTERKEY] == 3:
 		DEBUG("KEYPRESS")
-		
+
 
 
 
