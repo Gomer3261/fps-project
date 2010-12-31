@@ -4,6 +4,7 @@ def unpack(packet): return pickle.loads(packet)
 
 class createConnection:
 	def __init__(self, parent, addr, id=None, username=None):
+		self.parent=parent
 		self.addr=addr
 		self.id=id
 		self.username=username
