@@ -73,13 +73,13 @@ class initializeInterface:
 #		else:
 #			self.out(text, note=True)
 #	
-#	def out(self, text, terminal=True, note=False, console=False):
-#		"""
-#		Basic output method. Outputs to the terminal by default.
-#		"""
-#		if terminal:
-#			self.Terminal.output(text)
-#		if note:
-#			self.Notes.notify(text)
-#		if console:
-#			print(text)
+	def out(self, text, terminal=True, note=False, console=False):
+		"""
+		Basic output method. Outputs to the terminal by default.
+		"""
+		if terminal:
+			self.terminal.output(text)
+		if note:
+			pass
+		if console:
+			print(text)
