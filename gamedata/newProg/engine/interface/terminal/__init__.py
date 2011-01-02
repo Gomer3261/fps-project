@@ -10,6 +10,11 @@ class initializeTerminal:
 	
 	def __init__(self, bgui):
 		
+		import engine.interface.terminal.commandsUser as commandsUser
+		self.commandsUser = commandsUser
+		import engine.interface.terminal.commandsAdmin as commandsAdmin
+		self.commandsAdmin = commandsAdmin
+		
 		self.bgui = bgui
 	
 		# Terminal access activitiy.
@@ -31,11 +36,11 @@ Important functions:
 		self.contents = self.openingText.split("\n")
 		self.oldcontents = []
 
-		#History Object
-		self.History = self.initializeHistory()
+		#history Object
+		self.history = self.initializeHistory()
 
 		self.wraplen = 100
-		self.maxlines = 60
+		self.maxlines = 50
 		
 		self.gui = self.initializeGui(self.bgui)
 		self.gui.display.text = '\n'.join(self.contents)
@@ -52,11 +57,13 @@ Important functions:
 			bgui.System.__init__(self)
 			
 			self.frame = bgui.Frame(self, 'terminal', border=0)
-			self.frame.colors = [(1, 1, 1, .5) for i in range(4)]
+			self.frame.colors = [(1, 1, 1, .8) for i in range(4)]
 			
-			self.display = bgui.TextBlock(self.frame, 'textblock', text="Error: empty text widget", pt_size=24, size=[0.95, 0.95], pos=[0, 0], options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
+			self.display = bgui.TextBlock(self.frame, 'textblock', text="Error: empty text widget", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.95], pos=[0, 0], options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
 			
-			self.input = bgui.TextInput(self.frame, 'input', text="Input goes here!", pt_size=24, size=[0.95, 0.05], pos=[.025, .05], options = bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
+			self.input = bgui.TextInput(self.frame, 'input', text="", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.05], pos=[.025, .05], options = bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
+			
+			self.focused_widget = self.input
 			
 			import bge
 			self.keymap = {getattr(bge.events, val): getattr(bgui, val) for val in dir(bge.events) if val.endswith('KEY') or val.startswith('PAD')}
@@ -202,15 +209,12 @@ Important functions:
 		if s[0] == "/":
 			isCommand = 1
 		
-		if isCommand and slab != None:
+		if isCommand:
 			self.output(" ")
 			self.output(">> "+s)
 			s = s[1:]
 			
-			if not hasattr(self, "CommandsUser"):
-				import CommandsUser as CommandsModuleUser; self.CommandsUser = CommandsModuleUser.Class(slab)
-				import CommandsAdmin as CommandsModuleAdmin; self.CommandsAdmin = CommandsModuleAdmin.Class(slab)
-			modules = [self.CommandsUser, self.CommandsAdmin]
+			modules = [self.commandsUser, self.commandsAdmin]
 
 			namespace = {}
 			
@@ -231,10 +235,10 @@ Important functions:
 		
 		else:
 			#Network = self.slab
-			self.slab.Network.sendText(self.slab.Admin.UID, s)
-			#self.output(s)
+			#self.slab.Network.sendText(self.slab.Admin.UID, s)
+			self.output(s)
 			# Now we assume this is a text message....
-			#pass
+			pass
 			
 
 	def output(self, s):
@@ -269,9 +273,13 @@ Important functions:
 	
 	def main(self):
 		import bge
-		self.handleOpenClose()
 		if self.active:
 			self.gui.main()
+			self.runTerminal()
+		
+		self.handleOpenClose()
+
+		
 			
 	def handleOpenClose(self):
 		"""
@@ -288,68 +296,53 @@ Important functions:
 				
 			else:
 				self.gui.frame.visible = 1
+				self.gui.input.text = ""
 				self.active = 1
 				self.oldcontents = []
 
 
 
-	def runHandler(self, slab):
+	def runTerminal(self):
 		"""
 		This function handles all actions to do with the terminal while it's open.
 		Its called externally by a script running in the terminal scene.
 		"""
+		import bge
 		
-		if self.active:
-			import bge
-			
-			con = bge.logic.getCurrentController()
-			
-			returnKey = con.sensors["RETURN"]
-			upKey = con.sensors["UP"]
-			downKey = con.sensors["DOWN"]
-			deleteKey = con.sensors["DELETE"]
+		enterKey = bge.logic.keyboard.events[bge.events.ENTERKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
+		upKey = bge.logic.keyboard.events[bge.events.UPARROWKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
+		downKey = bge.logic.keyboard.events[bge.events.DOWNARROWKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
+		delKey = bge.logic.keyboard.events[bge.events.DELKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
+
+		### INPUT HANDLING ###
+
+		# Delete key clears input field
+		if delKey:
+			self.gui.input.text = ""
 		
-			inTextObj = bge.logic.getCurrentScene().objects["Terminal-inText"]
-			outTextObj = bge.logic.getCurrentScene().objects["Terminal-outText"]
-
-
-			### INPUT HANDLING ###
-
-			# Delete key clears input field
-			if deleteKey.positive:
-				inTextObj["input"] = ""
+		# A = Input String
+		s = self.gui.input.text
+		
+		if s and enterKey:
+			self.input(s)
+			self.gui.input.text = ""
 			
-			# A = Input String
-			A = inTextObj["input"]
-			A = A.replace("\r", "")
-			A = A.replace("\n", "")
-			inTextObj["Text"] = A + "|"
+			# Add the last input into the history
+			self.history.add(s)
 
 			
-			if A and returnKey.positive:
-				self.input(A, slab)
-				inTextObj["input"] = ""
-				inTextObj["Text"] = ""
-				
-				# Add the last input into the history
-				self.History.add(A)
-
-				
-				
-			elif upKey.positive:
-				inTextObj["input"] = self.History.getNextItem(A)
-			elif downKey.positive:
-				inTextObj["input"] = self.History.getPrevItem()
 			
-			if self.oldcontents != self.contents:
-				### OUTPUT HANDLING ###
-				self.contents = self.formatLines(self.contents)
-				output = "\n".join(self.contents)
-				
-				output = output.replace("\r", "")
-				
-				outTextObj["Text"] = output
-				self.oldcontents = self.contents[:]
-
-
-
+		elif upKey:
+			self.gui.input.text = self.history.getNextItem(s)
+		elif downKey:
+			self.gui.input.text = self.history.getPrevItem()
+		
+		if self.oldcontents != self.contents:
+			### OUTPUT HANDLING ###
+			self.contents = self.formatLines(self.contents)
+			output = "\n".join(self.contents)
+			
+			output = output.replace("\r", "")
+			
+			self.gui.display.text = output
+			self.oldcontents = self.contents[:]
