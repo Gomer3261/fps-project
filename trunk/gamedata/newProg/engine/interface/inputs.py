@@ -34,7 +34,9 @@ class initializeInputs:
 		import bge
 
 		def __init__(self):
-
+			"""
+			Initialize engine's mouse object.
+			"""
 			self.width = self.bge.render.getWindowWidth()
 			self.height = self.bge.render.getWindowHeight()
 
@@ -152,6 +154,9 @@ class initializeInputs:
 		
 
 		def __init__(self):
+			"""
+			Initialize controller object
+			"""
 			import bge
 
 			#finding sensors
@@ -182,17 +187,19 @@ class initializeInputs:
 			The Event class is used to detect hit keys and other control related information. (1 control/event)
 			"""
 			def __init__(self, controller, control, value=None):
+				"""
+				Initialize event object.
+				"""
 				self.controller = controller
 
 				self.control = control
 				self.getValue(value)
 				
-				self.kind = ""
 				self.lastpositive = 0
 				
 			def convertMouseControl(self, control):
 				"""
-				converts a special mouse options value to a bge.events value.
+				Converts a special mouse options value to a bge.events value.
 				"""
 				newControl = ""
 				
@@ -214,7 +221,7 @@ class initializeInputs:
 
 			def getValue(self, value=None):
 				"""
-				converts the options value to a bge.events value.
+				Converts the options value to a bge.events value.
 				"""
 				if not value:
 					if control not in self.controller.controls:
@@ -235,17 +242,14 @@ class initializeInputs:
 
 			def getStatus(self):
 				"""
-				figures out the status of the event. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
+				Figures out the status of the event. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
 				"""
 				import bge
 				if "MOUSE" in self.value:
-					self.kind = "other"
-
 					status = self.controller.mouse.events[getattr(bge.events, self.value)]
 					return status
 				
 				else:
-					self.kind = "key"
 					status = self.controller.keyboard.events[getattr(bge.events, self.value)]
 					return status
 
@@ -253,7 +257,7 @@ class initializeInputs:
 
 			def isPositive(self):
 				"""
-				checks if the event is positive or not.
+				Checks if the event is positive or not.
 				"""
 				status = self.getStatus()
 				if (status == 1) or (status == 2):
@@ -264,7 +268,7 @@ class initializeInputs:
 
 		def getEvent(self, control):
 			"""
-			checks for the event in self.events
+			Checks for the event in self.events
 			"""
 			if control in self.events:
 				event = self.events[control]
@@ -276,7 +280,7 @@ class initializeInputs:
 
 		def getStatus(self, control):
 			"""
-			returns the status of the control. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
+			Returns the status of the control. (0 for inactive, 1 for just pressed, 2 for held, 3 for just released.)
 			"""
 			event = self.getEvent(control)
 			if not event:
@@ -288,7 +292,7 @@ class initializeInputs:
 
 		def isPositive(self, control):
 			"""
-			returns 1 if the control is positive.
+			Returns 1 if the control is positive.
 			"""
 			event = self.getEvent(control)
 			if not event:
@@ -300,7 +304,7 @@ class initializeInputs:
 		
 		def setControls(self, controls):
 			"""
-			changes the values of controls, and creates events to detect them.
+			Changes the values of controls, and creates events to detect them.
 			"""
 			# controls are usually from options.py
 			self.controls = {}

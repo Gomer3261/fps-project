@@ -1,8 +1,14 @@
 ### Interface Module ###
+# Maintained by:
+# Geoffrey Gollmer (Gomer)
 
 class initializeInterface:
 	def __init__(self):
-	
+		"""
+		Initialization function for the intferface object.
+		Initializes Interface's components.
+		"""
+		#Bgui is an external library, courtesy of Mitchell Stokes. Thanks Mitchell
 		import engine.interface.bgui
 		self.bgui = bgui
 		
@@ -14,65 +20,19 @@ class initializeInterface:
 		
 		import engine.interface.terminal as terminalModule
 		self.terminal = terminalModule.initializeTerminal(self.bgui)
-
+		
+		#Notes to be added once it's converted to bgui.
 #		import Notes as NotesModule
 #		self.Notes = NotesModule.Class()
 
 	def main(self):
+		"""
+		Main interface loop.
+		"""
 		self.terminal.main()
-
-	#Quick input detection
-	def checkControl(self, control):
-		return self.inputs.controller.isPositive(control)
+		#self.notes.main() 
 		
-	def controlStatus(self, control):
-		return self.inputs.controller.getStatus(control)
-		
-	#Quick option access
-	def defaultOptions(self):
-		return self.options.saveDefaults()
-		
-	def setSetting(self, setting, value):
-		return self.options.setSetting(self, setting, value)
-		
-	def getSetting(self, setting):
-		return self.options.getSetting(self, setting)
-		
-	def resetSetting(self, setting):
-		return self.options.defaultSetting(setting)
-		
-	def setControl(self, control, value):
-		return self.options.setSetting(self, control, value)
-		
-	def getControl(self, control):
-		return self.options.getSetting(self, control)
-		
-	def resetControl(self, control):
-		return self.options.defaultControl(control)
-
-#	def run(self, Network, GameState):
-#		"""
-#		handles controlling the terminal scene.
-#		"""
-#		self.Terminal.handleOpenClose()
-#		self.handleTexts(Network, GameState)
-#	
-#	def handleTexts(self, Network, GameState):
-#		for bundle in Network.inBundles:
-#			fwdUID, item = bundle
-#			flag, data = item
-#			if flag == 'TXT':
-#				UID, text = data
-#				self.displayText(UID, text, GameState)
-#				if Network.GPS: Network.GPS.sendToAll( ('TXT', (UID, text)) )
-#	
-#	def displayText(self, UID, text, GameState):
-#		if UID:
-#			name = GameState.getUserName(UID)
-#			self.out("%s: %s"%(name, text), note=True)
-#		else:
-#			self.out(text, note=True)
-#	
+	#InterfaceCommands:
 	def out(self, text, terminal=True, note=False, console=False):
 		"""
 		Basic output method. Outputs to the terminal by default.
@@ -81,5 +41,72 @@ class initializeInterface:
 			self.terminal.output(text)
 		if note:
 			pass
+			#self.notes.output(text)
 		if console:
 			print(text)
+
+	#Quick input detection:
+	@property
+	def mouse(self):
+		return self.inputs.mouse
+	
+	def checkControl(self, control):
+		"""
+		Function to check if a control is active (positive).
+		"""
+		return self.inputs.controller.isPositive(control)
+		
+	def controlStatus(self, control):
+		"""
+		Function to retrieve a control's status.
+		0=inactive,
+		1=just activated,
+		2=active,
+		3=just deactivated 
+		"""
+		return self.inputs.controller.getStatus(control)
+		
+	#Quick option access:
+	def defaultOptions(self):
+		"""
+		Function to reset controls and settings to default.
+		"""
+		return self.options.saveDefaults()
+		
+	def setSetting(self, setting, value):
+		"""
+		Function to set individual settings.
+		"""
+		return self.options.setSetting(self, setting, value)
+		
+	def getSetting(self, setting):
+		"""
+		Function to retrieve individual settings.
+		"""
+		return self.options.getSetting(self, setting)
+		
+	def resetSetting(self, setting):
+		"""
+		Function to reset indivdual settings to their default values.
+		"""
+		return self.options.defaultSetting(setting)
+		
+	def setControl(self, control, value):
+		"""
+		Function to set individual controls.
+		"""
+		return self.options.setSetting(self, control, value)
+		
+	def getControl(self, control):
+		"""
+		Function to retrieve individual controls.
+		"""
+		return self.options.getSetting(self, control)
+		
+	def resetControl(self, control):
+		"""
+		Function to reset individual controls to their default values.
+		"""
+		return self.options.defaultControl(control)
+
+

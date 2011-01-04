@@ -14,7 +14,7 @@ class initializeOptions:
 
 	#the init function. Most modules have this.
 	def __init__(self, inputs):
-		"""Init the module."""
+		"""Initialize the options module."""
 		self.sepchar = "\n=------ Settings Above / Controls Below ------=\n\n" #this can actually be anything, it's just more eye pleasing if you open the file directly.
 		self.path = "delta_options.txt" #the path for the options file (change it to something more game relative later?)
 		self.settings = {}
@@ -102,7 +102,7 @@ class initializeOptions:
 
 	def setSetting(self, key, value):
 		"""
-		sets the given setting to the given value, then saves the setting.
+		Sets the given setting to the given value, then saves the setting.
 		"""
 		key = key.lower()
 		if key == "lens":
@@ -115,12 +115,18 @@ class initializeOptions:
 		return r
 
 	def getSetting(self, key):
+		"""
+		Returns the value of the given setting.
+		"""
 		key = key.lower()
 		if key in self.settings:
 			return self.settings[key]
 		return None
 	
 	def defaultSetting(self, key):
+		"""
+		Restores the value of the given setting to it's default value, then saves the setting.
+		"""
 		key = key.lower()
 		if key in self.defaultSettings:
 			self.settings[key] = self.defaultSettings[key]
@@ -139,12 +145,18 @@ class initializeOptions:
 		return r
 	
 	def getControl(self, key):
+		"""
+		Returns the value of the given control.
+		"""
 		key = key.lower()
 		if key in self.controls:
 			return self.controls[key]
 		return None
 		
 	def defaultControl(self, key):
+		"""
+		Restores the value of the given control to it's default value, then saves the control.
+		"""
 		key = key.lower()
 		if key in self.defaultControls:
 			self.controls[key] = self.defaultControls[key]
@@ -155,7 +167,7 @@ class initializeOptions:
 
 	def save(self):
 		"""
-		saves current controls and settings to the options file.
+		Saves current controls and settings to the options file.
 		"""
 		
 		import os
@@ -191,7 +203,7 @@ class initializeOptions:
 
 	def load(self):
 		"""
-		loads all information from the options file.
+		Loads all information from the options file.
 		"""
 		
 		try:
@@ -245,11 +257,17 @@ class initializeOptions:
 			return 0
 	
 	def checkSettings(self):
+		"""
+		Insures that there is a value for all required settings.
+		"""
 		for setting in self.defaultSettings:
 			if not setting in self.settings:
 				self.settings[setting] = self.defaultSettings[setting]
 
 	def checkControls(self):
+		"""
+		Insures that there is a value for all required controls.
+		"""
 		for control in self.defaultControls:
 			if not control in self.controls:
 				self.controls[control] = self.defaultControls[control]
