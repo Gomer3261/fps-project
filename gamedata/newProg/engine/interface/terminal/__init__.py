@@ -61,16 +61,19 @@ Important functions:
 			
 			self.display = bgui.TextBlock(self.frame, 'textblock', text="Error: empty text widget", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.95], pos=[0, 0], options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
 			
-			self.input = bgui.TextInput(self.frame, 'input', text="", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.05], pos=[.025, .05], options = bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
-			
-			self.focused_widget = self.input
+			self.input = bgui.TextInput(self.frame, 'input', text="", prefix=">>>", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.05], pos=[.025, .05], options = bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
 			
 			import bge
 			self.keymap = {getattr(bge.events, val): getattr(bgui, val) for val in dir(bge.events) if val.endswith('KEY') or val.startswith('PAD')}
 			
+			self.on_enter = None
+			
+			
 		def main(self):
 			"""Method to be ran every frame"""
 			import bge
+			
+			self.focused_widget = self.input
 			# Handle the keyboard
 			keyboard = bge.logic.keyboard
 			
@@ -211,7 +214,7 @@ Important functions:
 		
 		if isCommand:
 			self.output(" ")
-			self.output(">> "+s)
+			self.output(">>> "+s)
 			s = s[1:]
 			
 			modules = [self.commandsUser, self.commandsAdmin]
