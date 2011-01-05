@@ -13,7 +13,7 @@ class Class(baseEntity.Class):
 		import bge
 		keyboard = bge.logic.keyboard
 		
-		if keyboard.events[bge.events.QKEY] == 3 and (not engine.interface.terminalIsActive()):
+		if keyboard.events[bge.events.PKEY] == 3 and (not engine.interface.terminalIsActive()):
 			deltas.append( {'E':{gamestate.getNextId():{'t':'player','c':engine.id}}} )
 		
 		for memo in self.memos:
@@ -29,7 +29,7 @@ class Class(baseEntity.Class):
 		import engine
 		import bge
 		keyboard = bge.logic.keyboard
-		if keyboard.events[bge.events.QKEY] == 3 and (not engine.interface.terminalIsActive()):
+		if keyboard.events[bge.events.PKEY] == 3 and (not engine.interface.terminalIsActive()):
 			memos.append( (self.id, ('player', self.engine.id)) )
 		
 		return memos # Return memos.
