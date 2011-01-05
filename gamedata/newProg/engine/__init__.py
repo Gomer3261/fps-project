@@ -5,7 +5,7 @@ host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
 net			= 1 # local:0, client:1, server:1			##								####################
 username	= 'Jesus' # you'd better pick a cool name	##
 ip			= '192.168.1.101' # the server address		##
-port		= 3210 # the connection port				##
+port		= 3211 # the connection port				##
 ##########################################################
 
 
@@ -87,16 +87,17 @@ def mainloop():
 	else:
 		if net:
 			if not host:
-				if gamestate.delta and network.remoteHandler.connection: network.remoteHandler.throw( gamestate.delta )
+				if gamestate.delta and network.remoteHandler.connection: network.remoteHandler.throw( ('d', gamestate.delta) )
 				gamestate.delta.clear()
-			deltas = network.remoteHandler.main( gamestate ) # network uses gamestate to sync user id's.
-			for delta in deltas:
-				print("IN DELTA:", delta)
-				gamestate.mergeDelta( delta )
+			items = network.remoteHandler.main( gamestate ) # network uses gamestate to sync user id's.
+			for item in items:
+				flag, thingy = item
+				if flag=='d': gamestate.mergeDelta( thingy ); print("incoming gamestate delta merged")
+				elif flag=='f' and (not host): gamestate.data=thingy; print("incoming full gamestate data replaced")
 			if host:
-				if gamestate.delta: network.remoteHandler.throwToAll( gamestate.delta )
+				if gamestate.delta: network.remoteHandler.throwToAll( ('d',gamestate.delta) )
 				if network.time.time()-network.lastGamestateDataSend > 2.0:
-					network.remoteHandler.throwToAll(gamestate.data)
+					network.remoteHandler.throwToAll( ('f',gamestate.data) )
 					network.lastGamestateDataSend=network.time.time()
 		gamestate.applyDelta()
 		gamestate.delta.clear()
