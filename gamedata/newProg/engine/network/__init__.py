@@ -55,8 +55,8 @@ class createServer(REMOTE_HANDLER):
 			if type==1: # THROW Packet
 				type, seq, label, id, payload = data
 				connection = self.connections[id]; connection.contact()
-				item = connection.handleThrowPacket(seq, label, id, payload)
-				if item: inItems.append(item)
+				items = connection.handleThrowPacket(seq, label, id, payload)
+				for item in items: inItems.append(item)
 			if type==2: # STREAM Packet
 				pass
 		return inItems
@@ -83,7 +83,7 @@ class createServer(REMOTE_HANDLER):
 		toRemove = []
 		for id in self.connections:
 			connection = self.connections[id]
-			if connection.hasTimedOut():
+			if connection.hasGoneStale():
 				toRemove.append(id)
 		for id in toRemove:
 			del self.connections[id]
@@ -111,7 +111,7 @@ class createClient(REMOTE_HANDLER):
 		if not self.connection: self.attemptConnection()
 		else:
 			self.keepAliveLoop()
-			if self.connection.hasTimedOut():
+			if self.connection.hasGoneStale():
 				self.connectionAttempts=0; self.connection=None
 				print("DISCONNECTED! SERVER TIMED OUT.")
 		
