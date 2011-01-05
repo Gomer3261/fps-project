@@ -5,6 +5,7 @@ class Class:
 		self.id = id
 		self.entityController = entityController
 		import engine; self.engine = engine
+		import time; self.time=time
 		
 		self.control = gamestate.hasControl(self.id)
 		
@@ -42,7 +43,11 @@ class Class:
 		"""
 		self.object.endObject()
 	
-	def serverDataSimulate(self, gamestate):
+	
+	
+	# The four fundamental run functions
+	
+	def simulateServerData(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
@@ -52,7 +57,7 @@ class Class:
 		self.memos = [] # Clear memos when you're done with them.
 		return [] # Return delta data to be merged with gamestate.delta
 	
-	def serverDataReplicate(self, gamestate):
+	def replicateServerData(self, gamestate):
 		"""
 		This is where memos are born. Memos are messages to serverside entities.
 		"""
@@ -61,14 +66,14 @@ class Class:
 		memo=(id,data)
 		return memos
 	
-	def controllerDataSimulate(self, gamestate):
+	def simulateControllerData(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
 		"""
 		return [] # Return delta data to be merged with gamestate.delta
 	
-	def controllerDataReplicate(self, gamestate):
+	def replicateControllerData(self, gamestate):
 		pass
 	
 	
@@ -87,14 +92,14 @@ class Class:
 		"""
 		deltaDataList=[]; memoList=[]
 		if gamestate.hasControl(self.id):
-			deltas = self.controllerDataSimulate(gamestate)
+			deltas = self.simulateControllerData(gamestate)
 			for delta in deltas: deltaDataList.append(delta)
 		else:
-			self.controllerDataReplicate(gamestate)
+			self.replicateControllerData(gamestate)
 		
 		if self.engine.host:
-			deltas = self.serverDataSimulate(gamestate)
+			deltas = self.simulateServerData(gamestate)
 			for delta in deltas: deltaDataList.append(delta)
 		else:
-			memoList = self.serverDataReplicate(gamestate)
+			memoList = self.replicateServerData(gamestate)
 		return deltaDataList, memoList

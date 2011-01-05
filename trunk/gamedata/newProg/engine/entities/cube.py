@@ -17,7 +17,7 @@ class Class(baseEntity.Class):
 		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
 		self.count = 0
 	
-	def serverDataSimulate(self, gamestate):
+	def simulateServerData(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
