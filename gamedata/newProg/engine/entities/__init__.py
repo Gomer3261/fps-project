@@ -1,6 +1,6 @@
 # Entities
 
-class initializeEntityController:
+class createEntityController:
 	def __init__(self):
 		self.entities = {}
 		self.entityClasses = {}
@@ -8,6 +8,11 @@ class initializeEntityController:
 		import engine.entities.baseEntity; self.entityClasses["baseEntity"] = baseEntity.Class
 		import engine.entities.cube; self.entityClasses["cube"] = cube.Class
 		import engine.entities.director; self.entityClasses["director"] = director.Class
+	
+	def submitMemos(self, memos):
+		for memoItem in memos:
+			id, memo = memoItem
+			self.entities[id].memos.append(memo)
 
 	def conform(self, gamestate ):
 		delete = []

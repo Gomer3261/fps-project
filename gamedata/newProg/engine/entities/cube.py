@@ -16,27 +16,14 @@ class Class(baseEntity.Class):
 		import bge
 		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
 		self.count = 0
-		
-	def end(self):
-		"""
-		Mandatory end method, often involves deleting bge object.
-		"""
-		self.object.endObject()
 	
 	def serverDataSimulate(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
 		"""
+		deltas = []
 		self.count+=1
-		delta=None
 		if self.count >= 100:
-			delta={'E':{self.id:None}}
-		return delta # Return delta data to be merged with gamestate.delta
-	
-	def controllerDataSimulate(self, gamestate):
-		"""
-		Simulates stuff, and returns gamestate delta data to the
-		mainloop, where it is merged with the gamestate delta.
-		"""
-		return None # Return delta data to be merged with gamestate.delta
+			deltas.append( {'E':{self.id:None}} )
+		return deltas # Return delta data to be merged with gamestate.delta

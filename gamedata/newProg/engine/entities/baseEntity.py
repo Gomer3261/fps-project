@@ -6,6 +6,8 @@ class Class:
 		self.entityController = entityController
 		import engine; self.engine = engine
 		
+		self.memos = [] # list of incoming memos.
+		
 		if gamestate.hasControl(self.id): self.initializeGamestateData( gamestate )
 		
 		self.initialize( gamestate )
@@ -37,25 +39,33 @@ class Class:
 		"""
 		Mandatory end method, often involves deleting bge object.
 		"""
-		pass
-		#self.object.endObject()
+		self.object.endObject()
 	
 	def serverDataSimulate(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
+		Memos are handled by this method.
 		"""
-		return None # Return delta data to be merged with gamestate.delta
+		# Handle memos before clearing them each run.
+		self.memos = [] # Clear memos when you're done with them.
+		return [] # Return delta data to be merged with gamestate.delta
 	
 	def serverDataReplicate(self, gamestate):
-		pass
+		"""
+		This is where memos are born. Memos are messages to serverside entities.
+		"""
+		memos = []
+		id=None; data=None
+		memo=(id,data)
+		return memos
 	
 	def controllerDataSimulate(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
 		"""
-		return None # Return delta data to be merged with gamestate.delta
+		return [] # Return delta data to be merged with gamestate.delta
 	
 	def controllerDataReplicate(self, gamestate):
 		pass
@@ -74,14 +84,16 @@ class Class:
 		Runs the four basic methods that make entities do stuff.
 		Returns delta data sets to the mainloop.
 		"""
-		deltaDataList = []
+		deltaDataList=[]; memoList=[]
 		if gamestate.hasControl(self.id):
-			deltaDataList.append( self.controllerDataSimulate(gamestate) )
+			deltas = self.controllerDataSimulate(gamestate)
+			for delta in deltas: deltaDataList.append(delta)
 		else:
 			self.controllerDataReplicate(gamestate)
 		
 		if self.engine.host:
-			deltaDataList.append( self.serverDataSimulate(gamestate) )
+			deltas = self.serverDataSimulate(gamestate)
+			for delta in deltas: deltaDataList.append(delta)
 		else:
-			self.serverDataReplicate(gamestate)
-		return deltaDataList
+			memoList = self.serverDataReplicate(gamestate)
+		return deltaDataList, memoList
