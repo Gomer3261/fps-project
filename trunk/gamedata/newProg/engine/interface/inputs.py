@@ -97,8 +97,8 @@ class initializeInputs:
 			"""
 			X, Y = self.getPosition()
 
-			X = (X-self.centerX)
-			Y = (self.centerY-Y)
+			X = (X-0.5)
+			Y = (0.5-Y)
 
 			return X, Y
 

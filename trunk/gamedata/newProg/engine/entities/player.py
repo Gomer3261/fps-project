@@ -43,7 +43,7 @@ class Class(baseEntity.Class):
 			
 			self.engine.interface.mouse.reset()
 			self.angle_y = 0.0
-			self.sensitivity = 0.001
+			self.sensitivity = 1
 		else:
 			import bge
 			self.object = bge.logic.getCurrentScene().addObject("player_proxy", bge.logic.getCurrentController().owner)
@@ -162,19 +162,19 @@ class Class(baseEntity.Class):
 		if mouse.isPositive():
 			rotation = [0, 0]
 			rotation[0], rotation[1] = mouse.getPositionFromCenter()
-			i=0
-			for x in rotation:
-				rotation[i] *= self.sensitivity
-				i+=1
+			rotation[0] *= self.sensitivity * -2
+			rotation[1] *= self.sensitivity
 				
 			#limit of 70 degrees for the y axis
-			if self.angle_y+rotation[1] <= -1.2217:
-				rotation[1] = -1.2217-self.angle_y
-			if self.angle_y+rotation[1] >= 1.2217:
-				rotation[1] = 1.2217-self.angle_y
+			if self.angle_y+rotation[1] <= -1.5706:
+				rotation[1] = -1.5706-self.angle_y
+			if self.angle_y+rotation[1] >= 1.5706:
+				rotation[1] = 1.5706-self.angle_y
 			
-			self.object.applyRotation([0, 0, rotation[0]], 0)
-			self.camera.applyRotation([rotation[1], 0, 0], 1)
+			if abs(rotation[0]) > 0.002 or abs(rotation[1]) > 0.002:
+				self.angle_y += rotation[1]
+				self.object.applyRotation([0, 0, rotation[0]], 0)
+				self.camera.applyRotation([rotation[1], 0, 0], 1)
 			
 			mouse.reset()
 
