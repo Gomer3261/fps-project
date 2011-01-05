@@ -1,11 +1,11 @@
 ##########################################################
 ######## USER SETTING BOX OF FUN					######
 ##########################################################								####################
-host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
+host		= 1 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
 net			= 1 # local:0, client:1, server:1			##								####################
-username	= 'Jesus' # you'd better pick a cool name	##
+username	= 'Gawd' # you'd better pick a cool name	##
 ip			= '192.168.1.101' # the server address		##
-port		= 3225 # the connection port				##
+port		= 3228 # the connection port				##
 ##########################################################
 
 

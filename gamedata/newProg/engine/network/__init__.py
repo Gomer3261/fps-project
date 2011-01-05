@@ -28,6 +28,7 @@ class createServer(REMOTE_HANDLER):
 	def initialize(self):
 		import socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 		self.sock.bind( ('',self.addr[1]) )
 		self.sock.setblocking(0)
 		print("SERVER RUNNING:", self.addr)
