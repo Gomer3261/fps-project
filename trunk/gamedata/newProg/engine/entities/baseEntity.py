@@ -6,10 +6,11 @@ class Class:
 		self.entityController = entityController
 		import engine; self.engine = engine
 		
+		self.control = gamestate.hasControl(self.id)
+		
 		self.memos = [] # list of incoming memos.
 		
 		if gamestate.hasControl(self.id): self.initializeGamestateData( gamestate )
-		
 		self.initialize( gamestate )
 	
 	### 
