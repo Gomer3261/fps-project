@@ -18,6 +18,7 @@ def offer(camera, priority):
 def reset():
 	global scene, eCam, currentCameraPriority
 	scene.active_camera = eCam
+	currentCameraPriority = 0
 
 def resetPriority():
 	global currentCameraPriority

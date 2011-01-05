@@ -12,8 +12,9 @@ class Class(baseEntity.Class):
 		import engine
 		import bge
 		keyboard = bge.logic.keyboard
-		if keyboard.events[bge.events.QKEY] == 3:
-			deltas.append( {'E':{gamestate.getNextId():{'t':'cube','c':engine.id}}} )
+		
+		if keyboard.events[bge.events.QKEY] == 3 and (not engine.interface.terminalIsActive()):
+			deltas.append( {'E':{gamestate.getNextId():{'t':'player','c':engine.id}}} )
 		
 		for memo in self.memos:
 			print("\nServerside Director Recieved Memo!", memo, '\n')
@@ -29,7 +30,7 @@ class Class(baseEntity.Class):
 		import engine
 		import bge
 		keyboard = bge.logic.keyboard
-		if keyboard.events[bge.events.QKEY] == 3:
+		if keyboard.events[bge.events.QKEY] == 3 and (not engine.interface.terminalIsActive()):
 			memos.append( (self.id, "spawn cube plz") )
 		
 		return memos # Return memos.

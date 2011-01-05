@@ -45,10 +45,11 @@ class initializeInterface:
 		if console:
 			print(text)
 			
-	def isTerminalActive():
+	def terminalIsActive(self):
 		"""
 		Checks if the terminal is currently active.
 		"""
+		import engine
 		return engine.interface.terminal.active
 
 	#Quick input detection:
@@ -56,13 +57,13 @@ class initializeInterface:
 	def mouse(self):
 		return self.inputs.mouse
 	
-	def checkControl(self, control):
+	def isControlPositive(self, control):
 		"""
 		Function to check if a control is active (positive).
 		"""
 		return self.inputs.controller.isPositive(control)
 		
-	def controlStatus(self, control):
+	def getControlStatus(self, control):
 		"""
 		Function to retrieve a control's status.
 		0=inactive,

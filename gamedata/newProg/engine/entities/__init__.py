@@ -8,6 +8,7 @@ class createEntityController:
 		import engine.entities.baseEntity; self.entityClasses["baseEntity"] = baseEntity.Class
 		import engine.entities.cube; self.entityClasses["cube"] = cube.Class
 		import engine.entities.director; self.entityClasses["director"] = director.Class
+		import engine.entities.player; self.entityClasses["player"] = player.Class
 	
 	def submitMemos(self, memos):
 		for memoItem in memos:
