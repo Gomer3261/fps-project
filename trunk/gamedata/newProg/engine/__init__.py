@@ -5,7 +5,7 @@ host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
 net			= 1 # local:0, client:1, server:1			##								####################
 username	= 'Jesus' # you'd better pick a cool name	##
 ip			= '192.168.1.101' # the server address		##
-port		= 3215 # the connection port				##
+port		= 3216 # the connection port				##
 ##########################################################
 
 
@@ -58,7 +58,7 @@ def initialize():
 	global gamestate, entityController; global INIT
 	
 	gamestate = gamestateModule.initializeGamestate()
-	entityController = entities.initializeEntityController()
+	entityController = entities.createEntityController()
 	interface = interface.initializeInterface()
 	
 	if host:
@@ -91,10 +91,11 @@ def mainloop():
 				gamestate.delta.clear()
 			items = network.remoteHandler.main( gamestate ) # network uses gamestate to sync user id's.
 			for item in items:
-				flag, thingy = item
-				if flag=='d': gamestate.mergeDelta( thingy )
-				elif flag=='f' and (not host): gamestate.data=thingy
-				else: print("\nunknown item type:", item, "\n")
+				flag, stuff = item
+				if flag=='d': gamestate.mergeDelta( stuff )
+				elif flag=='f' and (not host): gamestate.data=stuff
+				elif flag=='m': entityController.submitMemos(stuff)
+				else: print("\nUnknown item type received:", item, "\n")
 			if host:
 				if gamestate.delta: network.remoteHandler.throwToAll( ('d',gamestate.delta) )
 				if network.time.time()-network.lastGamestateDataSend > 2.0:
@@ -109,9 +110,10 @@ def mainloop():
 	
 	for idloop in entityController.entities: # We loop through every entity.
 		entity = entityController.entities[idloop]
-		deltaDataList = entity.run( gamestate ) # Running controlled entities.
+		deltaDataList, memoList = entity.run( gamestate ) # Running controlled entities.
 		for deltaData in deltaDataList:
 			if deltaData: gamestate.mergeDelta(deltaData)
+		if memoList and (not host): network.remoteHanlder.throwToAll( ('m', memoList) )
 					
 	interface.main() #not available until proper bgui implementation
 	
