@@ -69,8 +69,8 @@ class initializeInputs:
 			"""
 			position = self.bge.logic.mouse.position
 
-			X = position[0]*self.width
-			Y = position[1]*self.height
+			X = position[0]
+			Y = position[1]
 
 			return X, Y
 
@@ -82,10 +82,10 @@ class initializeInputs:
 			X, Y = self.getPosition()
 			center = 1
 
-			if X != self.centerX:
+			if X != 0.5:
 				center = 0
 
-			if Y != self.centerY:
+			if Y != 0.5:
 				center = 0
 
 			return center
