@@ -44,6 +44,12 @@ class initializeInterface:
 			#self.notes.output(text)
 		if console:
 			print(text)
+			
+	def isTerminalActive():
+		"""
+		Checks if the terminal is currently active.
+		"""
+		return engine.interface.terminal.active
 
 	#Quick input detection:
 	@property

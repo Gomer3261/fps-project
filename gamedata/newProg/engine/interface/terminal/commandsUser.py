@@ -61,10 +61,13 @@ def setHistoryLimit(I):
 
 
 
-#	# ------------------------
-#	# Informational Commands
-#	# ------------------------
-#
+	# ------------------------
+	# Informational Commands
+	# ------------------------
+
+def gs():
+	import engine
+	output(engine.gamestate.data)
 #	def ammo():
 #		"""
 #		Use this to see how much ammo you have.
