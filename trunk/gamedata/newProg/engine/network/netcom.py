@@ -112,8 +112,8 @@ class createConnection:
 		def staleLoop(self):
 			toRemove=[]
 			for seq in self.chains:
-				if self.chain[seq].hasGoneStale(): toRemove.append(seq)
+				if self.chains[seq].hasGoneStale(): toRemove.append(seq)
 			for seq in toRemove:
-				del self.chain[seq]
+				del self.chains[seq]
 
 
