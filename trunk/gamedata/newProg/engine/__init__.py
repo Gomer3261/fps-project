@@ -5,7 +5,7 @@ host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
 net			= 1 # local:0, client:1, server:1			##								####################
 username	= 'Jesus' # you'd better pick a cool name	##
 ip			= '192.168.1.101' # the server address		##
-port		= 3208 # the connection port				##
+port		= 3209 # the connection port				##
 ##########################################################
 
 
@@ -90,7 +90,9 @@ def mainloop():
 				if gamestate.delta and network.remoteHandler.connection: network.remoteHandler.throw( gamestate.delta )
 				gamestate.delta.clear()
 			deltas = network.remoteHandler.main( gamestate ) # network uses gamestate to sync user id's.
-			for delta in deltas: gamestate.mergeDelta( delta )
+			for delta in deltas:
+				print("IN DELTA:", delta)
+				gamestate.mergeDelta( delta )
 			if host:
 				if gamestate.delta: network.remoteHandler.throwToAll( gamestate.delta )
 				if network.time.time()-network.lastGamestateDataSend > 2.0:
