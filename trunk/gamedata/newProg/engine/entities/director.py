@@ -17,9 +17,8 @@ class Class(baseEntity.Class):
 			deltas.append( {'E':{gamestate.getNextId():{'t':'player','c':engine.id}}} )
 		
 		for memo in self.memos:
-			print("\nServerside Director Recieved Memo!", memo, '\n')
-			if memo == "spawn cube plz":
-				deltas.append( {'E':{gamestate.getNextId():{'t':'cube','c':engine.id}}} )
+			type, controlId = memo
+			deltas.append( {'E':{gamestate.getNextId():{'t':type,'c':controlId}}} )
 		self.memos = [] # Clearing memos.
 		
 		return deltas # Return delta data to be merged with gamestate.delta
@@ -31,7 +30,7 @@ class Class(baseEntity.Class):
 		import bge
 		keyboard = bge.logic.keyboard
 		if keyboard.events[bge.events.QKEY] == 3 and (not engine.interface.terminalIsActive()):
-			memos.append( (self.id, "spawn cube plz") )
+			memos.append( (self.id, ('player', self.engine.id)) )
 		
 		return memos # Return memos.
 	
