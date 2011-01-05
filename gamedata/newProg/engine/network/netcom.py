@@ -102,6 +102,7 @@ class createConnection:
 				linkNumber, expectedLinks = label
 				self.chains[seq]=self.createChain(seq, expectedLinks, id); self.chains[seq].addLink(linkNumber, payload)
 			else: # add to existing chain
+				linkNumber, expectedLinks = label
 				self.chains[seq].addLink(linkNumber, payload)
 		def extract(self):
 			payloads = []
