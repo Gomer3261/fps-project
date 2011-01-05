@@ -3,8 +3,9 @@
 ####################################
 # This is the terminal module.
 # It handles terminal input and output.
+import engine.interface.bgui as bgui
 
-class initializeTerminal:
+class initializeTerminal(bgui.System):
 	
 	import engine.interface.bgui as bgui
 	
@@ -16,7 +17,7 @@ class initializeTerminal:
 		self.commandsAdmin = commandsAdmin
 		
 		self.bgui = bgui
-	
+		
 		# Terminal access activitiy.
 		self.active = 0
 
@@ -30,62 +31,33 @@ Important functions:
 	/restoreDefaults() # Use this whenever things seem to be not working.
 	/setSetting("username", "Stewart Walton") # Set your username.
 
-================================================================"""
+================================================================\n"""
 
 		self.openingText = self.openingText.replace("\r", "")
-		self.contents = self.openingText.split("\n")
-		self.oldcontents = []
 
+		##Bgui initialization
+		bgui.System.__init__(self)
+			
+		self.frame = bgui.Frame(self, 'terminal', border=0)
+		self.frame.colors = [(1, 1, 1, .8) for i in range(4)]
+			
+		self.display = bgui.TextBlock(self.frame, 'textblock', text=self.openingText, color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.94], pos=[0, 0.035],
+			options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX, overflow=bgui.BGUI_OVERFLOW_REPLACE)
+			
+		self.input = bgui.TextInput(self.frame, 'input', text="", prefix=">>>", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.025], pos=[0.025, 0.025], options = bgui.BGUI_DEFAULT)
+		self.input.on_enter = self.on_enter
+		
+		import bge
+		self.keymap = {getattr(bge.events, val): getattr(bgui, val) for val in dir(bge.events) if val.endswith('KEY') or val.startswith('PAD')}
+		
 		#history Object
 		self.history = self.initializeHistory()
-
-		self.wraplen = 100
-		self.maxlines = 50
-		
-		self.gui = self.initializeGui(self.bgui)
-		self.gui.display.text = '\n'.join(self.contents)
 	
-	##################################
-	### ------ TERMINAL GUI ------ ###
-	##################################
 	
-	class initializeGui(bgui.System):
-		"""
-		A bgui object created to display the terminal
-		"""
-		def __init__(self, bgui):
-			bgui.System.__init__(self)
-			
-			self.frame = bgui.Frame(self, 'terminal', border=0)
-			self.frame.colors = [(1, 1, 1, .8) for i in range(4)]
-			
-			self.display = bgui.TextBlock(self.frame, 'textblock', text="Error: empty text widget", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.95], pos=[0, 0], options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
-			
-			self.input = bgui.TextInput(self.frame, 'input', text="", prefix=">>>", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.05], pos=[.025, .05], options = bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX)
-			
-			import bge
-			self.keymap = {getattr(bge.events, val): getattr(bgui, val) for val in dir(bge.events) if val.endswith('KEY') or val.startswith('PAD')}
-			
-			self.on_enter = None
-			
-			
-		def main(self):
-			"""Method to be ran every frame"""
-			import bge
-			
-			self.focused_widget = self.input
-			# Handle the keyboard
-			keyboard = bge.logic.keyboard
-			
-			key_events = keyboard.events
-			is_shifted = key_events[bge.events.LEFTSHIFTKEY] == bge.logic.KX_INPUT_ACTIVE or \
-						key_events[bge.events.RIGHTSHIFTKEY] == bge.logic.KX_INPUT_ACTIVE
-						
-			for key, state in keyboard.events.items():
-				if state == bge.logic.KX_INPUT_JUST_ACTIVATED:
-					self.update_keyboard(self.keymap[key], is_shifted)
-					
-			bge.logic.getCurrentScene().post_draw = [self.render]
+	
+	
+	
+	
 	
 	######################################
 	### ------ TERMINAL HISTORY ------ ###
@@ -152,45 +124,6 @@ Important functions:
 				return self.current_input
 			
 			return self.history[self.slot]
-			
-
-
-
-
-
-
-
-
-
-
-	#########################################
-	### ------ TERMINAL FORMATTING ------ ###
-	#########################################
-
-	def limit(self, x, l=10):
-		"""
-		Trims a list from the beginning until it reaches the desired length.
-		"""
-		while len(x) > l:
-			x = x[1:]
-		return x
-
-	def formatLines(self, lines):
-		"""
-		Formats lines (wraps them, trims them)
-		"""
-		import textwrap
-		newlines = []
-
-		for line in lines:
-			new = textwrap.fill(line, self.wraplen).split("\n")
-			for n in new:
-				newlines.append(n)
-
-		newlines = self.limit(newlines, self.maxlines)
-
-		return newlines
-
 
 
 
@@ -203,64 +136,20 @@ Important functions:
 	########################################
 	### ------ TERMINAL FUNCTIONS ------ ###
 	########################################
-
-	def input(self, s):
-		"""
-		runs input commands (maybe rename to run, or command?)
-		"""
-		isCommand = 0
-		if s[0] == "/":
-			isCommand = 1
-		
-		if isCommand:
-			self.output(" ")
-			self.output(">>> "+s)
-			s = s[1:]
-			
-			modules = [self.commandsUser, self.commandsAdmin]
-
-			namespace = {}
-			
-			for module in modules:
-				for variableName in dir(module):
-					namespace[variableName] = getattr(module, variableName)
-
-			import sys
-			import traceback
-			try:
-				exec(s, namespace)
-			except:
-				exc_type, exc_value, exc_traceback = sys.exc_info()
-				error = traceback.format_exception_only(exc_type, exc_value)
-				error = error[len(error)-1]
-				self.output(error)
-				traceback.print_exc()
-		
-		else:
-			#Network = self.slab
-			#self.slab.Network.sendText(self.slab.Admin.UID, s)
-			self.output(s)
-			# Now we assume this is a text message....
-			pass
-			
-
+	
 	def output(self, s):
 		"""
 		Outputs something to the terminal.
 		"""
 		
 		s = s.replace("\r", "")
-		lines = s.split("\n")
-
-		for line in lines:
-			self.contents.append(line)
+		self.display.text += s
 
 	def clear(self):
 		"""
 		Clears terminal's contents.
 		"""
-		self.contents = []
-
+		self.display.text = self.openingText
 
 
 
@@ -275,14 +164,34 @@ Important functions:
 	###################################
 	
 	def main(self):
-		import bge
+		"""
+		Main terminal script, renders the terminal, handles actions, and opens/closes the terminal.
+		"""
 		if self.active:
-			self.gui.main()
-			self.runTerminal()
+			
+			self.handleGui()
+			self.handleActions()
 		
 		self.handleOpenClose()
 
+	def handleGui(self):
+		"""
+		Renders the terminal and handle inputs.
+		"""
+		import bge
+		self.focused_widget = self.input
+		# Handle the keyboard
+		keyboard = bge.logic.keyboard
 		
+		key_events = keyboard.events
+		is_shifted = key_events[bge.events.LEFTSHIFTKEY] == bge.logic.KX_INPUT_ACTIVE or \
+					key_events[bge.events.RIGHTSHIFTKEY] == bge.logic.KX_INPUT_ACTIVE
+					
+		for key, state in keyboard.events.items():
+			if state == bge.logic.KX_INPUT_JUST_ACTIVATED:
+				self.update_keyboard(self.keymap[key], is_shifted)
+				
+		bge.logic.getCurrentScene().post_draw = [self.render]
 			
 	def handleOpenClose(self):
 		"""
@@ -294,58 +203,72 @@ Important functions:
 
 		if bge.logic.keyboard.events[bge.events.ACCENTGRAVEKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED:
 			if self.active:
-				self.gui.frame.visible = 0
+				self.frame.visible = 0
 				self.active = 0
 				
 			else:
-				self.gui.frame.visible = 1
-				self.gui.input.text = ""
+				self.frame.visible = 1
+				self.input.text = ""
 				self.active = 1
-				self.oldcontents = []
 
-
-
-	def runTerminal(self):
+	def handleActions(self):
 		"""
-		This function handles all actions to do with the terminal while it's open.
-		Its called externally by a script running in the terminal scene.
+		This function handles all custom actions to do with the terminal while it's open.
 		"""
 		import bge
 		
-		enterKey = bge.logic.keyboard.events[bge.events.ENTERKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
 		upKey = bge.logic.keyboard.events[bge.events.UPARROWKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
 		downKey = bge.logic.keyboard.events[bge.events.DOWNARROWKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
 		delKey = bge.logic.keyboard.events[bge.events.DELKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED
 
-		### INPUT HANDLING ###
-
 		# Delete key clears input field
 		if delKey:
-			self.gui.input.text = ""
-		
-		# A = Input String
-		s = self.gui.input.text
-		
-		if s and enterKey:
-			self.input(s)
-			self.gui.input.text = ""
-			
-			# Add the last input into the history
-			self.history.add(s)
-
-			
-			
+			self.input.text = ""
 		elif upKey:
-			self.gui.input.text = self.history.getNextItem(s)
+			self.input.text = self.history.getNextItem(self.input.text)
+			self.input.pos = len(self.input.text)
 		elif downKey:
-			self.gui.input.text = self.history.getPrevItem()
-		
-		if self.oldcontents != self.contents:
-			### OUTPUT HANDLING ###
-			self.contents = self.formatLines(self.contents)
-			output = "\n".join(self.contents)
+			self.input.text = self.history.getPrevItem()
+			self.input.pos = len(self.input.text)
+
+
+
+
+
+
+
+	####################################
+	### ------ BGUI CALLBACKS ------ ###
+	####################################
+
+	def on_enter(self, input):
+		"""
+		runs when enter key is hit in input from bgui
+		"""
+		if input.text != "":
+			self.output("\n ")
+			self.output(">>> "+input.text+"\n")
 			
-			output = output.replace("\r", "")
+			modules = [self.commandsUser, self.commandsAdmin]
+
+			namespace = {}
 			
-			self.gui.display.text = output
-			self.oldcontents = self.contents[:]
+			for module in modules:
+				for variableName in dir(module):
+					namespace[variableName] = getattr(module, variableName)
+
+			import sys
+			import traceback
+			try:
+				exec(input.text, namespace)
+			except:
+				exc_type, exc_value, exc_traceback = sys.exc_info()
+				error = traceback.format_exception_only(exc_type, exc_value)
+				error = error[len(error)-1]
+				self.output(error)
+				traceback.print_exc()
+			
+			self.history.add(input.text)
+			input.text = ""
+				
+			
