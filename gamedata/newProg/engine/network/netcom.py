@@ -60,10 +60,10 @@ class createConnection:
 		return items
 	
 	def chunkifyData(self, data, max):
-		chunks = []; newChunk = b''; count=0
+		chunks = []; newChunk=bytearray(); count=0
 		for byte in data:
-			newChunk+=byte; count+=1
-			if len(newChunk) == max: chunks.append(newChunk); newChunk=b''
+			newChunk.append(byte); count+=1
+			if len(newChunk) == max: chunks.append(newChunk); newChunk=bytearray()
 		if newChunk: chunks.append(newChunk)
 		return chunks
 	
