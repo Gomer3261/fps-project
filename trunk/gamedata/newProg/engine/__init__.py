@@ -5,7 +5,7 @@ host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
 net			= 1 # local:0, client:1, server:1			##								####################
 username	= 'Jesus' # you'd better pick a cool name	##
 ip			= '192.168.1.101' # the server address		##
-port		= 3217 # the connection port				##
+port		= 3218 # the connection port				##
 ##########################################################
 
 
@@ -113,7 +113,7 @@ def mainloop():
 		deltaDataList, memoList = entity.run( gamestate ) # Running controlled entities.
 		for deltaData in deltaDataList:
 			if deltaData: gamestate.mergeDelta(deltaData)
-		if memoList and (not host): network.remoteHandler.throwToAll( ('m', memoList) )
+		if memoList and (not host): network.remoteHandler.throw( ('m', memoList) )
 					
 	interface.main() #not available until proper bgui implementation
 	
