@@ -90,7 +90,7 @@ class Class(baseEntity.Class):
 		self.doMouseLook()
 		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
-			deltas.append( {'E':self.id:{'P':self.object.position}} )
+			deltas.append( {'E': {self.id:{'P':self.object.position}} } )
 			self.lastUpdate = self.time.time()
 		
 		return deltas # Return delta data to be merged with gamestate.delta
