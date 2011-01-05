@@ -2,7 +2,7 @@
 import engine.entities.baseEntity as baseEntity
 class Class(baseEntity.Class):
 
-	def serverDataSimulate(self, gamestate):
+	def simulateServerData(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
@@ -24,7 +24,7 @@ class Class(baseEntity.Class):
 		
 		return deltas # Return delta data to be merged with gamestate.delta
 	
-	def serverDataReplicate(self, gamestate):
+	def replicateServerData(self, gamestate):
 		memos = []
 		
 		import engine
@@ -35,7 +35,7 @@ class Class(baseEntity.Class):
 		
 		return memos # Return memos.
 	
-	def controllerDataSimulate(self, gamestate):
+	def simulateControllerData(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.

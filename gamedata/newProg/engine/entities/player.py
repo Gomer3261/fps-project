@@ -15,6 +15,9 @@ class Class(baseEntity.Class):
 	def initialize(self, gamestate):
 		
 		if self.control:
+			self.lastUpdate = self.time.time()
+			self.updateInterval = 0.1 # every tenth of a second.
+			
 			self.speedForce = 80.0*70 # Speed in force of general player movement
 			self.sprintMod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
 			self.crouchMod = 0.5 # Speed multiplier when crouching (sprint effects crouching speed as well)
@@ -54,7 +57,7 @@ class Class(baseEntity.Class):
 	
 	
 	
-	def serverDataSimulate(self, gamestate):
+	def simulateServerData(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
@@ -64,7 +67,7 @@ class Class(baseEntity.Class):
 		self.memos = [] # Clear memos when you're done with them.
 		return [] # Return delta data to be merged with gamestate.delta
 	
-	def serverDataReplicate(self, gamestate):
+	def replicateServerData(self, gamestate):
 		"""
 		This is where memos are born. Memos are messages to serverside entities.
 		"""
@@ -73,7 +76,7 @@ class Class(baseEntity.Class):
 		memo=(id,data)
 		return memos # memos are used when you shoot people.
 	
-	def controllerDataSimulate(self, gamestate):
+	def simulateControllerData(self, gamestate):
 		"""
 		Simulates stuff, and returns gamestate delta data to the
 		mainloop, where it is merged with the gamestate delta.
@@ -86,10 +89,15 @@ class Class(baseEntity.Class):
 		self.doPlayerMovement()
 		self.doMouseLook()
 		
+		if self.time.time()-self.lastUpdate > self.updateInterval:
+			deltas.append( {'E':self.id:{'P':self.object.position}} )
+			self.lastUpdate = self.time.time()
+		
 		return deltas # Return delta data to be merged with gamestate.delta
 	
-	def controllerDataReplicate(self, gamestate):
-		pass
+	def replicateControllerData(self, gamestate):
+		data = self.engine.gamestate.getById(self.id)
+		self.object.position = data['P']
 	
 	
 	
