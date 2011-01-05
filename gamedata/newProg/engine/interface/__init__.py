@@ -33,17 +33,10 @@ class initializeInterface:
 		#self.notes.main() 
 		
 	#InterfaceCommands:
-	def out(self, text, terminal=True, note=False, console=False):
-		"""
-		Basic output method. Outputs to the terminal by default.
-		"""
-		if terminal:
-			self.terminal.output(text)
-		if note:
-			pass
-			#self.notes.output(text)
-		if console:
-			print(text)
+	def output(self, text, terminal=True, note=False, console=False):
+		if terminal: self.terminal.output(text)
+		if note: pass
+		if console: print(text)
 			
 	def terminalIsActive(self):
 		"""

@@ -2,7 +2,7 @@
 ######## USER SETTING BOX OF FUN					######
 ##########################################################								####################
 host		= 1 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
-net			= 1 # local:0, client:1, server:1			##								####################
+net			= 0 # local:0, client:1, server:1			##								####################
 username	= 'Gawd' # you'd better pick a cool name	##
 ip			= '192.168.1.101' # the server address		##
 port		= 3228 # the connection port				##
@@ -27,6 +27,7 @@ import engine.network
 import engine.entities
 import engine.interface
 import engine.camera
+import engine.mouse
 ###
 
 gamestate=None
@@ -54,7 +55,7 @@ def DEBUG(title="unspecified"):
 
 def initialize():
 	global host, net, username, ip, port; global id, addr, mode
-	global engine, gamestateModule, network, entities, interface, camera
+	global engine, gamestateModule, network, entities, interface, camera, mouse
 	global gamestate, entityController; global INIT
 	
 	gamestate = gamestateModule.initializeGamestate()
@@ -74,7 +75,7 @@ def initialize():
 
 def mainloop():
 	global host, net, username, ip, port; global id, addr, mode
-	global engine, gamestateModule, network, entities, interface, camera
+	global engine, gamestateModule, network, entities, interface, camera, mouse
 	global gamestate, entityController; global INIT
 	
 	if not INIT: initialize()
@@ -114,6 +115,12 @@ def mainloop():
 		for deltaData in deltaDataList:
 			if deltaData: gamestate.mergeDelta(deltaData)
 		if memoList and (not host): network.remoteHandler.throw( ('m', memoList) )
+	
+	if host: # We remove entities with controller users that have left.
+		toDelete=[]
+		for idloop in entityController.entities:
+			if not gamestate['E'][idloop]['c'] in gamestate['U']: toDelete.append(idloop)
+		for idloop in toDelete: gamestate.removeEntity(idloop)
 					
 	interface.main() #not available until proper bgui implementation
 	

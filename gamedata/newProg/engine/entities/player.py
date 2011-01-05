@@ -7,7 +7,7 @@ class Class(baseEntity.Class):
 		data['P'] = [0.0, 0.0, -100.0] # Position
 		data['R'] = [0.0, 1.0, 0.0] # Aim Location
 		data['F'] = False # Firing Status
-		data['S'] = 1 # Stance 1=stand, 2=crouch, 3=prone
+		data['S'] = 1 # Stance. 1=stand, 2=crouch, 3=prone
 		
 		delta = {'E':{self.id:data}} # Putting it in gamestate.delta form
 		gamestate.mergeDelta(delta) # merging it with gamestate's delta
@@ -18,24 +18,29 @@ class Class(baseEntity.Class):
 			self.lastUpdate = self.time.time()
 			self.updateInterval = 0.1 # every tenth of a second.
 			
-			self.speedForce = 80.0*70 # Speed in force of general player movement
+			self.mass = 80.0
+			self.speedForce = 80.0*self.mass # Speed in force of general player movement
 			self.sprintMod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
 			self.crouchMod = 0.5 # Speed multiplier when crouching (sprint effects crouching speed as well)
-			self.jumpForce = 250.0*70 # Upward force when jump is executed.
+			self.jumpForce = 250.0*self.mass # Upward force when jump is executed.
 			self.slopeInfluence = 0.8 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
 			self.noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
+			
+			self.firing = False
+			self.stance = 1
 			
 			import bge
 			self.object = bge.logic.getCurrentScene().addObject("player", bge.logic.getCurrentController().owner)
 			
-			self.camera = self.object.children['player_camera']
+			self.aim = self.object.children['player_aim']
+			self.camera = self.aim.children['player_camera']
 			
-			self.floorSensor = []
-			self.floorSensor.append( self.object.children['player_floorSensor0'] )
-			self.floorSensor.append( self.object.children['player_floorSensor1'] )
-			self.floorSensor.append( self.object.children['player_floorSensor2'] )
-			self.floorSensor.append( self.object.children['player_floorSensor3'] )
-			self.floorSensor.append( self.object.children['player_floorSensor4'] )
+			self.floorSensors = []
+			self.floorSensors.append( self.object.children['player_floorSensor0'] )
+			self.floorSensors.append( self.object.children['player_floorSensor1'] )
+			self.floorSensors.append( self.object.children['player_floorSensor2'] )
+			self.floorSensors.append( self.object.children['player_floorSensor3'] )
+			self.floorSensors.append( self.object.children['player_floorSensor4'] )
 			
 			self.ceilingRays = []
 			self.ceilingRays.append( self.object.children['player_ceilingSensor0'] )
@@ -50,6 +55,7 @@ class Class(baseEntity.Class):
 		else:
 			import bge
 			self.object = bge.logic.getCurrentScene().addObject("player_proxy", bge.logic.getCurrentController().owner)
+			self.targetPosition = [0.0, 0.0, -100.0]
 	
 	def end(self):
 		self.engine.camera.reset()
@@ -87,17 +93,23 @@ class Class(baseEntity.Class):
 		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
 		
 		self.doPlayerMovement()
-		self.doMouseLook()
+		self.engine.mouse.object.doMouseLook(self.object, self.aim)
 		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
-			deltas.append( {'E': {self.id:{'P':self.object.position[:]}} } )
+			pos = self.object.position[:]
+			for i in range(3): pos[i]=str(round(pos[i], 3))
+			deltas.append( {'E': {self.id:{'P':pos}} } )
 			self.lastUpdate = self.time.time()
 		
 		return deltas # Return delta data to be merged with gamestate.delta
 	
 	def replicateControllerData(self, gamestate):
 		data = self.engine.gamestate.getById(self.id)
-		self.object.position = data['P']
+		if 'P' in data:
+			pos = data['P']
+			for i in range(3): pos[i]=float(pos[i])
+			self.targetPosition = pos
+		self.object.position = self.interpolate(self.object.position, self.targetPosition, 20.0)
 	
 	
 	
@@ -109,9 +121,9 @@ class Class(baseEntity.Class):
 	def doPlayerMovement(self):
 		movement = self.getDesiredMovement()
 		movement = self.applySprint(movement)
-		#movement = self.applyStance(movement)
+		movement = self.applyStance(movement)
 		#movement = self.doSlopeDamping(movement)
-		#movement = self.degradeMovementWhenNotOnGround(movement)
+		movement = self.degradeMovementWhenNotOnGround(movement)
 		if not self.engine.interface.terminalIsActive(): self.object.applyForce(movement, 1)
 		self.doDamping()
 	
@@ -149,41 +161,50 @@ class Class(baseEntity.Class):
 	
 	def doDamping(self):
 		d=1.0
-		if self.isOnGround(): d=25.0*70
+		if self.isOnGround(): d=25.0*self.mass
 		x,y,z=self.object.getVelocity()
 		x*=-d; y*=-d
 		self.object.applyForce([x, y, 0.0], 0)
 
 	def isOnGround(self):
-		return True
-		#for sensor in self.floorSensors:
-		#	if sensor.positive: return True
-		#return False
+		for floorSensor in self.floorSensors:
+			pos = floorSensor.position[:]; pos[2] -= 0.2
+			if floorSensor.rayCastTo(pos, 0.2): return True
+		return False
 	
+	def interpolate(self, origin, target, percent=20.0): # Interpolates positions by a percentage.
+		oX,oY,oZ=origin; tX,tY,tZ=target
+		# Getting the difference between them
+		dX=tX-oX; dY=tY-oY; dZ=tZ-oZ
+		# Getting a fraction of the difference
+		fX=dX*(percent/100.0); fY=dY*(percent/100.0); fZ=dZ*(percent/100.0)
+		# Applying the fraction of difference to the origin
+		nX=oX+fX; nY=oY+fY; nZ=oZ+fZ
+		return [nX, nY, nZ]
+
 	
-	def doMouseLook(self):
-		"""
-		A mouse script uses movement of the mouse to cause object rotation.
-		"""
-		import engine
-		mouse = engine.interface.mouse
-		if mouse.isPositive():
-			rotation = [0, 0]
-			rotation[0], rotation[1] = mouse.getPositionFromCenter()
-			rotation[0] *= self.sensitivity * -2
-			rotation[1] *= self.sensitivity
-				
-			#limit of 70 degrees for the y axis
-			if self.angle_y+rotation[1] <= -1.5706:
-				rotation[1] = -1.5706-self.angle_y
-			if self.angle_y+rotation[1] >= 1.5706:
-				rotation[1] = 1.5706-self.angle_y
-			
-			if abs(rotation[0]) > 0.001 or abs(rotation[1]) > 0.001:
-				self.angle_y += rotation[1]
-				self.object.applyRotation([0, 0, rotation[0]], 0)
-				self.camera.applyRotation([rotation[1], 0, 0], 1)
-			
-			mouse.reset()
-
-
+	### Geoff's MouseLook
+	#def doMouseLook(self):
+	#	"""
+	#	A mouse script uses movement of the mouse to cause object rotation.
+	#	"""
+	#	import engine
+	#	mouse = engine.interface.mouse
+	#	if mouse.isPositive():
+	#		rotation = [0, 0]
+	#		rotation[0], rotation[1] = mouse.getPositionFromCenter()
+	#		rotation[0] *= self.sensitivity * -2
+	#		rotation[1] *= self.sensitivity
+	#			
+	#		#limit of 70 degrees for the y axis
+	#		if self.angle_y+rotation[1] <= -1.5706:
+	#			rotation[1] = -1.5706-self.angle_y
+	#		if self.angle_y+rotation[1] >= 1.5706:
+	#			rotation[1] = 1.5706-self.angle_y
+	#		
+	#		if abs(rotation[0]) > 0.001 or abs(rotation[1]) > 0.001:
+	#			self.angle_y += rotation[1]
+	#			self.object.applyRotation([0, 0, rotation[0]], 0)
+	#			self.camera.applyRotation([rotation[1], 0, 0], 1)
+	#		
+	#		mouse.reset()

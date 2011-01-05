@@ -15,7 +15,7 @@ class createEntityController:
 			id, memo = memoItem
 			self.entities[id].memos.append(memo)
 
-	def conform(self, gamestate ):
+	def conform(self, gamestate):
 		delete = []
 		for id in self.entities:
 			if not id in gamestate["E"]:
