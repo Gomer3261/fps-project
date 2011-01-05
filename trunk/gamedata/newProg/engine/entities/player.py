@@ -15,10 +15,10 @@ class Class(baseEntity.Class):
 	def initialize(self, gamestate):
 		
 		if self.control:
-			self.speedForce = 80.0 # Speed in force of general player movement
+			self.speedForce = 80.0*70 # Speed in force of general player movement
 			self.sprintMod = 1.75 # Speed multiplier when sprinting (1.0=no change, 2.0=double)
 			self.crouchMod = 0.5 # Speed multiplier when crouching (sprint effects crouching speed as well)
-			self.jumpForce = 250.0 # Upward force when jump is executed.
+			self.jumpForce = 250.0*70 # Upward force when jump is executed.
 			self.slopeInfluence = 0.8 # The power of slope damping. 1.0 is pretty powerful, 2.0 makes it impossible to go up steep slopes, 0.5 makes it slight but noticeable.
 			self.noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
 			
@@ -40,6 +40,10 @@ class Class(baseEntity.Class):
 			self.ceilingRays.append( self.object.children['player_ceilingSensor2'] )
 			self.ceilingRays.append( self.object.children['player_ceilingSensor3'] )
 			self.ceilingRays.append( self.object.children['player_ceilingSensor4'] )
+			
+			self.engine.interface.mouse.reset()
+			self.angle_y = 0.0
+			self.sensitivity = 0.001
 		else:
 			import bge
 			self.object = bge.logic.getCurrentScene().addObject("player_proxy", bge.logic.getCurrentController().owner)
@@ -75,8 +79,13 @@ class Class(baseEntity.Class):
 		mainloop, where it is merged with the gamestate delta.
 		"""
 		deltas = []
-		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
+		
 		self.engine.camera.offer(self.camera, 10)
+		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
+		
+		self.doPlayerMovement()
+		self.doMouseLook()
+		
 		return deltas # Return delta data to be merged with gamestate.delta
 	
 	def controllerDataReplicate(self, gamestate):
@@ -90,13 +99,12 @@ class Class(baseEntity.Class):
 	
 	
 	def doPlayerMovement(self):
-		import engine.interface as interface
 		movement = self.getDesiredMovement()
 		movement = self.applySprint(movement)
-		movement = self.applyStance(movement)
+		#movement = self.applyStance(movement)
 		#movement = self.doSlopeDamping(movement)
-		movement = self.degradeMovementWhenNotOnGround(movement)
-		if interface.terminalIsActive(): self.object.applyForce(movement, 1)
+		#movement = self.degradeMovementWhenNotOnGround(movement)
+		if not self.engine.interface.terminalIsActive(): self.object.applyForce(movement, 1)
 		self.doDamping()
 	
 	def getDesiredMovement(self):
@@ -133,18 +141,41 @@ class Class(baseEntity.Class):
 	
 	def doDamping(self):
 		d=1.0
-		if self.isOnGround(): d=25.0
-		x,y,z=obj.getVelocity()
+		if self.isOnGround(): d=25.0*70
+		x,y,z=self.object.getVelocity()
 		x*=-d; y*=-d
-		obj.applyForce([x, y, 0.0], 0)
-
-
-
-
+		self.object.applyForce([x, y, 0.0], 0)
 
 	def isOnGround(self):
-		for sensor in self.floorSensors:
-			if sensor.positive: return True
-		return False
+		return True
+		#for sensor in self.floorSensors:
+		#	if sensor.positive: return True
+		#return False
+	
+	
+	def doMouseLook(self):
+		"""
+		A mouse script uses movement of the mouse to cause object rotation.
+		"""
+		import engine
+		mouse = engine.interface.mouse
+		if mouse.isPositive():
+			rotation = [0, 0]
+			rotation[0], rotation[1] = mouse.getPositionFromCenter()
+			i=0
+			for x in rotation:
+				rotation[i] *= self.sensitivity
+				i+=1
+				
+			#limit of 70 degrees for the y axis
+			if self.angle_y+rotation[1] <= -1.2217:
+				rotation[1] = -1.2217-self.angle_y
+			if self.angle_y+rotation[1] >= 1.2217:
+				rotation[1] = 1.2217-self.angle_y
+			
+			self.object.applyRotation([0, 0, rotation[0]], 0)
+			self.camera.applyRotation([rotation[1], 0, 0], 1)
+			
+			mouse.reset()
 
 
