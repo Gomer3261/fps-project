@@ -126,8 +126,8 @@ class createClient(REMOTE_HANDLER):
 				self.handleNetPacket(flag, payload)
 			elif type==1: # THROW PACKET
 				type, seq, label, id, payload = data
-				item = self.connection.handleThrowPacket(seq, label, id, payload)
-				if item: inItems.append(item)
+				items = self.connection.handleThrowPacket(seq, label, id, payload)
+				for item in items: inItems.append(item)
 			elif type==2: # STREAM PACKET
 				pass
 		return inItems
