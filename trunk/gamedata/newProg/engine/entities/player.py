@@ -179,7 +179,7 @@ class Class(baseEntity.Class):
 			if self.angle_y+rotation[1] >= 1.5706:
 				rotation[1] = 1.5706-self.angle_y
 			
-			if abs(rotation[0]) > 0.002 or abs(rotation[1]) > 0.002:
+			if abs(rotation[0]) > 0.001 or abs(rotation[1]) > 0.001:
 				self.angle_y += rotation[1]
 				self.object.applyRotation([0, 0, rotation[0]], 0)
 				self.camera.applyRotation([rotation[1], 0, 0], 1)

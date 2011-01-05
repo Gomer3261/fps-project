@@ -82,9 +82,9 @@ class initializeGamestate:
 		
 	def getById(self, id):
 		if id in self.data['U']:
-			return self.data['U'][i]
+			return self.data['U'][id]
 		elif id in self.data['E']:
-			return self.data['E'][i]
+			return self.data['E'][id]
 		else:
 			return None
 	
