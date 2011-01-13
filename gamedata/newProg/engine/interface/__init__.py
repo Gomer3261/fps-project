@@ -77,13 +77,13 @@ class initializeInterface:
 		"""
 		Function to set individual settings.
 		"""
-		return self.options.setSetting(self, setting, value)
+		return self.options.setSetting(setting, value)
 		
 	def getSetting(self, setting):
 		"""
 		Function to retrieve individual settings.
 		"""
-		return self.options.getSetting(self, setting)
+		return self.options.getSetting(setting)
 		
 	def resetSetting(self, setting):
 		"""
@@ -95,7 +95,7 @@ class initializeInterface:
 		"""
 		Function to set individual controls.
 		"""
-		return self.options.setSetting(self, control, value)
+		return self.options.setSetting(control, value)
 		
 	def getControl(self, control):
 		"""

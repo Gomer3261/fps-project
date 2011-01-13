@@ -51,7 +51,6 @@ class Class(baseEntity.Class):
 			
 			self.engine.interface.mouse.reset()
 			self.angle_y = 0.0
-			self.sensitivity = 1
 		else:
 			import bge
 			self.object = bge.logic.getCurrentScene().addObject("player_proxy", bge.logic.getCurrentController().owner)
@@ -93,11 +92,11 @@ class Class(baseEntity.Class):
 		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
 		
 		self.doPlayerMovement()
-		self.engine.mouse.object.doMouseLook(self.object, self.aim)
+		self.doMouseLook()
 		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
-			pos = self.object.position[:]
-			for i in range(3): pos[i]=str(round(pos[i], 3))
+			pos = [0.0, 0.0, 0.0]
+			for i in range(3): pos[i]=str(round(self.object.position[i], 3))
 			deltas.append( {'E': {self.id:{'P':pos}} } )
 			self.lastUpdate = self.time.time()
 		
@@ -168,7 +167,7 @@ class Class(baseEntity.Class):
 
 	def isOnGround(self):
 		for floorSensor in self.floorSensors:
-			pos = floorSensor.position[:]; pos[2] -= 0.2
+			pos = (floorSensor.position[0], floorSensor.position[1], floorSensor.position[2] - 0.2)
 			if floorSensor.rayCastTo(pos, 0.2): return True
 		return False
 	
@@ -182,29 +181,28 @@ class Class(baseEntity.Class):
 		nX=oX+fX; nY=oY+fY; nZ=oZ+fZ
 		return [nX, nY, nZ]
 
-	
-	### Geoff's MouseLook
-	#def doMouseLook(self):
-	#	"""
-	#	A mouse script uses movement of the mouse to cause object rotation.
-	#	"""
-	#	import engine
-	#	mouse = engine.interface.mouse
-	#	if mouse.isPositive():
-	#		rotation = [0, 0]
-	#		rotation[0], rotation[1] = mouse.getPositionFromCenter()
-	#		rotation[0] *= self.sensitivity * -2
-	#		rotation[1] *= self.sensitivity
-	#			
-	#		#limit of 70 degrees for the y axis
-	#		if self.angle_y+rotation[1] <= -1.5706:
-	#			rotation[1] = -1.5706-self.angle_y
-	#		if self.angle_y+rotation[1] >= 1.5706:
-	#			rotation[1] = 1.5706-self.angle_y
-	#		
-	#		if abs(rotation[0]) > 0.001 or abs(rotation[1]) > 0.001:
-	#			self.angle_y += rotation[1]
-	#			self.object.applyRotation([0, 0, rotation[0]], 0)
-	#			self.camera.applyRotation([rotation[1], 0, 0], 1)
-	#		
-	#		mouse.reset()
+	def doMouseLook(self):
+		"""
+		A mouse script uses movement of the mouse to cause object rotation.
+		"""
+		import engine
+		mouse = engine.interface.mouse
+		if mouse.isPositive():
+			rotation = [0, 0]
+			rotation[0], rotation[1] = mouse.getPositionFromCenter()
+			
+			rotation[0] *= engine.interface.getSetting("mxsens")/1000
+			self.object.applyRotation([0, 0, rotation[0]], 0)
+			
+			rotation[1] *= engine.interface.getSetting("mysens")/1000
+			
+			#limit of 90 degrees for the y axis
+			if self.angle_y+rotation[1] <= -1.5706:
+				rotation[1] = -1.5706-self.angle_y
+			if self.angle_y+rotation[1] >= 1.5706:
+				rotation[1] = 1.5706-self.angle_y
+		
+			self.angle_y += rotation[1]
+			self.camera.applyRotation([rotation[1], 0, 0], 1)
+			
+			mouse.reset()

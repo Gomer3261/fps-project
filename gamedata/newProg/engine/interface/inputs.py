@@ -63,14 +63,18 @@ class initializeInputs:
 			"""
 			self.bge.logic.mouse.visible = vis
 
-		def getPosition(self):
+		def getPosition(self, normalized=False):
 			"""
 			returns the position of the mouse. X, Y
 			"""
 			position = self.bge.logic.mouse.position
-
-			X = position[0]
-			Y = position[1]
+			
+			if not normalized:
+				X = position[0]*self.width
+				Y = position[1]*self.height
+			else:
+				X = position[0]
+				Y = position[1]
 
 			return X, Y
 
@@ -79,7 +83,7 @@ class initializeInputs:
 			"""
 			True if the mouse is in the center of the viewport.
 			"""
-			X, Y = self.getPosition()
+			X, Y = self.getPosition(normalized=True)
 			center = 1
 
 			if X != 0.5:
@@ -91,14 +95,18 @@ class initializeInputs:
 			return center
 
 
-		def getPositionFromCenter(self):
+		def getPositionFromCenter(self, normalized=False):
 			"""
 			Returns the difference between the mouse position and the center of the screen. X, Y
 			"""
-			X, Y = self.getPosition()
-
-			X = (X-0.5)
-			Y = (0.5-Y)
+			X, Y = self.getPosition(normalized)
+			
+			if normalized:
+				X = (0.5-X)
+				Y = (0.5-Y)
+			else:
+				X = (self.centerX-X)
+				Y = (self.centerY-Y)
 
 			return X, Y
 
@@ -117,12 +125,10 @@ class initializeInputs:
 			Resets mouse to center of the screen.
 			"""
 			if self.isPositive():
-				X, Y = self.getPositionFromCenter()
+				X, Y = self.getPositionFromCenter(normalized=False)
 			else:
 				X = 0
 				Y = 0
-			if X or Y:
-				self.reset()
 			return X, Y
 
 
