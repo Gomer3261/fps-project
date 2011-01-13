@@ -45,7 +45,7 @@ Important functions:
 			options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX, overflow=bgui.BGUI_OVERFLOW_REPLACE)
 			
 		self.input = bgui.TextInput(self.frame, 'input', text="", prefix=">>>", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.025], pos=[0.025, 0.025], options = bgui.BGUI_DEFAULT)
-		self.input.on_enter = self.on_enter
+		self.input.on_enter_key = self.on_enter
 		
 		import bge
 		self.keymap = {getattr(bge.events, val): getattr(bgui, val) for val in dir(bge.events) if val.endswith('KEY') or val.startswith('PAD')}
