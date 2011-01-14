@@ -21,9 +21,8 @@ class initializeInterface:
 		import engine.interface.terminal as terminalModule
 		self.terminal = terminalModule.initializeTerminal(self.bgui)
 		
-		#Notes to be added once it's converted to bgui.
-#		import Notes as NotesModule
-#		self.Notes = NotesModule.Class()
+		import engine.interface.notes as notesModule
+		self.notificationSystem = notesModule.initializeNotificationSystem(self, self.bgui)
 
 	def main(self):
 		"""
@@ -31,6 +30,7 @@ class initializeInterface:
 		"""
 		import bge
 		self.terminal.main()
+		self.notificationSystem.main()
 		bge.logic.getCurrentScene().post_draw = [self.render]
 		
 		#self.notes.main() 
@@ -41,11 +41,12 @@ class initializeInterface:
 		"""
 		if self.terminal.active:
 			self.terminal.render()
+		self.notificationSystem.render()
 		
 	#InterfaceCommands:
 	def output(self, text, terminal=True, note=False, console=False):
 		if terminal: self.terminal.output(text)
-		if note: pass
+		if note: self.notificationSystem.requestNote(text)
 		if console: print(text)
 			
 	def terminalIsActive(self):

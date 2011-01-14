@@ -61,9 +61,9 @@ def setHistoryLimit(I):
 
 
 
-	# ------------------------
-	# Informational Commands
-	# ------------------------
+# ------------------------
+# Informational Commands
+# ------------------------
 
 def gs():
 	import engine
@@ -124,20 +124,21 @@ def gs():
 #	def text(msg="Hi."):
 #		import modules
 #		modules.networking.gncore.text(msg)
-#
-#
-#
-#
-#
-#
-#
-#
-#	# -----------------
-#	# Notification Commands
-#	# -----------------
-#
-#	def notify(self, text="This is a notice.", time=0.0):
-#		self.slab.Interface.Notes.notify(text, time)
+
+
+
+
+
+
+
+
+# -----------------
+# Notification Commands
+# -----------------
+
+def notify(text="This is a notice.", time=0.0):
+	import engine
+	engine.interface.notificationSystem.requestNote(text, time)
 
 
 
