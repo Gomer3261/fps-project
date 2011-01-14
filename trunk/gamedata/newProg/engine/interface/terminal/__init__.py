@@ -190,8 +190,6 @@ Important functions:
 		for key, state in keyboard.events.items():
 			if state == bge.logic.KX_INPUT_JUST_ACTIVATED:
 				self.update_keyboard(self.keymap[key], is_shifted)
-				
-		bge.logic.getCurrentScene().post_draw = [self.render]
 			
 	def handleOpenClose(self):
 		"""

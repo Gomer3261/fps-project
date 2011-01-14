@@ -4,6 +4,49 @@
 ### ====================================== ###
 ##############################################
 
+class initializeNotification:
+	"""
+	The Notification class manages all notifications and alerts.
+	This involves making sure all notes and alerts are displayed to the user,
+	Notes and alerts are not displayed the second they are requested.
+	"""
+	
+	def __init__(self, interface, bgui):
+		self.interface = interface
+		self.bgui = bgui
+		
+		self.notes = []
+		self.alerts = []
+		self.activeNote = None
+		self.activeAlert = None
+		
+	def requestNote(self, text="Error", time=None):
+		"""
+		Leaves a request for a note to the player in the noficiation system.
+		"""
+		self.notes.append((text, time))
+		
+	def requestAlert(self, text="Error", buttons=None):
+		"""
+		Leaves a request for an alert to the player in the notification system.
+		requests are in the form, text, buttons where buttons is a list of tuples consising of text and callback objects.
+		e.g. [("exit", bge.endGame), ("continue", None)]
+		A button with no callback will close the window.
+		An empty button list will allow the user to close the window by pressing anywhere on the alert.
+		"""
+		self.alerts.append()
+		
+	def self.main(self):
+		if self.activeAlert:
+			self.activeAlert.main()
+		elif self.alerts
+	
+	def self.render(self):
+		if self.activeNote:
+			self.activeNote.render()
+		if self.activeAlert:
+			self.activeAlert.render()
+
 class Class:
 	"""
 	The Notification class manages all notifications.

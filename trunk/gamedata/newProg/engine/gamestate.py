@@ -20,11 +20,10 @@ class initializeGamestate:
 	def deleteNullities(self, dict1, dict2):
 		list = []
 		for i in dict1:
-			if i in dict2:
-				if dict1[i] == None:
-					list.append(i)
-				elif type(dict1[i]) == type({}):
+			if i in dict2 and type(dict1[i]) == type({}):
 					self.deleteNullities(dict1[i], dict2[i])
+			elif dict1[i] == None:
+				list.append(i)
 		for i in list:
 			del dict1[i]
 			if i in dict2:

@@ -29,8 +29,18 @@ class initializeInterface:
 		"""
 		Main interface loop.
 		"""
+		import bge
 		self.terminal.main()
+		bge.logic.getCurrentScene().post_draw = [self.render]
+		
 		#self.notes.main() 
+		
+	def render(self):
+		"""
+		Renders the components of the interface using post_draw.
+		"""
+		if self.terminal.active:
+			self.terminal.render()
 		
 	#InterfaceCommands:
 	def output(self, text, terminal=True, note=False, console=False):
