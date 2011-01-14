@@ -3,8 +3,9 @@
 ### ======		 Note System!		====== ###
 ### ====================================== ###
 ##############################################
+import engine.interface.bgui as bgui
 
-class initializeNotification:
+class initializeNotificationSystem:
 	"""
 	The Notification class manages all notifications and alerts.
 	This involves making sure all notes and alerts are displayed to the user,
@@ -36,11 +37,11 @@ class initializeNotification:
 		"""
 		self.alerts.append((text, buttons))
 		
-	def self.main(self):
+	def main(self):
 		if self.activeAlert:
 			self.activeAlert.main()
 		elif self.alerts:
-			self.activeAlert = self.initializeAlert(self, self.bgui, self.alerts[0])
+			#self.activeAlert = self.initializeAlert(self, self.bgui, self.alerts[0])
 			self.activeAlert.main()
 			del self.alerts[0]
 		
@@ -51,111 +52,56 @@ class initializeNotification:
 			self.activeNote.main()
 			del self.notes[0]
 	
-	def self.render(self):
+	def render(self):
 		if self.activeNote:
 			self.activeNote.render()
 		if self.activeAlert:
 			self.activeAlert.render()
 
-class Class:
-	"""
-	The Notification class manages all notifications.
-	This involves making sure all notifications are displayed to the user,
-	and insuring animations are given time to complete.
-	
-	Please note that notifications are not displayed the second they are requested.
-	"""
-	# The times it takes for the notifier to play
-	# it's hiding and showing animations...
-	noteShowTime = 0.25
-	noteHideTime = 0.25
-
-	def __init__(self):
-		# Adding the Notes scene.
-		import bge
-		con = bge.logic.getCurrentController()
-		
-		bge.logic.addScene("Notes", 1)
-		
-		# A note looks like (text, time)
-		self.notes = []
-
-		# When active, we are currently in the process of "notifying" the user.
-		self.active = 0
-
-		# This shows/hides the notification panel.
-		self.show = 0
-
-		# The current note text to display
-		self.currentText = ""
-
-		self.displayTime = 0.0
-		self.startTime = 0.0
-		self.currentTime = 0.0
-		
-		print("  Interface/Notes are good to go.")
-
-
-
-
-
-
-
-	def notify(self, text, time=0.0):
+	class initializeNote(bgui.System):
 		"""
-		Adds a notification to the display que.
+		A notification is a small message that appears in the top right of the players screen.
+		It lasts for a short period of time before deleting itself.
+		The note class is responsible for displaying itself and handling it's own animations.
 		"""
-		self.notes.append((text, time))
-
-	def run(self):
-		"""
-		Runs the notification object on the notes scene.
-		"""
-		import time
-		import bge
-		con = bge.logic.getCurrentController()
+		noteShowTime = 0.25
+		noteHideTime = 0.25
 		
-		# If the notifier is not active, and is ready for the next note...
-		if not self.active:
-			# And there is a note read in the queue...
-			if self.notes:
-				# Get the next note
-				note = self.notes.pop(0) # note looks like (text, time)
-				
-				# Textwrapping
-				import textwrap
-				self.currentText = textwrap.fill(note[0], 32)
-				
-				# Set the display time
-				if not note[1]:
-					#FAST-READER# self.displayTime = (float(len(note[0])) * 0.05) + 0.5 # Dynamic Display Time (0.05 seconds per character)
-					self.displayTime = (float(len(note[0])) * 0.08) + 0.5 # Dynamic Display Time (0.05 seconds per character)
-				else:
-					self.displayTime = note[1]
-				
-				self.displayTime += self.noteShowTime
-				
-				self.active = 1 # It's now active (not ready to take another note yet)
-				self.show = 1 # This is the signal for the notifier to pop out and display it's note text
-				self.startTime = time.time() # Starting the timer...
-		else:
-			# Okay, so we're getting the time that the note has been active
-			self.currentTime = time.time() - self.startTime
+		def __init__(self, notificationSystem, bgui, args):
+			import time
+			self.time = time
 			
-			# When the note has been active for the display time, then it's time to stop showing.
-			if self.currentTime > self.displayTime:
-				self.show = 0
+			self.notificationSystem = notificationSystem
+			self.bgui = bgui
+			self.text = args[0]
+
+			if not args[1]:
+				self.displayTime = (float(len(self.text)) * 0.08) + 0.5 # Dynamic Display Time (0.05 seconds per character)
+			else:
+				self.displayTime = args[1]
+				
+			self.startTime = self.time.time()
 			
-			# Just because we're done showing doesn't mean we're ready for the next note; the notifier
-			# neets some time to play it's hiding animation, only once that is done may we do the next note
-			if self.currentTime > (self.displayTime + self.noteHideTime):
-				self.active = 0
-		
-		
-		
-		# Okay, so we've got all our information for our notifier object,
-		# so now we just give it to the object so it can display it graphically :)
-		obj = con.owner
-		textObj = con.actuators["noteText"].owner
-		textObj["Text"] = self.currentText
-		obj["show"] = self.show
+			#Bgui object initialization
+			bgui.System.__init__(self)
+			
+			self.frame = bgui.Frame(self, 'note', border=1, size=[0.3, 0.2], pos=[0.7, 0.8])
+			self.frame.colors = [(0.2, 0.2, 0.2, 0.8) for i in range(4)]
+			
+			self.display = bgui.TextBlock(self.frame, 'note_text', text=self.text, color=(1, 1, 1, 1), pt_size=40, size=[0.95, 0.90],
+				options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX | bgui.BGUI_CENTERY, overflow=bgui.BGUI_OVERFLOW_HIDDEN)
+			
+		def main(self):
+			if self.time.time() > (self.startTime + self.noteShowTime + self.displayTime + self.noteHideTime):
+				self.end()
+			elif self.time.time() > (self.startTime + self.noteShowTime + self.displayTime):
+				#play end animation
+				pass
+			elif self.time.time() > self.startTime:
+				#play show animation.
+				pass
+				
+		def end(self):
+			#kill bgui objects
+			self.notificationSystem.activeNote = None
+			self._remove_widget(self.frame)
