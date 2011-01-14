@@ -64,8 +64,8 @@ class initializeNotificationSystem:
 		It lasts for a short period of time before deleting itself.
 		The note class is responsible for displaying itself and handling it's own animations.
 		"""
-		noteShowTime = 0.25
-		noteHideTime = 0.25
+		showTime = 0.20
+		hideTime = 0.20
 		
 		def __init__(self, notificationSystem, bgui, args):
 			import time
@@ -76,7 +76,7 @@ class initializeNotificationSystem:
 			self.text = args[0]
 
 			if not args[1]:
-				self.displayTime = (float(len(self.text)) * 0.08) + 0.5 # Dynamic Display Time (0.05 seconds per character)
+				self.displayTime = (float(len(self.text)) * 0.05) + 1.0 # Dynamic Display Time (0.05 seconds per character)
 			else:
 				self.displayTime = args[1]
 				
@@ -86,20 +86,37 @@ class initializeNotificationSystem:
 			bgui.System.__init__(self)
 			
 			self.frame = bgui.Frame(self, 'note', border=1, size=[0.3, 0.2], pos=[0.7, 0.8])
-			self.frame.colors = [(0.2, 0.2, 0.2, 0.8) for i in range(4)]
+			self.frame.colors = [(0.2, 0.2, 0.2, 0.0) for i in range(4)]
 			
 			self.display = bgui.TextBlock(self.frame, 'note_text', text=self.text, color=(1, 1, 1, 1), pt_size=40, size=[0.95, 0.90],
 				options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX | bgui.BGUI_CENTERY, overflow=bgui.BGUI_OVERFLOW_HIDDEN)
 			
 		def main(self):
-			if self.time.time() > (self.startTime + self.noteShowTime + self.displayTime + self.noteHideTime):
+			factor = 0.0
+			if self.time.time() > (self.startTime + self.showTime + self.displayTime + self.hideTime):
 				self.end()
-			elif self.time.time() > (self.startTime + self.noteShowTime + self.displayTime):
-				#play end animation
-				pass
-			elif self.time.time() > self.startTime:
+			elif self.time.time() > (self.startTime + self.showTime + self.displayTime):
+				#Hide animation will occur here.
+				factor = (self.hideTime - (self.time.time() - (self.startTime + self.showTime + self.displayTime))) / self.hideTime
+				self.frame.colors = [(0.2, 0.2, 0.2, (0.8 * factor)) for i in range(4)]
+				self.frame._update_position(self.frame._base_size, [0.7, (1.0 - (0.2 * factor))])
+				self.display._update_position(self.display._base_size, self.display._base_pos)
+				self.display.text = self.text
+			
+			elif self.time.time() > (self.startTime + self.showTime):
+				if self.frame._base_pos != [0.7, 0.8]:
+					self.frame._update_position(self.frame._base_size, [0.7, 0.8])
+					self.display._update_position(self.display._base_size, self.display._base_pos)
+					self.display.text = self.text
+			
+			else:
 				#play show animation.
-				pass
+				factor = (self.time.time() - self.startTime) / self.showTime
+				self.frame.colors = [(0.2, 0.2, 0.2, (0.8 * factor)) for i in range(4)]
+				self.frame._update_position(self.frame._base_size, [0.7, (1.0 - (0.2 * factor))])
+				self.display._update_position(self.display._base_size, self.display._base_pos)
+				self.display.text = self.text
+				
 				
 		def end(self):
 			#kill bgui objects
