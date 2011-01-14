@@ -3,9 +3,9 @@
 ##########################################################								####################
 host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
 net			= 1 # local:0, client:1, server:1			##								####################
-username	= 'Cheech' # you'd better pick a cool name	##
+username	= 'Chong' # you'd better pick a cool name	##
 ip			= '96.54.129.113' # server host	##
-port		= 3200 # the connection port				##
+port		= 3201 # the connection port				##
 ##########################################################
 
 
