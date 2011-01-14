@@ -25,7 +25,7 @@ def output(s):
 	"""
 	global engine
 	s = str(s)
-	engine.interface.out(s, 1, 0)
+	engine.interface.output(s, 1, 0)
 
 def clear():
 	"""
