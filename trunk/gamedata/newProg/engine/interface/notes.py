@@ -34,12 +34,22 @@ class initializeNotification:
 		A button with no callback will close the window.
 		An empty button list will allow the user to close the window by pressing anywhere on the alert.
 		"""
-		self.alerts.append()
+		self.alerts.append((text, buttons))
 		
 	def self.main(self):
 		if self.activeAlert:
 			self.activeAlert.main()
-		elif self.alerts
+		elif self.alerts:
+			self.activeAlert = self.initializeAlert(self, self.bgui, self.alerts[0])
+			self.activeAlert.main()
+			del self.alerts[0]
+		
+		if self.activeNote:
+			self.activeNote.main()
+		elif self.notes:
+			self.activeNote = self.initializeNote(self, self.bgui, self.notes[0])
+			self.activeNote.main()
+			del self.notes[0]
 	
 	def self.render(self):
 		if self.activeNote:

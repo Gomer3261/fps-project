@@ -36,6 +36,11 @@ class initializeGamestate:
 			else:
 				value1[i] = value2[i]
 		return value1
+		
+	def scanDelta(self):
+		for i in self.delta['E']:
+			if not 't' in i:
+				del i
 				
 	def applyDelta(self):
 		self.deleteNullities(self.delta, self.data)
@@ -43,6 +48,7 @@ class initializeGamestate:
 		
 	def mergeDelta(self, deltaData):
 		#Possiblity of loss in null values. Propery Nullity handling may be necessary
+		self.scanDelta()
 		self.delta = self.updateRecursively(self.delta, deltaData)
 	
 	def addUser(self, username):
