@@ -33,7 +33,8 @@ class initializeInterface:
 		self.notificationSystem.main()
 		bge.logic.getCurrentScene().post_draw = [self.render]
 		
-		#self.notes.main() 
+		if bge.logic.keyboard.events[bge.events.TABKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED:
+			self.alert("Are you sure you want to exit the game?", (("Exit", self._endGame), ("Resume", None)))
 		
 	def render(self):
 		"""
@@ -43,22 +44,41 @@ class initializeInterface:
 		if self.terminal.active:
 			self.terminal.render()
 		#self.menus.render()
-		#self.notificationSystem.renderAlert()
+		self.notificationSystem.renderAlert()
 		#self.debugDisplay.render()
 		
 	#InterfaceCommands:
 	def output(self, text, terminal=True, note=False, console=False):
+		"""
+		outputs information.
+		first argument is a string to be output
+		last 3 optional arguments choose which form of output to use.
+		they are in the order: terminal, note, console
+		"""
 		if terminal: self.terminal.output(text)
 		if note: self.notificationSystem.requestNote(text)
 		if console: print(text)
-			
+		
+	def alert(self, text, buttons):
+		"""
+		Creates an alert using the notificationSystem.
+		"""
+		self.notificationSystem.requestAlert(text, buttons)
+		
 	def terminalIsActive(self):
 		"""
 		Checks if the terminal is currently active.
 		"""
 		import engine
 		return engine.interface.terminal.active
-
+	
+	
+	
+	
+	
+	
+	
+	
 	#Quick input detection:
 	@property
 	def mouse(self):
@@ -79,7 +99,13 @@ class initializeInterface:
 		3=just deactivated 
 		"""
 		return self.inputs.controller.getStatus(control)
-		
+	
+	
+	
+	
+	
+	
+	
 	#Quick option access:
 	def defaultOptions(self):
 		"""
@@ -124,3 +150,7 @@ class initializeInterface:
 		return self.options.defaultControl(control)
 
 
+	#Callbacks
+	def _endGame(self, button):
+		import bge
+		bge.logic.endGame()
