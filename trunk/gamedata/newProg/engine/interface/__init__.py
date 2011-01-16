@@ -39,9 +39,12 @@ class initializeInterface:
 		"""
 		Renders the components of the interface using post_draw.
 		"""
+		self.notificationSystem.renderNote()
 		if self.terminal.active:
 			self.terminal.render()
-		self.notificationSystem.render()
+		#self.menus.render()
+		#self.notificationSystem.renderAlert()
+		#self.debugDisplay.render()
 		
 	#InterfaceCommands:
 	def output(self, text, terminal=True, note=False, console=False):
