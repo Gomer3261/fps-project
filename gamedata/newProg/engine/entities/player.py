@@ -92,7 +92,7 @@ class Class(baseEntity.Class):
 		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
 		
 		self.doPlayerMovement()
-		self.doMouseLook()
+		if not self.engine.interface.mouse.reserved: self.doMouseLook()
 		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
 			pos = [0.0, 0.0, 0.0]

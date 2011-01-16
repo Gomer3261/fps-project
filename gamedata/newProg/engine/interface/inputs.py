@@ -42,8 +42,18 @@ class initializeInputs:
 
 			self.centerX = self.width//2
 			self.centerY = self.height//2
-
-
+			
+			self._reserved = 0
+		
+		@property
+		def reserved(self):
+			return self._reserved
+			
+		@reserved.setter
+		def reserved(self, value):
+			self.reset()
+			self._reserved = value
+		
 		def reset(self):
 			"""
 			sets the mouse position to the center of the screen.

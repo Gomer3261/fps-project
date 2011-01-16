@@ -180,8 +180,15 @@ class initializeNotificationSystem:
 			self.notificationSystem = notificationSystem
 			self.bgui = bgui
 			self.text = args[0]
+			self.buttons = []
 			
-			buttons = args[1]
+			buttonData = args[1]
+			
+			import bge
+			bge.logic.mouse.visible = True
+			
+			import engine
+			engine.interface.mouse.reserved += 1
 			
 			#Bgui object initialization
 			bgui.System.__init__(self)
@@ -195,24 +202,51 @@ class initializeNotificationSystem:
 			self.display = bgui.TextBlock(self.frame, 'note_text', text=self.text, color=(1, 1, 1, 1), pt_size=40, size=[0.95, 0.90],
 				options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX | bgui.BGUI_CENTERY, overflow=bgui.BGUI_OVERFLOW_HIDDEN)
 				
-			if not self.args[1]:
+			if not buttonData:
 				self.display.on_click = self.end
 			else:
-				#Loop through and make buttons.
-				pass
+				for i in range(len(buttonData)):
+					self.buttons.append(bgui.FrameButton(self.frame, ('alert_button_' + str(i)), text=buttonData[i][0], size=[(0.9/len(buttonData)), 0.1], pos=[0.05+(0.9/len(buttonData)*i), 0.05],
+						options = bgui.BGUI_DEFAULT))
+					if buttonData[i][1]:
+						self.buttons[i].on_click = buttonData[i][1]
+					else:
+						self.buttons[i].on_click = self.end
 			
 		def main(self):
 			"""
 			Updates the current mouse information for bgui.
 			"""
-			pass
-			# This should update the mouse location
-				
+			# Handle the mouse
+			import bge
+			mouse = bge.logic.mouse
+			
+			pos = list(mouse.position)
+			pos[0] *= bge.render.getWindowWidth()
+			pos[1] = bge.render.getWindowHeight() - (bge.render.getWindowHeight() * pos[1])
+			
+			mouse_state = bgui.BGUI_MOUSE_NONE
+			mouse_events = mouse.events
+					
+			if mouse_events[bge.events.LEFTMOUSE] == bge.logic.KX_INPUT_JUST_ACTIVATED:
+				mouse_state = bgui.BGUI_MOUSE_CLICK
+			elif mouse_events[bge.events.LEFTMOUSE] == bge.logic.KX_INPUT_JUST_RELEASED:
+				mouse_state = bgui.BGUI_MOUSE_RELEASE
+			elif mouse_events[bge.events.LEFTMOUSE] == bge.logic.KX_INPUT_ACTIVE:
+				mouse_state = bgui.BGUI_MOUSE_ACTIVE
+			
+			self.update_mouse(pos, mouse_state)
 				
 		def end(self, arg2=None):
 			"""
 			Ends the notification so a new one can be displayed.
 			"""
+			import bge
+			bge.logic.mouse.visible = False
+			
+			import engine
+			engine.interface.mouse.reserved -= 1
+			
 			#kill bgui objects
 			self.notificationSystem.activeAlert = None
-			self._remove_widget(self.frame)
+			self._remove_widget(self.background)

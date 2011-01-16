@@ -7,6 +7,9 @@ Use listUserCommands() for a good time.
 Precede your input with "/" to designate it as a python command or it will be sent as a text message.
 """
 
+# ------------------------
+# Terminal Commands
+# ------------------------
 
 def help(cmd = None):
 	"""
@@ -45,8 +48,6 @@ def listUserCommands():
 		# Filter out the python module stuff so we only get our commands
 		if not i.startswith("__") and i != "helpText":
 			output(i)
-			
-			
 			
 def setHistoryLimit(I):
 	"""
@@ -136,11 +137,19 @@ def gs():
 # Notification Commands
 # -----------------
 
-def notify(text="This is a notice.", time=0.0):
+def notify(text="Error", time=0.0):
+	"""
+	Creates a note visible to the local player.
+	"""
 	import engine
 	engine.interface.notificationSystem.requestNote(text, time)
 
-
+def alert(text="Error", buttons=None):
+	"""
+	Creates an alert visible to the local player.
+	"""
+	import engine.interface
+	engine.interface.alert(text, buttons)
 
 
 
@@ -229,3 +238,14 @@ def loadOptions():
 	options = engine.interface.options
 	r = options.load()
 	output("Success value: %s"%(r))
+
+# -----------------
+# Engine Commands
+# -----------------
+
+def exitGame():
+	"""
+	Quits the current game in case of failure.
+	"""
+	import bge
+	bge.logic.endGame()

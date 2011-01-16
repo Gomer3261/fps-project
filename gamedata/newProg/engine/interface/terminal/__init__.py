@@ -73,7 +73,7 @@ Important functions:
 		def __init__(self):
 			# Variables for handling the history
 			self.history = []
-			self.slot = 0
+			self.slot = -1
 			self.max = 10
 			self.current_input = ""
 
@@ -101,17 +101,20 @@ Important functions:
 			"""
 			Gets the next item in the history.
 			"""
-			self.slot += 1
-			
-			if self.slot == 0:
-				self.saveCurrentInput(s)
-			elif self.slot > self.max:
-				self.slot = 0
-			elif (len(self.history)-1) < self.slot:
-				self.slot = len(self.history) - 1
+			if self.history:
+				self.slot += 1
 				
-			
-			return self.history[self.slot]
+				if self.slot == 0:
+					self.saveCurrentInput(s)
+				elif self.slot > self.max:
+					self.slot = 0
+				elif (len(self.history)-1) < self.slot:
+					self.slot = len(self.history) - 1
+					
+				
+				return self.history[self.slot]
+			else:
+				return s
 
 		def getPrevItem(self):
 			"""
@@ -198,13 +201,16 @@ Important functions:
 		"""
 		
 		import bge
+		import engine
 
 		if bge.logic.keyboard.events[bge.events.ACCENTGRAVEKEY] == bge.logic.KX_INPUT_JUST_ACTIVATED:
 			if self.active:
+				engine.interface.mouse.reserved -= 1
 				self.frame.visible = 0
 				self.active = 0
 				
 			else:
+				engine.interface.mouse.reserved += 1
 				self.frame.visible = 1
 				self.input.text = ""
 				self.active = 1
