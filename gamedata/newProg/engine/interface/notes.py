@@ -13,6 +13,11 @@ class initializeNotificationSystem:
 	"""
 	
 	def __init__(self, interface, bgui):
+		"""
+		Initializing the notification system.
+		And yes, I use objects because I don't want global variables.
+		Deal with it.
+		"""
 		self.interface = interface
 		self.bgui = bgui
 		
@@ -38,10 +43,14 @@ class initializeNotificationSystem:
 		self.alerts.append((text, buttons))
 		
 	def main(self):
+		"""
+		The main function ensures that either a note and alert are displaying or notes and alerts are empty.
+		The function also runs each note and alert to ensure they are in the correct state for rendering.
+		"""
 		if self.activeAlert:
 			self.activeAlert.main()
 		elif self.alerts:
-			#self.activeAlert = self.initializeAlert(self, self.bgui, self.alerts[0])
+			self.activeAlert = self.initializeAlert(self, self.bgui, self.alerts[0])
 			self.activeAlert.main()
 			del self.alerts[0]
 		
@@ -52,11 +61,30 @@ class initializeNotificationSystem:
 			self.activeNote.main()
 			del self.notes[0]
 	
-	def render(self):
+	def renderNote(self):
+		"""
+		Renders the current note.
+		"""
 		if self.activeNote:
 			self.activeNote.render()
+	
+	#These functions are split to allow the interface to order them however it wants.
+	def renderAlert(self):
+		"""
+		Renders the current alert
+		"""
 		if self.activeAlert:
 			self.activeAlert.render()
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 
 	class initializeNote(bgui.System):
 		"""
@@ -68,6 +96,11 @@ class initializeNotificationSystem:
 		hideTime = 0.20
 		
 		def __init__(self, notificationSystem, bgui, args):
+			"""
+			Creates the note object.
+			initializes bgui objects.
+			calculates display time.
+			"""
 			import time
 			self.time = time
 			
@@ -92,6 +125,9 @@ class initializeNotificationSystem:
 				options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX | bgui.BGUI_CENTERY, overflow=bgui.BGUI_OVERFLOW_HIDDEN)
 			
 		def main(self):
+			"""
+			Animates and kills the note.
+			"""
 			factor = 0.0
 			if self.time.time() > (self.startTime + self.showTime + self.displayTime + self.hideTime):
 				self.end()
@@ -119,6 +155,64 @@ class initializeNotificationSystem:
 				
 				
 		def end(self):
+			"""
+			Ends the notification so a new one can be displayed.
+			"""
 			#kill bgui objects
 			self.notificationSystem.activeNote = None
+			self._remove_widget(self.frame)
+			
+			
+			
+			
+			
+			
+			
+			
+	class initializeAlert(bgui.System):
+		"""
+		Alerts are a popup window that forces the user to acknowledge it.
+		Alerts are able to accept callback buttons, but will default to closing themselves if none are provided.
+		Alerts appear above all other UIs and lock everything that uses the mouse.
+		"""
+		def __init__(self, notificationSystem, bgui, args):
+			
+			self.notificationSystem = notificationSystem
+			self.bgui = bgui
+			self.text = args[0]
+			
+			buttons = args[1]
+			
+			#Bgui object initialization
+			bgui.System.__init__(self)
+			
+			self.background = bgui.Frame(self, 'alert_background', border=0, size=[1.0, 1.0], pos=[0.0, 0.0])
+			self.background.colors = [(0.0, 0.0, 0.0, 0.8) for i in range(4)]
+			
+			self.frame = bgui.Frame(self.background, 'alert', border=1, size=[0.4, 0.4], options=bgui.BGUI_DEFAULT|bgui.BGUI_CENTERX|bgui.BGUI_CENTERY)
+			self.frame.colors = [(0.2, 0.2, 0.2, 0.8) for i in range(4)]
+			
+			self.display = bgui.TextBlock(self.frame, 'note_text', text=self.text, color=(1, 1, 1, 1), pt_size=40, size=[0.95, 0.90],
+				options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX | bgui.BGUI_CENTERY, overflow=bgui.BGUI_OVERFLOW_HIDDEN)
+				
+			if not self.args[1]:
+				self.display.on_click = self.end
+			else:
+				#Loop through and make buttons.
+				pass
+			
+		def main(self):
+			"""
+			Updates the current mouse information for bgui.
+			"""
+			pass
+			# This should update the mouse location
+				
+				
+		def end(self, arg2=None):
+			"""
+			Ends the notification so a new one can be displayed.
+			"""
+			#kill bgui objects
+			self.notificationSystem.activeAlert = None
 			self._remove_widget(self.frame)
