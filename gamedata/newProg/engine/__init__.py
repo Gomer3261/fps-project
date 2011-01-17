@@ -1,11 +1,11 @@
 ##########################################################
 ######## USER SETTING BOX OF FUN					######
 ##########################################################								####################
-host		= 0 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
+host		= 1 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
 net			= 1 # local:0, client:1, server:1			##								####################
-username	= 'Chimmy' # you'd better pick a cool name	##
+username	= 'Gawd' # you'd better pick a cool name	##
 ip			= 'chasemoskal.dyndns.org' # server host	##
-port		= 3203 # the connection port				##
+port		= 3206 # the connection port				##
 ##########################################################
 
 
@@ -107,14 +107,17 @@ def mainloop():
 
 	
 	### UNIVERSAL ROUTINES: These apply to server, client, and local modes.
-	entityController.conform( gamestate ) # replicator emulates the gamestate by adding objects or removing them based on what the gamestate says.
+	try: entityController.conform( gamestate ) # replicator emulates the gamestate by adding objects or removing them based on what the gamestate says.
+	except: import traceback; traceback.print_exc()
 	
 	for idloop in entityController.entities: # We loop through every entity.
-		entity = entityController.entities[idloop]
-		deltaDataList, memoList = entity.run( gamestate ) # Running controlled entities.
-		for deltaData in deltaDataList:
-			if deltaData: gamestate.mergeDelta(deltaData)
-		if memoList and (not host): network.remoteHandler.throw( ('m', memoList) )
+		try:
+			entity = entityController.entities[idloop]
+			deltaDataList, memoList = entity.run( gamestate ) # Running controlled entities.
+			for deltaData in deltaDataList:
+				if deltaData: gamestate.mergeDelta(deltaData)
+			if memoList and (not host): network.remoteHandler.throw( ('m', memoList) )
+		except: import traceback; traceback.print_exc()
 	
 	if host: # We remove entities with controller users that have left.
 		toDelete=[]

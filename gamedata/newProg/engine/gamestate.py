@@ -38,9 +38,11 @@ class initializeGamestate:
 		return value1
 		
 	def scanDelta(self):
-		for i in self.delta['E']:
-			if not 't' in i:
-				del i
+		if 'E' in self.delta:
+			toDelete=[]
+			for id in self.delta['E']:
+				if not 't' in self.delta['E'][id]: toDelete.append(id)
+			for id in toDelete: del self.delta['E'][id]
 				
 	def applyDelta(self):
 		self.deleteNullities(self.delta, self.data)
