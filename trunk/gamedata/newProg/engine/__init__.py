@@ -1,11 +1,11 @@
 ##########################################################
 ######## USER SETTING BOX OF FUN					######
-##########################################################								####################
-host		= 1 # local:1, client:0, server:1			##								## HEY OVER HERE! ##
-net			= 1 # local:0, client:1, server:1			##								####################
+##########################################################
+host		= 1 # local:1, client:0, server:1			##
+net			= 0 # local:0, client:1, server:1			##
 username	= 'Gawd' # you'd better pick a cool name	##
 ip			= 'chasemoskal.dyndns.org' # server host	##
-port		= 3206 # the connection port				##
+port		= 3200 # the connection port				##
 ##########################################################
 
 
