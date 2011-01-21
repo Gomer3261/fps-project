@@ -99,6 +99,7 @@ class createClient(REMOTE_HANDLER):
 		import socket
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.sock.setblocking(0)
+		self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 		
 		self.lastConnectionAttempt=0.0 # time of last connection attempt
 		self.connectionAttemptPeriod=0.5 # time between connection attempts

@@ -27,10 +27,12 @@ class Class(baseEntity.Class):
 			self.noTouchMod = 0.02 # The modifier on desired movement when the player is not touching the ground.
 			
 			self.firing = False
-			self.stance = 1
+			self.stance = 1 # 1=stand, 2=crouch, 3=prone
 			
 			import bge
 			self.object = bge.logic.getCurrentScene().addObject("player", bge.logic.getCurrentController().owner)
+			self.aimpoint = bge.logic.getCurrentScene().addObject("player_aimpoint", bge.logic.getCurrentController().owner)
+			self.aimpoint.worldPosition = (0,0,5)
 			
 			self.aim = self.object.children['player_aim']
 			self.camera = self.aim.children['player_camera']
@@ -89,16 +91,20 @@ class Class(baseEntity.Class):
 		deltas = []
 		
 		self.engine.camera.offer(self.camera, 10)
-		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
 		
 		self.doPlayerMovement()
 		if not self.engine.interface.mouse.reserved: self.doMouseLook()
 		
+		hitEntityId, aimPosition = self.doAim()
+		self.aimpoint.worldPosition=aimPosition
+		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
 			pos = [0.0, 0.0, 0.0]
-			for i in range(3): pos[i]=str(round(self.object.position[i], 3))
+			for i in range(3): pos[i]=str(round(self.object.worldPosition[i], 3))
 			deltas.append( {'E': {self.id:{'P':pos}} } )
 			self.lastUpdate = self.time.time()
+		
+		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
 		
 		return deltas # Return delta data to be merged with gamestate.delta
 	
@@ -108,7 +114,7 @@ class Class(baseEntity.Class):
 			pos = data['P']
 			for i in range(3): pos[i]=float(pos[i])
 			self.targetPosition = pos
-		self.object.position = self.interpolate(self.object.position, self.targetPosition, 20.0)
+		self.object.worldPosition = self.interpolate(self.object.worldPosition, self.targetPosition, 20.0)
 	
 	
 	
@@ -116,6 +122,14 @@ class Class(baseEntity.Class):
 	
 	
 	
+	
+	def doAim(self):
+		"""
+		Project a ray from self.aim's Y axis.
+		We will
+		return hitEntityId, aimposition
+		"""
+		return None, (0,0,5)
 	
 	def doPlayerMovement(self):
 		movement = self.getDesiredMovement()
@@ -167,7 +181,7 @@ class Class(baseEntity.Class):
 
 	def isOnGround(self):
 		for floorSensor in self.floorSensors:
-			pos = (floorSensor.position[0], floorSensor.position[1], floorSensor.position[2] - 0.2)
+			pos = (floorSensor.worldPosition[0], floorSensor.worldPosition[1], floorSensor.worldPosition[2] - 0.2)
 			if floorSensor.rayCastTo(pos, 0.2): return True
 		return False
 	
