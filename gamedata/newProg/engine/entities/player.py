@@ -31,6 +31,7 @@ class Class(baseEntity.Class):
 			
 			import bge
 			self.object = bge.logic.getCurrentScene().addObject("player", bge.logic.getCurrentController().owner)
+			self.object["id"] = self.id
 			self.aimpoint = bge.logic.getCurrentScene().addObject("player_aimpoint", bge.logic.getCurrentController().owner)
 			self.aimpoint.worldPosition = (0,0,5)
 			
@@ -96,7 +97,11 @@ class Class(baseEntity.Class):
 		if not self.engine.interface.mouse.reserved: self.doMouseLook()
 		
 		hitEntityId, aimPosition = self.doAim()
-		self.aimpoint.worldPosition=aimPosition
+		if aimPosition:
+			self.aimpoint.worldPosition=aimPosition
+			self.aimpoint.visible = 1
+		else:
+			self.aimpoint.visible = 0
 		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
 			pos = [0.0, 0.0, 0.0]
@@ -129,7 +134,11 @@ class Class(baseEntity.Class):
 		We will
 		return hitEntityId, aimposition
 		"""
-		return None, (0,0,5)
+		dir = self.camera.worldOrientation[2]
+		hitdata = self.camera.rayCast([dir[0]*-10000, dir[1]*-10000, dir[2]*-10000], [self.camera.worldPosition[0], self.camera.worldPosition[1], self.camera.worldPosition[2]], 10000)
+		if hitdata[0] and "id" in hitdata[0]:
+			return hitdata[0]["id"], hitdata[1]
+		return None, hitdata[1]
 	
 	def doPlayerMovement(self):
 		movement = self.getDesiredMovement()
