@@ -94,6 +94,12 @@ class initializeGamestate:
 			return self.data['E'][id]
 		else:
 			return None
+			
+	def hasEntity(self, playerid, type):
+		if playerid in self.data['U']:
+			for i in self.data['E']:
+				if self.data['E'][i]['c'] == playerid and self.data['E'][i]['t'] == type: return True
+		return False;
 	
 	def hasControl(self, id):
 		entity = self.data['E'][id]

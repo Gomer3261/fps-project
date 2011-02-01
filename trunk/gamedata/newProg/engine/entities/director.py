@@ -14,10 +14,12 @@ class Class(baseEntity.Class):
 		keyboard = bge.logic.keyboard
 		
 		if keyboard.events[bge.events.PKEY] == 3 and (not engine.interface.terminalIsActive()):
-			deltas.append( {'E':{gamestate.getNextId():{'t':'player','c':engine.id}}} )
+			if not gamestate.hasEntity(engine.id, 'player'): 
+				deltas.append( {'E':{gamestate.getNextId():{'t':'player','c':engine.id}}} )
 		
 		for memo in self.memos:
 			type, controlId = memo
+			if type=='player' and gamestate.hasEntity(controlId, type): continue
 			deltas.append( {'E':{gamestate.getNextId():{'t':type,'c':controlId}}} )
 		self.memos = [] # Clearing memos.
 		
