@@ -4,7 +4,7 @@
 host		= 1 # local:1, client:0, server:1			##
 net			= 0 # local:0, client:1, server:1			##
 username	= 'Gawd' # you'd better pick a cool name	##
-ip			= 'chasemoskal.dyndns.org' # server host	##
+ip			= 'home.chasemoskal.com' # server host   	##
 port		= 3200 # the connection port				##
 ##########################################################
 
@@ -93,9 +93,9 @@ def mainloop():
 			items = network.remoteHandler.main( gamestate ) # network uses gamestate to sync user id's.
 			for item in items:
 				flag, stuff = item
-				if flag=='d': gamestate.mergeDelta( stuff )
-				elif flag=='f' and (not host): gamestate.data=stuff
-				elif flag=='m': entityController.submitMemos(stuff)
+				if flag=='d': gamestate.mergeDelta( stuff ) # gamestate delta
+				elif flag=='f' and (not host): gamestate.data=stuff # full gamestate
+				elif flag=='m': entityController.submitMemos(stuff) # memo
 				else: print("\nUnknown item type received:", item, "\n")
 			if host:
 				if gamestate.delta: network.remoteHandler.throwToAll( ('d',gamestate.delta) )

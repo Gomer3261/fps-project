@@ -1,6 +1,9 @@
 # PLAYER ENTITY
 import engine.entities.baseEntity as baseEntity
 class Class(baseEntity.Class):
+
+
+
 	def initializeGamestateData(self, gamestate):
 		data = {}
 		data['H'] = 100	# Health Integer
@@ -62,35 +65,32 @@ class Class(baseEntity.Class):
 	def end(self):
 		self.engine.camera.reset()
 		self.object.endObject()
+		self.aimpoint.endObject()
 	
 	
 	
-	def simulateServerData(self, gamestate):
-		"""
-		Simulates stuff, and returns gamestate delta data to the
-		mainloop, where it is merged with the gamestate delta.
-		Memos are handled by this method.
-		"""
-		# Handle memos before clearing them each run.
-		self.memos = [] # Clear memos when you're done with them.
-		return [] # Return delta data to be merged with gamestate.delta
 	
-	def replicateServerData(self, gamestate):
-		"""
-		This is where memos are born. Memos are messages to serverside entities.
-		"""
-		memos = []
-		id=None; data=None
-		memo=(id,data)
-		return memos # memos are used when you shoot people.
 	
-	def simulateControllerData(self, gamestate):
-		"""
-		Simulates stuff, and returns gamestate delta data to the
-		mainloop, where it is merged with the gamestate delta.
-		"""
-		deltas = []
-		
+	
+	
+	
+	
+	##################
+	###### HOST ###### Server-side behaviour for this entity.
+	################## Defines server-data; handles memos.
+	def host(self, gamestate):
+		pass
+	
+	####################
+	###### CLIENT ###### Client-side behaviour for this entity.
+	#################### Replicates server-data.
+	def client(self, gamestate):
+		pass
+	
+	########################
+	###### CONTROLLER ###### Controller behaviour for this entity.
+	######################## Defines controller-data; creates memos.
+	def controller(self, gamestate):
 		self.engine.camera.offer(self.camera, 10)
 		
 		self.doPlayerMovement()
@@ -99,21 +99,23 @@ class Class(baseEntity.Class):
 		hitEntityId, aimPosition = self.doAim()
 		if aimPosition:
 			self.aimpoint.worldPosition=aimPosition
-			self.aimpoint.visible = 1
+			self.aimpoint.visible = True
 		else:
-			self.aimpoint.visible = 0
+			self.aimpoint.visible = False
 		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
 			pos = [0.0, 0.0, 0.0]
 			for i in range(3): pos[i]=str(round(self.object.worldPosition[i], 3))
-			deltas.append( {'E': {self.id:{'P':pos}} } )
+			self.submitDelta( {'E': {self.id:{'P':pos}} } )
 			self.lastUpdate = self.time.time()
 		
-		if self.engine.interface.isControlPositive('suicide'): deltas.append( {'E':{self.id:None}} )
-		
-		return deltas # Return delta data to be merged with gamestate.delta
-	
-	def replicateControllerData(self, gamestate):
+		if self.engine.interface.isControlPositive('suicide'):
+			self.submitDelta( {'E':{self.id:None}} )
+			
+	###################
+	###### PROXY ###### Proxy behaviour for this entity.
+	################### Replicates controller-data.
+	def proxy(self, gamestate):
 		data = self.engine.gamestate.getById(self.id)
 		if 'P' in data:
 			pos = data['P']

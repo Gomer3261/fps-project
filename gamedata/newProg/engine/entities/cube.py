@@ -9,21 +9,48 @@ class Class(baseEntity.Class):
 		gamestate.mergeDelta(delta)
 	
 	def initialize(self, gamestate):
-		"""
-		Custom initialization for this entity object.
-		Often involves creating a bge object.
-		"""
 		import bge
 		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
 		self.count = 0
 	
-	def simulateServerData(self, gamestate):
-		"""
-		Simulates stuff, and returns gamestate delta data to the
-		mainloop, where it is merged with the gamestate delta.
-		"""
-		deltas = []
+	def host(self, gamestate):
 		self.count+=1
 		if self.count >= 100:
-			deltas.append( {'E':{self.id:None}} )
-		return deltas # Return delta data to be merged with gamestate.delta
+			self.submitDelta( {'E':{self.id:None}} )
+			
+	
+	
+
+
+	def initializeGamestateData(self, gamestate):
+		data = {'count':'0'}
+		delta = {'E':{self.id:data}} # Putting it in gamestate.delta form
+		gamestate.mergeDelta(delta) # merging it with gamestate's delta
+	
+	def initialize(self, gamestate):
+		# Custom initialization for this entity; often includes creating a bge object.
+		import bge
+		self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
+		self.count = 0
+		
+	def end(self):
+		# End method, often involves deleting bge object.
+		self.object.endObject()
+	
+	
+	########################################################
+	############ THE FANTASTIC FOUR RUN METHODS ############
+	########################################################
+	
+	#================#
+	#===== HOST =====# Server-side behaviour for this entity.
+	#================# Defines server-data; handles memos.
+	def host(self, gamestate):
+		self.count+=1
+		if self.count >= 100: self.submitDelta( {'E':{self.id:None}} )
+		
+		host_handleMemos()
+	def host_handleMemos(self):
+		for memo in self.memoInbox:
+			pass # Handle each memo.
+		self.memoInbox = []
