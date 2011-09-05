@@ -24,11 +24,9 @@ class initializeTerminal(bgui.System):
 		# The contents of the terminal window (output)
 		self.openingText = """Welcome to the terminal!
 
-Remember:
-   Precede all python commands with a slash (/), otherwise it is regarded as a text message.
-
 Important functions:
-	/restoreDefaults() # Use this whenever things seem to be not working.
+	/listUserCommands() # List of available commands.
+	/restoreDefaults() # Try this if something is not working correctly.
 	/setSetting("username", "Stewart Walton") # Set your username.
 
 ================================================================\n"""
@@ -46,6 +44,7 @@ Important functions:
 			
 		self.input = bgui.TextInput(self.frame, 'input', text="", prefix=">>>", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.025], pos=[0.025, 0.025], options = bgui.BGUI_DEFAULT)
 		self.input.on_enter_key = self.on_enter
+		self.input.colors["text"] = [(0, 0, 0, 1) for i in range(2)]
 		
 		import bge
 		self.keymap = {getattr(bge.events, val): getattr(bgui, val) for val in dir(bge.events) if val.endswith('KEY') or val.startswith('PAD')}
