@@ -13,7 +13,7 @@ class createEntityController:
 	def submitMemos(self, memos):
 		for memoItem in memos:
 			id, memo = memoItem
-			self.entities[id].memos.append(memo)
+			self.entities[id].memoInbox.append(memo)
 
 	def conform(self, gamestate):
 		delete = []

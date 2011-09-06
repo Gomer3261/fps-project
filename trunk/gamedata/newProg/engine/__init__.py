@@ -125,7 +125,7 @@ def mainloop():
 			if not gamestate['E'][idloop]['c'] in gamestate['U']: toDelete.append(idloop)
 		for idloop in toDelete: gamestate.removeEntity(idloop)
 					
-	interface.main() #not available until proper bgui implementation
+	interface.main()
 	
 	engine.camera.resetPriority() # Clearing the priority so that the cameras next frame can compete with each other.
 	
