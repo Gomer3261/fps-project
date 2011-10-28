@@ -27,7 +27,6 @@ import engine.network
 import engine.entities
 import engine.interface
 import engine.camera
-import engine.mouse
 ###
 
 gamestate=None

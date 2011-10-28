@@ -32,11 +32,14 @@ class initializeInputs:
 		"""
 		import math
 		import bge
+		import sys
 
 		def __init__(self):
 			"""
 			Initialize engine's mouse object.
 			"""
+			self.step = 0
+			
 			self.width = self.bge.render.getWindowWidth()
 			self.height = self.bge.render.getWindowHeight()
 
@@ -57,8 +60,14 @@ class initializeInputs:
 		def reset(self):
 			"""
 			sets the mouse position to the center of the screen.
+			osx has issues within blender that can break a mouse script, the step value fixes these issues, but makes the mouse script worse.
+			in order to fix this issue on osx but maintain the quality of the mouse script on other issues, we have a specific osx case.
 			"""
-			self.bge.logic.mouse.position = (0.5, 0.5)
+			if(self.sys.platform != "darwin" or self.step > 2):
+				self.bge.logic.mouse.position = (0.5, 0.5)
+				self.step = 0
+			else:
+				self.step += 1
 
 
 		def show(self, vis=1):
