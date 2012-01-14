@@ -34,15 +34,16 @@ Important functions:
 		self.openingText = self.openingText.replace("\r", "")
 
 		##Bgui initialization
-		bgui.System.__init__(self)
+		bgui.System.__init__(self, "../themes/default")
 			
 		self.frame = bgui.Frame(self, 'terminal', border=0)
 		self.frame.colors = [(1, 1, 1, .8) for i in range(4)]
 			
 		self.display = bgui.TextBlock(self.frame, 'textblock', text=self.openingText, color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.94], pos=[0, 0.035],
 			options=bgui.BGUI_DEFAULT | bgui.BGUI_CENTERX, overflow=bgui.BGUI_OVERFLOW_REPLACE)
-			
-		self.input = bgui.TextInput(self.frame, 'input', text="", prefix=">>>", color=(0, 0, 0, 1), pt_size=20, size=[0.95, 0.025], pos=[0.025, 0.025], options = bgui.BGUI_DEFAULT)
+		
+		self.prefix = bgui.Label(self.frame, 'prefix', text=">>>", color=(0, 0, 0, 1), pt_size=20, pos=[0.025, 0.028], options = bgui.BGUI_DEFAULT)
+		self.input = bgui.TextInput(self.frame, 'input', text="", color=(0, 0, 0, 1), pt_size=20, size=[0.920, 0.025], pos=[0.055, 0.025], options = bgui.BGUI_DEFAULT)
 		self.input.on_enter_key = self.on_enter
 		self.input.colors["text"] = [(0, 0, 0, 1) for i in range(2)]
 		
@@ -182,6 +183,7 @@ Important functions:
 		"""
 		import bge
 		self.focused_widget = self.input
+		self.lock_focus = True;
 		# Handle the keyboard
 		keyboard = bge.logic.keyboard
 		
