@@ -63,7 +63,10 @@ def initialize():
 	
 	if host:
 		engine.id = gamestate.addUser( username )
+		gamestate.applyDelta()
 		gamestate.addEntity( 'director' )
+		entityController.importCurrentScene(gamestate)
+		
 		
 	INIT = True
 	
@@ -116,12 +119,14 @@ def mainloop():
 			for deltaData in deltaDataList:
 				if deltaData: gamestate.mergeDelta(deltaData)
 			if memoList and (not host): network.remoteHandler.throw( ('m', memoList) )
+			elif memoList: entityController.submitMemos(memoList);
 		except: import traceback; traceback.print_exc()
 	
 	if host: # We remove entities with controller users that have left.
 		toDelete=[]
 		for idloop in entityController.entities:
-			if not gamestate['E'][idloop]['c'] in gamestate['U']: toDelete.append(idloop)
+			if gamestate.containsEntity(idloop):
+				if not gamestate['E'][idloop]['c'] in gamestate['U']: toDelete.append(idloop)
 		for idloop in toDelete: gamestate.removeEntity(idloop)
 					
 	interface.main()

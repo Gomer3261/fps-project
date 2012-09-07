@@ -15,7 +15,7 @@ class Class(baseEntity.Class):
 		delta = {'E':{self.id:data}} # Putting it in gamestate.delta form
 		gamestate.mergeDelta(delta) # merging it with gamestate's delta
 	
-	def initialize(self, gamestate):
+	def initialize(self, gamestate, gameObject):
 		
 		if self.control:
 			self.lastUpdate = self.time.time()
@@ -32,10 +32,15 @@ class Class(baseEntity.Class):
 			self.firing = False
 			self.stance = 1 # 1=stand, 2=crouch, 3=prone
 			
-			import bge
-			self.object = bge.logic.getCurrentScene().addObject("player", bge.logic.getCurrentController().owner)
+			if(gameObject):
+				print("Warning: Player Initialization: gameObject passed to player initialization, remove any player typed objects from the current scene.")
+				self.object.endObject()
+
+			self.object = self.bge.logic.getCurrentScene().addObject("player", self.bge.logic.getCurrentController().owner)
 			self.object["id"] = self.id
-			self.aimpoint = bge.logic.getCurrentScene().addObject("player_aimpoint", bge.logic.getCurrentController().owner)
+			self.object["targetable"] = True
+			
+			self.aimpoint = self.bge.logic.getCurrentScene().addObject("player_aimpoint", self.bge.logic.getCurrentController().owner)
 			self.aimpoint.worldPosition = (0,0,5)
 			
 			self.aim = self.object.children['player_aim']
@@ -58,8 +63,7 @@ class Class(baseEntity.Class):
 			self.engine.interface.mouse.reset()
 			self.angle_y = 0.0
 		else:
-			import bge
-			self.object = bge.logic.getCurrentScene().addObject("player_proxy", bge.logic.getCurrentController().owner)
+			self.object = self.bge.logic.getCurrentScene().addObject("player_proxy", bge.logic.getCurrentController().owner)
 			self.targetPosition = [0.0, 0.0, -100.0]
 	
 	def end(self):
@@ -75,33 +79,51 @@ class Class(baseEntity.Class):
 	
 	
 	
-	##################
-	###### HOST ###### Server-side behaviour for this entity.
-	################## Defines server-data; handles memos.
-	def host(self, gamestate):
-		pass
+	############################################
+	############ THE FANTASTIC FOUR ############
+	############################################
 	
-	####################
-	###### CLIENT ###### Client-side behaviour for this entity.
-	#################### Replicates server-data.
+	#================#
+	#===== HOST =====# Server-side behaviour for this entity.
+	#================# Updates server-data
+	def host(self, gamestate):
+		# self.hostHandleMemos()
+		pass
+		
+	#---------#
+	#- MEMOS -# Server-side memo handling for this entity.
+	#---------# This method is a part of the host method.
+	def hostHandleMemos(self):
+		self.memoInbox = []
+		#for memo in self.memoInbox:
+		#	pass # Handle each memo.
+	
+	#==================#
+	#===== CLIENT =====# Client-side behaviour for this entity.
+	#==================# Replicates server-data.
 	def client(self, gamestate):
 		pass
 	
-	########################
-	###### CONTROLLER ###### Controller behaviour for this entity.
-	######################## Defines controller-data; creates memos.
+	#======================#
+	#===== CONTROLLER =====# Controller behaviour for this entity.
+	#======================# Updates controller-data; creates memos.
 	def controller(self, gamestate):
 		self.engine.camera.offer(self.camera, 10)
 		
 		self.doPlayerMovement()
 		if not self.engine.interface.mouse.reserved: self.doMouseLook()
 		
-		hitEntityId, aimPosition = self.doAim()
+		hitEntity, aimPosition = self.doAim()
 		if aimPosition:
 			self.aimpoint.worldPosition=aimPosition
 			self.aimpoint.visible = True
 		else:
 			self.aimpoint.visible = False
+		
+		if hitEntity:
+			if self.engine.interface.getControlStatus('use') == 1 and "targetable" in hitEntity:
+				if hitEntity["targetable"] == True:
+					self.submitMemo( (hitEntity["id"], ("dmg", 10)) )
 		
 		if self.time.time()-self.lastUpdate > self.updateInterval:
 			pos = [0.0, 0.0, 0.0]
@@ -109,12 +131,12 @@ class Class(baseEntity.Class):
 			self.submitDelta( {'E': {self.id:{'P':pos}} } )
 			self.lastUpdate = self.time.time()
 		
-		if self.engine.interface.isControlPositive('suicide'):
+		if self.engine.interface.isControlPositive('suicide') and not self.engine.interface.terminal.active:
 			self.submitDelta( {'E':{self.id:None}} )
 			
-	###################
-	###### PROXY ###### Proxy behaviour for this entity.
-	################### Replicates controller-data.
+	#=================#
+	#===== PROXY =====# Proxy behaviour for this entity.
+	#=================# Replicates controller-data.
 	def proxy(self, gamestate):
 		data = self.engine.gamestate.getById(self.id)
 		if 'P' in data:
@@ -136,10 +158,11 @@ class Class(baseEntity.Class):
 		We will
 		return hitEntityId, aimposition
 		"""
-		dir = self.camera.worldOrientation[2]
-		hitdata = self.camera.rayCast([dir[0]*-10000, dir[1]*-10000, dir[2]*-10000], [self.camera.worldPosition[0], self.camera.worldPosition[1], self.camera.worldPosition[2]], 10000)
+		dir = self.camera.worldOrientation
+		hitdata = self.camera.rayCast([dir[0][2]*-10000, dir[1][2]*-10000, dir[2][2]*-10000], [self.camera.worldPosition[0], self.camera.worldPosition[1], self.camera.worldPosition[2]], 10000)
+		
 		if hitdata[0] and "id" in hitdata[0]:
-			return hitdata[0]["id"], hitdata[1]
+			return hitdata[0], hitdata[1]
 		return None, hitdata[1]
 	
 	def doPlayerMovement(self):

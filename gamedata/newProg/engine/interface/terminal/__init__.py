@@ -25,9 +25,9 @@ class initializeTerminal(bgui.System):
 		self.openingText = """Welcome to the terminal!
 
 Important functions:
-	/listUserCommands() # List of available commands.
-	/restoreDefaults() # Try this if something is not working correctly.
-	/setSetting("username", "Stewart Walton") # Set your username.
+	listUserCommands() # List of available commands.
+	restoreDefaults() # Try this if something is not working correctly.
+	setSetting("username", "Stewart Walton") # Set your username.
 
 ================================================================\n"""
 
@@ -144,6 +144,8 @@ Important functions:
 		"""
 		Outputs something to the terminal.
 		"""
+		# TODO: I am seeing a repeatable crash if I output a lot of data into one line in the terminal.
+		# TODO: I am seeing performance issues when rapidly printing to the terminal.
 		
 		s = s.replace("\r", "")
 		self.display.text += s
@@ -183,7 +185,7 @@ Important functions:
 		"""
 		import bge
 		self.focused_widget = self.input
-		self.lock_focus = True;
+		self.lock_focus = True
 		# Handle the keyboard
 		keyboard = bge.logic.keyboard
 		

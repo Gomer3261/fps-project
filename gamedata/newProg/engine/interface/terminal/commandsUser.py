@@ -1,10 +1,10 @@
 import engine
+import bge
 
 helpText = """
 Welcome to the FPS Project's in-game terminal.
 All commands are executed as Python scripts.
 Use listUserCommands() for a good time.
-Precede your input with "/" to designate it as a python command or it will be sent as a text message.
 """
 
 # ------------------------
@@ -17,16 +17,15 @@ def help(cmd = None):
 		Prints out text that should help you use the requested terminal command. If left blank, general help information is printed.
 	"""
 	if cmd:
-		output(cmd.__doc)
+		output(cmd.__doc__)
 	else:
-		output(self.helpText)
+		output(helpText)
 
 def output(s):
 	"""
 	Usage: output(string)
 		prints the given value in the terminal window.
 	"""
-	global engine
 	s = str(s)
 	engine.interface.output(s, 1, 0)
 
@@ -35,7 +34,6 @@ def clear():
 	Usage: clear()
 		Clears the terminal window of all text.
 	"""
-	global engine
 	engine.interface.terminal.clear()
 
 def listUserCommands():
@@ -43,18 +41,15 @@ def listUserCommands():
 	Usage: listUserCommands()
 		Displays a list of commands available to the user.
 	"""
-	global engine
-	for i in dir(engine.interface.terminal.commandsUser):
-		# Filter out the python module stuff so we only get our commands
-		if not i.startswith("__") and i != "helpText":
-			output(i)
+	commands = [i for i in dir(engine.interface.terminal.commandsUser) if (not i.startswith("__") and i != "helpText")]
+	
+	output("\n".join(commands))
 			
 def setHistoryLimit(I):
 	"""
 	Usage: setHistoryLimit()
 		Changes the number of items stored in the Terminal's history to the value given.
 	"""
-	global engine
 	engine.interface.terminal.history.max = I
 
 
@@ -67,7 +62,10 @@ def setHistoryLimit(I):
 # ------------------------
 
 def gs():
-	import engine
+	"""
+	Usage: gs()
+		Prints the current gamestate for debug purposes.
+	"""
 	output(engine.gamestate.data)
 #	def ammo():
 #		"""
@@ -141,14 +139,12 @@ def notify(text="Error", time=0.0):
 	"""
 	Creates a note visible to the local player.
 	"""
-	import engine
 	engine.interface.notificationSystem.requestNote(text, time)
 
 def alert(text="Error", buttons=None):
 	"""
 	Creates an alert visible to the local player.
 	"""
-	import engine.interface
 	engine.interface.alert(text, buttons)
 
 
@@ -166,7 +162,6 @@ def restoreDefaults():
 	Usage: defaultOptions()
 		Resets the games options to the default values.
 	"""
-	global engine
 	options = engine.interface.options
 	options.saveDefaults()
 	output("Options have been set to defaults. I think.")
@@ -176,7 +171,6 @@ def setSetting(key, value):
 	Usage: setSetting(setting, value)
 		Sets the given setting to the given value.
 	"""
-	global engine
 	options = engine.interface.options
 	r = options.setSetting(key, value)
 	output("Success value: %s"%(r))
@@ -186,7 +180,6 @@ def getSetting(key):
 	Usage: getSetting(setting)
 		prints the value of the requested setting.
 	"""
-	global engine
 	options = engine.interface.options
 	output("Setting %s is set to %s" % (key, options.settings[key]))
 	
@@ -195,7 +188,6 @@ def defaultSetting(key):
 	Usage: defaultSetting(setting)
 		resets the value of the requested setting to default.
 	"""
-	global engine
 	options = engine.interface.options
 	r = options.defaultSetting(key)
 	output("Success value: %s"%(r))
@@ -205,7 +197,6 @@ def setControl(key, value):
 	Usage: setControl(control, value)
 		Sets the given control to the given value.
 	"""
-	global engine
 	options = engine.interface.options
 	r = options.setControl(key, value)
 	output("Success value: %s"%(r))
@@ -215,7 +206,6 @@ def getControl(key):
 	Usage: getControl(control)
 		Prints the value of the requested control.
 	"""
-	global engine
 	options = engine.interface.options
 	output("Control %s is set to %s" % (key, options.controls[key]))
 	
@@ -224,17 +214,33 @@ def defaultControl(key):
 	Usage: defaultControl(control)
 		resets the value of the requested control to default.
 	"""
-	global engine
 	options = engine.interface.options
 	r = options.defaultControl(key)
 	output("Success value: %s"%(r))
+	
+def listControls():
+	"""
+	Usage: listControls()
+		lists the current controls
+	"""
+	options = engine.interface.options
+	r = "\n".join(options.controls)
+	output(r)
+	
+def listSettings():
+	"""
+	Usage: listSettings()
+		lists the current settings
+	"""
+	options = engine.interface.options
+	r = "\n".join(options.settings)
+	output(r)
 
 def loadOptions():
 	"""
 	Usage: loadOptions()
 		Loads the options from FPS_options.txt
 	"""
-	global engine
 	options = engine.interface.options
 	r = options.load()
 	output("Success value: %s"%(r))
@@ -245,7 +251,7 @@ def loadOptions():
 
 def exitGame():
 	"""
-	Quits the current game in case of failure.
+	Usage: exitGame()
+		Quits the current game in case of failure.
 	"""
-	import bge
 	bge.logic.endGame()

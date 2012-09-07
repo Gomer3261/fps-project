@@ -1,3 +1,4 @@
+import engine
 #def fullgs(self):
 #	"""
 #	Outputs the current gamestate information to the terminal.
@@ -31,3 +32,20 @@
 #		GI = bge.logic.globalDict['gameInfo']
 #		address = GI['address']
 #	self.slab.Network.startClient(address)
+
+def spawnEntity(type, controlid=None):
+	global engine
+
+	for id in engine.gamestate['E']:
+		if 't' in engine.gamestate['E'][id]:
+			if engine.gamestate['E'][id]['t'] == "director":
+				directorid = id
+	
+	if(directorid):
+		memo = [(directorid, (type, controlid))]
+		if(engine.host):
+			engine.entityController.submitMemos(memo);
+		else:
+			network.remoteHandler.throw( ('m', memo) )
+	else:
+		raise Exception("Director Object Not Found")
