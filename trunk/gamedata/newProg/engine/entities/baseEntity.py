@@ -1,11 +1,12 @@
 # Base Entity
 
 class Class:
-	def __init__(self, id, gamestate, entityController):
+	def __init__(self, id, gamestate, entityController, gameObject=None):
 		self.id = id
 		self.entityController = entityController
 		import engine; self.engine = engine
 		import time; self.time=time
+		import bge; self.bge=bge
 		
 		self.control = gamestate.hasControl(self.id)
 		
@@ -14,9 +15,12 @@ class Class:
 		self.deltaOutbox = [] # list of outgoing deltas. 
 		
 		if gamestate.hasControl(self.id): self.initializeGamestateData( gamestate )
-		self.initialize( gamestate )
+		self.initialize( gamestate, gameObject )
 		
 	def run(self, gamestate):
+		self.memoOutbox = [] # list of outgoing memos.
+		self.deltaOutbox = [] # list of outgoing deltas. 
+		
 		### host/client ###
 		if self.engine.host:
 			self.host(gamestate)
@@ -43,9 +47,11 @@ class Class:
 		#delta = {'E':{self.id:data}} # Putting it in gamestate.delta form
 		#gamestate.mergeDelta(delta) # merging it with gamestate's delta
 	
-	def initialize(self, gamestate):
+	def initialize(self, gamestate, gameObject):
 		# Custom initialization for this entity; often includes creating a bge object.
-		pass
+		# The game object parameter allows an existing game object to be passed into the engine for proper incorperation.
+		if(gameObject):
+			gameObject.endObject()
 		#import bge
 		#self.object = bge.logic.getCurrentScene().addObject("cube", bge.logic.getCurrentController().owner)
 		#print("RUNNING")
@@ -65,7 +71,7 @@ class Class:
 	#===== HOST =====# Server-side behaviour for this entity.
 	#================# Updates server-data
 	def host(self, gamestate):
-		host_handleMemos()
+		self.hosthandleMemos()
 	
 	#---------#
 	#- MEMOS -# Server-side memo handling for this entity.

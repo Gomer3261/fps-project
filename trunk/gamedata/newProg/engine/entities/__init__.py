@@ -31,3 +31,19 @@ class createEntityController:
 				
 	def createEntity(self, id, gamestate):
 		return self.entityClasses[gamestate["E"][id]["t"]]( id, gamestate, self )
+		
+		
+	def importCurrentScene(self, gamestate):
+		import bge;
+		import engine;
+		
+		for object in bge.logic.getCurrentScene().objects:
+			if "type" in object:
+				if object["type"] in self.entityClasses and engine.host:
+					id =  gamestate.addEntity(object["type"])
+					if(id):
+						self.entities[id] = self.entityClasses[object["type"]]( id, gamestate, self, object )
+					else:
+						object.endObject()
+				else:
+					object.endObject()
